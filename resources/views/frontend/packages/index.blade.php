@@ -1,149 +1,103 @@
 @extends('layouts.frontend')
 
-@section('title', 'Treks – Visit Nepal')
+@section('title', 'Packages – Visit Nepal')
 
 @section('content')
-
-    <div class="trek-wrapper">
+    <div class="packages-wrapper">
 
         {{-- HERO HEADER --}}
-        <div class="trek-header">
-            <h1>Explore Treks in Nepal</h1>
-            <p>Choose from world-class trekking adventures across the Himalayas</p>
+        <div class="packages-header">
+            <h1>Travel Packages</h1>
+            <p>Discover carefully curated Nepal travel experiences</p>
         </div>
 
-        {{-- GRID --}}
-        <div class="trek-grid">
-
-            @forelse($treks as $trek)
-                <a href="{{ route('treks.show', $trek->slug) }}" class="trek-card group">
-
-                    {{-- IMAGE --}}
-                    <div class="trek-image">
-                        <img src="{{ asset('storage/' . $trek->featured_image) }}" alt="{{ $trek->name }}"
-                            class="group-hover:scale-110 transition duration-500">
-
+        {{-- PACKAGES GRID --}}
+        <div class="packages-grid">
+            @forelse ($packages as $package)
+                <div class="package-card">
+                    <div class="package-image">
+                        <img src="{{ $package['img'] }}" alt="{{ $package['name'] }}">
                         <div class="overlay"></div>
-
                         <div class="badge">
-                            {{ ucfirst($trek->difficulty) }}
+                            Best Deal
                         </div>
                     </div>
 
-                    {{-- CONTENT --}}
-                    <div class="trek-content">
-
-                        <h2>{{ $trek->name }}</h2>
-
-                        <p>
-                            {{ \Illuminate\Support\Str::limit($trek->short_description, 100) }}
-                        </p>
+                    <div class="package-content">
+                        <h3>{{ $package['name'] }}</h3>
 
                         <div class="meta">
-
                             <span>
-                                <i class="fas fa-calendar"></i>
-                                {{ $trek->duration_days }} Days
+                                <i class="fas fa-clock"></i>
+                                {{ $package['days'] }} Days
                             </span>
-
                             <span>
-                                <i class="fas fa-mountain"></i>
-                                {{ $trek->max_altitude ?? 'N/A' }}
+                                <i class="fas fa-map-marker-alt"></i>
+                                Nepal
                             </span>
-
                         </div>
 
                         <div class="footer">
-
-                            <div class="price">
-                                ${{ number_format($trek->price_usd ?? 0) }}
-                            </div>
-
-                            <span class="view-btn">
+                            <a href="{{ route('packages.show', $package['slug']) }}" class="view-btn">
                                 View Details →
-                            </span>
-
+                            </a>
                         </div>
-
                     </div>
-
-                </a>
-
+                </div>
             @empty
-
                 <div class="empty">
-                    No treks available at the moment.
+                    No packages available at the moment.
                 </div>
             @endforelse
-
         </div>
-
     </div>
-
 @endsection
 
-
-{{-- CUSTOM CSS --}}
 @push('styles')
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .trek-wrapper {
+        .packages-wrapper {
             max-width: 1400px;
             margin: auto;
             padding: 80px 20px;
             position: relative;
             min-height: 100vh;
 
-            /* Premium Background Image - High resolution mountain trek */
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),
-                url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            /* Premium Background Image */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.55)),
+                url('https://images.unsplash.com/photo-1536240474400-b6c5a6a7b9c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
             background-size: cover;
-            background-position: center 30%;
+            background-position: center 40%;
             background-attachment: fixed;
             background-repeat: no-repeat;
         }
 
-        /* Optional fallback local background image - uncomment if you have local image */
-        /*
-            .trek-wrapper {
-                background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
-                                  url('{{ asset('images/trek-background.jpg') }}');
-            }
-            */
-
-        /* Animated gradient overlay */
-        .trek-wrapper::before {
+        /* Overlay effect */
+        .packages-wrapper::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.1) 100%);
             z-index: 0;
             pointer-events: none;
         }
 
-        /* Ensure content appears above the overlay */
-        .trek-header,
-        .trek-grid {
+        .packages-header,
+        .packages-grid {
             position: relative;
             z-index: 2;
         }
 
-        /* Enhanced Hero Header */
-        .trek-header {
+        /* Hero Header */
+        .packages-header {
             text-align: center;
             margin-bottom: 60px;
             animation: fadeInUp 0.8s ease-out;
         }
 
-        .trek-header h1 {
+        .packages-header h1 {
             font-size: 3.5rem;
             font-weight: 800;
             background: linear-gradient(135deg, #FFFFFF 0%, #FFD700 100%);
@@ -154,7 +108,7 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .trek-header p {
+        .packages-header p {
             color: #f0f0f0;
             margin-top: 10px;
             font-size: 1.2rem;
@@ -162,57 +116,82 @@
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
-        /* Enhanced Grid */
-        .trek-grid {
+        /* Packages Grid */
+        .packages-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
         }
 
-        /* Enhanced CARD */
-        .trek-card {
+        /* Package Card */
+        .package-card {
             background: rgba(255, 255, 255, 0.98);
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            text-decoration: none;
-            color: inherit;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             backdrop-filter: blur(0px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.6s ease-out;
+            animation-fill-mode: both;
         }
 
-        .trek-card:hover {
+        .package-card:hover {
             transform: translateY(-12px);
             box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3);
             background: white;
         }
 
-        /* Enhanced IMAGE */
-        .trek-image {
+        /* Staggered animations */
+        .package-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .package-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .package-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .package-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .package-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .package-card:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        /* Package Image */
+        .package-image {
             position: relative;
             height: 240px;
             overflow: hidden;
         }
 
-        .trek-image img {
+        .package-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        .trek-card:hover .trek-image img {
+        .package-card:hover .package-image img {
             transform: scale(1.15);
         }
 
         .overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 60%);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent 60%);
         }
 
-        /* Enhanced BADGE */
+        /* Badge */
         .badge {
             position: absolute;
             top: 15px;
@@ -229,83 +208,77 @@
             z-index: 2;
         }
 
-        /* Enhanced CONTENT */
-        .trek-content {
+        /* Package Content */
+        .package-content {
             padding: 20px;
         }
 
-        .trek-content h2 {
+        .package-content h3 {
             font-size: 1.35rem;
             font-weight: 800;
             color: #1e293b;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             transition: color 0.3s;
         }
 
-        .trek-card:hover .trek-content h2 {
+        .package-card:hover .package-content h3 {
             color: #2563eb;
         }
 
-        .trek-content p {
-            font-size: 0.9rem;
-            color: #64748b;
-            margin-top: 8px;
-            line-height: 1.5;
-        }
-
-        /* Enhanced META */
+        /* Meta Info */
         .meta {
             display: flex;
             gap: 15px;
-            font-size: 12px;
+            font-size: 13px;
             color: #475569;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #e2e8f0;
+            margin-top: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .meta span {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .meta i {
             color: #f59e0b;
+            font-size: 14px;
         }
 
-        /* Enhanced FOOTER */
+        /* Footer */
         .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-top: 18px;
-            padding-top: 12px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .price {
-            font-weight: 800;
-            color: #16a34a;
-            font-size: 1.2rem;
         }
 
         .view-btn {
-            font-size: 13px;
-            color: #2563eb;
-            font-weight: 700;
-            transition: all 0.3s;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #2563eb;
+            text-decoration: none;
+            transition: all 0.3s;
+            padding: 8px 0;
         }
 
-        .trek-card:hover .view-btn {
+        .view-btn:hover {
             transform: translateX(5px);
             color: #1d4ed8;
         }
 
-        /* EMPTY STATE */
+        .view-btn::after {
+            content: '→';
+            transition: transform 0.3s;
+        }
+
+        .view-btn:hover::after {
+            transform: translateX(3px);
+        }
+
+        /* Empty State */
         .empty {
             text-align: center;
             color: white;
@@ -339,73 +312,38 @@
             }
         }
 
-        .trek-card {
-            animation: fadeIn 0.6s ease-out;
-            animation-fill-mode: both;
-        }
-
-        .trek-card:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .trek-card:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .trek-card:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        .trek-card:nth-child(4) {
-            animation-delay: 0.4s;
-        }
-
-        .trek-card:nth-child(5) {
-            animation-delay: 0.5s;
-        }
-
-        .trek-card:nth-child(6) {
-            animation-delay: 0.6s;
-        }
-
-        /* Responsive adjustments */
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .trek-wrapper {
+            .packages-wrapper {
                 padding: 50px 15px;
                 background-attachment: scroll;
-                background-position: center;
             }
 
-            .trek-header h1 {
+            .packages-header h1 {
                 font-size: 2.2rem;
             }
 
-            .trek-header p {
+            .packages-header p {
                 font-size: 1rem;
             }
 
-            .trek-grid {
+            .packages-grid {
                 gap: 20px;
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             }
 
-            .trek-image {
+            .package-image {
                 height: 200px;
             }
         }
 
         @media (max-width: 480px) {
-            .trek-header h1 {
+            .packages-header h1 {
                 font-size: 1.8rem;
             }
 
-            .trek-content h2 {
+            .package-content h3 {
                 font-size: 1.2rem;
-            }
-
-            .meta {
-                flex-wrap: wrap;
-                gap: 10px;
             }
         }
 

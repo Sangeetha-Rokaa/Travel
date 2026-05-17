@@ -4,36 +4,32 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Destination;
-use App\Models\Trek;
-use App\Models\Package;
 
 class DestinationController extends Controller
 {
-    /**
-     * List all active destinations.
-     */
     public function index()
     {
         $destinations = Destination::active()
             ->ordered()
-            ->withCount(['treks' => fn($q) => $q->active()])
             ->paginate(12);
 
-        $regions = Destination::active()->distinct()->pluck('region')->filter()->sort()->values();
-
-        return view('frontend.destinations.index', compact('destinations', 'regions'));
+        return view('frontend.destinations.index', compact('destinations'));
     }
 
-    /**
-     * Show a single destination with its related treks/packages.
-     */
-    public function show(Destination $destination)
+    public function show($slug)
     {
-        abort_if(! $destination->is_active, 404);
+        $destination = Destination::where('slug', $slug)
+            ->active()
+            ->firstOrFail();
 
-        $treks    = $destination->treks()->active()->ordered()->get();
-        $related  = Destination::active()->where('id', '!=', $destination->id)->inRandomOrder()->take(3)->get();
+        $relatedDestinations = Destination::where('id', '!=', $destination->id)
+            ->active()
+            ->take(4)
+            ->get();
 
-        return view('frontend.destinations.show', compact('destination', 'treks', 'related'));
+        return view('frontend.destinations.show', compact(
+            'destination',
+            'relatedDestinations'
+        ));
     }
 }

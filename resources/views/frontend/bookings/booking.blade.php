@@ -4,9 +4,9 @@
 @push('styles')
     <style>
         /* ═══════════════════════════════════════════════
-             BOOKING PAGE — VISIT NEPAL
-             Matches the 6-step design exactly
-          ═══════════════════════════════════════════════ */
+                 BOOKING PAGE — VISIT NEPAL
+                 Matches the 6-step design exactly
+              ═══════════════════════════════════════════════ */
 
         *,
         *::before,
@@ -843,410 +843,376 @@
 
 @section('content')
 
-    <div class="booking-page">
 
-        <!-- ── Header with logo + stepper ── -->
-        <div class="booking-header">
-            <a href="{{ route('home') }}" class="booking-logo">
-                <div class="logo-mountain"><i class="fas fa-mountain"></i></div>
-                <div>
-                    <div class="logo-text-name">Visit Nepal</div>
-                    <div class="logo-text-tag">Dream · Explore · Discover</div>
-                </div>
-            </a>
+    <div class="booking-wrap">
 
-            <div class="stepper" id="stepper">
-                <div class="step-item active" data-step="1">
-                    <div class="step-circle"><i class="fas fa-box"></i></div>
-                    <span class="step-label">Package</span>
+        <!-- ════════════════════════════════════════
+                     STEP 1 — Package Summary
+                ════════════════════════════════════════ -->
+        <div class="booking-step active" id="step-1">
+            <div class="pkg-summary-card">
+
+                <!-- Left: image -->
+                <div class="pkg-img-side">
+                    <img src="{{ isset($package) ? $package->featured_image_url : asset('images/landingimg.png') }}"
+                        alt="{{ isset($package) ? $package->name : 'Nepal Highlights Tour' }}"
+                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                    <div class="pkg-img-placeholder-bk">
+                        <i class="fas fa-mountain"></i>
+                    </div>
                 </div>
-                <div class="step-item" data-step="2">
-                    <div class="step-circle"><i class="fas fa-user"></i></div>
-                    <span class="step-label">Details</span>
+
+                <!-- Right: info -->
+                <div class="pkg-info-side">
+                    <div class="pkg-includes-title">Package Includes</div>
+                    <ul class="pkg-includes-list">
+                        @if (isset($package) && $package->included)
+                            @foreach (array_slice($package->included, 0, 6) as $item)
+                                <li>
+                                    <i class="fas fa-check"></i>
+                                    {{ $item }}
+                                </li>
+                            @endforeach
+                        @else
+                            @foreach (['Hotel Accommodation', 'Breakfast', 'Sightseeing', 'Private Transport', 'Tour Guide', 'Airport Pickup/Drop'] as $item)
+                                <li><i class="fas fa-check"></i> {{ $item }}</li>
+                            @endforeach
+                        @endif
+                    </ul>
+
+                    <div class="pkg-name-row">
+                        {{ isset($package) ? $package->name : 'Nepal Highlights Tour' }}
+                    </div>
+                    <div class="pkg-meta-row">
+                        <span><i class="far fa-clock"></i> {{ isset($package) ? $package->duration_days : 7 }}
+                            Days</span>
+                        <span><i class="fas fa-moon"></i> {{ isset($package) ? $package->duration_days - 1 : 6 }}
+                            Nights</span>
+                        <span><i class="fas fa-signal"></i> Easy</span>
+                    </div>
+                    <div class="pkg-price-row">
+                        <div class="pkg-price-label">Package Price</div>
+                        <div class="pkg-price-value">
+                            ${{ isset($package) ? number_format($package->effective_price, 0) : '750' }}</div>
+                    </div>
+                    <a href="#" class="pkg-view-link">View Package Details</a>
+
+                    <button class="btn-book-now" onclick="goToStep(2)">Book Now</button>
                 </div>
-                <div class="step-item" data-step="3">
-                    <div class="step-circle"><i class="fas fa-credit-card"></i></div>
-                    <span class="step-label">Payment</span>
+
+            </div>
+        </div><!-- /step-1 -->
+
+
+        <!-- ════════════════════════════════════════
+                     STEP 2 — Traveler Details
+                ════════════════════════════════════════ -->
+        <div class="booking-step" id="step-2">
+            <div class="traveler-card">
+                <h2>Traveler Information</h2>
+
+                <div class="form-grid-2">
+
+                    <!-- Full Name -->
+                    <div class="form-field full">
+                        <label>Full Name <span class="req">*</span></label>
+                        <input type="text" id="b_full_name" placeholder="Enter your full name" />
+                        <span class="field-error" id="err_b_full_name"
+                            style="color:#ef4444;font-size:12px;display:none;">Please enter your full name.</span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-field full">
+                        <label>Email Address <span class="req">*</span></label>
+                        <input type="email" id="b_email" placeholder="Enter your email address" />
+                        <span class="field-error" id="err_b_email" style="color:#ef4444;font-size:12px;display:none;">Please
+                            enter a valid email.</span>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="form-field full">
+                        <label>Phone Number <span class="req">*</span></label>
+                        <div class="phone-row">
+                            <select class="phone-code" id="b_phone_code">
+                                <option value="+977">🇳🇵 +977</option>
+                                <option value="+1">🇺🇸 +1</option>
+                                <option value="+44">🇬🇧 +44</option>
+                                <option value="+91">🇮🇳 +91</option>
+                                <option value="+61">🇦🇺 +61</option>
+                                <option value="+49">🇩🇪 +49</option>
+                                <option value="+33">🇫🇷 +33</option>
+                            </select>
+                            <input type="tel" id="b_phone" placeholder="Enter your phone number" style="flex:1;" />
+                        </div>
+                        <span class="field-error" id="err_b_phone" style="color:#ef4444;font-size:12px;display:none;">Please
+                            enter your phone number.</span>
+                    </div>
+
+                    <!-- Number of Travelers -->
+                    <div class="form-field full">
+                        <label>Number of Travelers <span class="req">*</span></label>
+                        <select id="b_travelers">
+                            <option value="1">1 Traveler</option>
+                            <option value="2">2 Travelers</option>
+                            <option value="3">3 Travelers</option>
+                            <option value="4">4 Travelers</option>
+                            <option value="5">5 Travelers</option>
+                            <option value="6+">6+ Travelers</option>
+                        </select>
+                    </div>
+
+                    <!-- Special Request -->
+                    <div class="form-field full">
+                        <label>Special Request (Optional)</label>
+                        <textarea id="b_special" placeholder="Any special request..."></textarea>
+                    </div>
+
                 </div>
-                <div class="step-item" data-step="4">
-                    <div class="step-circle"><i class="fas fa-check"></i></div>
-                    <span class="step-label">Confirmation</span>
+
+                <div class="step-btns">
+                    <button class="btn-back" onclick="goToStep(1)">Back</button>
+                    <button class="btn-continue" onclick="validateStep2()">Continue to Payment</button>
                 </div>
             </div>
-        </div><!-- /booking-header -->
+        </div><!-- /step-2 -->
 
-        <div class="booking-wrap">
 
-            <!-- ════════════════════════════════════════
-                 STEP 1 — Package Summary
-            ════════════════════════════════════════ -->
-            <div class="booking-step active" id="step-1">
-                <div class="pkg-summary-card">
+        <!-- ════════════════════════════════════════
+                     STEP 3 — Payment Options
+                ════════════════════════════════════════ -->
+        <div class="booking-step" id="step-3">
+            <div class="payment-grid">
 
-                    <!-- Left: image -->
-                    <div class="pkg-img-side">
-                        <img src="{{ isset($package) ? $package->featured_image_url : asset('images/landingimg.png') }}"
-                            alt="{{ isset($package) ? $package->name : 'Nepal Highlights Tour' }}"
-                            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-                        <div class="pkg-img-placeholder-bk">
-                            <i class="fas fa-mountain"></i>
-                        </div>
+                <!-- Left: summary -->
+                <div class="payment-summary-card">
+                    <h3>Payment Summary</h3>
+
+                    <div class="summary-row">
+                        <span class="s-label">Package Name</span>
+                        <span class="s-value" id="sum_pkg_name">Nepal Highlights Tour</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="s-label">Duration</span>
+                        <span class="s-value" id="sum_duration">7 Days / 6 Nights</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="s-label">Travelers</span>
+                        <span class="s-value" id="sum_travelers">1</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="s-label">Price per Person</span>
+                        <span class="s-value" id="sum_price_pp">$750</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span class="s-label">Total Amount</span>
+                        <span class="s-value" id="sum_total">$750</span>
                     </div>
 
-                    <!-- Right: info -->
-                    <div class="pkg-info-side">
-                        <div class="pkg-includes-title">Package Includes</div>
-                        <ul class="pkg-includes-list">
-                            @if (isset($package) && $package->included)
-                                @foreach (array_slice($package->included, 0, 6) as $item)
-                                    <li>
-                                        <i class="fas fa-check"></i>
-                                        {{ $item }}
-                                    </li>
-                                @endforeach
-                            @else
-                                @foreach (['Hotel Accommodation', 'Breakfast', 'Sightseeing', 'Private Transport', 'Tour Guide', 'Airport Pickup/Drop'] as $item)
-                                    <li><i class="fas fa-check"></i> {{ $item }}</li>
-                                @endforeach
-                            @endif
-                        </ul>
-
-                        <div class="pkg-name-row">
-                            {{ isset($package) ? $package->name : 'Nepal Highlights Tour' }}
-                        </div>
-                        <div class="pkg-meta-row">
-                            <span><i class="far fa-clock"></i> {{ isset($package) ? $package->duration_days : 7 }}
-                                Days</span>
-                            <span><i class="fas fa-moon"></i> {{ isset($package) ? $package->duration_days - 1 : 6 }}
-                                Nights</span>
-                            <span><i class="fas fa-signal"></i> Easy</span>
-                        </div>
-                        <div class="pkg-price-row">
-                            <div class="pkg-price-label">Package Price</div>
-                            <div class="pkg-price-value">
-                                ${{ isset($package) ? number_format($package->effective_price, 0) : '750' }}</div>
-                        </div>
-                        <a href="#" class="pkg-view-link">View Package Details</a>
-
-                        <button class="btn-book-now" onclick="goToStep(2)">Book Now</button>
-                    </div>
-
-                </div>
-            </div><!-- /step-1 -->
-
-
-            <!-- ════════════════════════════════════════
-                 STEP 2 — Traveler Details
-            ════════════════════════════════════════ -->
-            <div class="booking-step" id="step-2">
-                <div class="traveler-card">
-                    <h2>Traveler Information</h2>
-
-                    <div class="form-grid-2">
-
-                        <!-- Full Name -->
-                        <div class="form-field full">
-                            <label>Full Name <span class="req">*</span></label>
-                            <input type="text" id="b_full_name" placeholder="Enter your full name" />
-                            <span class="field-error" id="err_b_full_name"
-                                style="color:#ef4444;font-size:12px;display:none;">Please enter your full name.</span>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="form-field full">
-                            <label>Email Address <span class="req">*</span></label>
-                            <input type="email" id="b_email" placeholder="Enter your email address" />
-                            <span class="field-error" id="err_b_email"
-                                style="color:#ef4444;font-size:12px;display:none;">Please enter a valid email.</span>
-                        </div>
-
-                        <!-- Phone -->
-                        <div class="form-field full">
-                            <label>Phone Number <span class="req">*</span></label>
-                            <div class="phone-row">
-                                <select class="phone-code" id="b_phone_code">
-                                    <option value="+977">🇳🇵 +977</option>
-                                    <option value="+1">🇺🇸 +1</option>
-                                    <option value="+44">🇬🇧 +44</option>
-                                    <option value="+91">🇮🇳 +91</option>
-                                    <option value="+61">🇦🇺 +61</option>
-                                    <option value="+49">🇩🇪 +49</option>
-                                    <option value="+33">🇫🇷 +33</option>
-                                </select>
-                                <input type="tel" id="b_phone" placeholder="Enter your phone number"
-                                    style="flex:1;" />
-                            </div>
-                            <span class="field-error" id="err_b_phone"
-                                style="color:#ef4444;font-size:12px;display:none;">Please enter your phone number.</span>
-                        </div>
-
-                        <!-- Number of Travelers -->
-                        <div class="form-field full">
-                            <label>Number of Travelers <span class="req">*</span></label>
-                            <select id="b_travelers">
-                                <option value="1">1 Traveler</option>
-                                <option value="2">2 Travelers</option>
-                                <option value="3">3 Travelers</option>
-                                <option value="4">4 Travelers</option>
-                                <option value="5">5 Travelers</option>
-                                <option value="6+">6+ Travelers</option>
-                            </select>
-                        </div>
-
-                        <!-- Special Request -->
-                        <div class="form-field full">
-                            <label>Special Request (Optional)</label>
-                            <textarea id="b_special" placeholder="Any special request..."></textarea>
-                        </div>
-
-                    </div>
-
-                    <div class="step-btns">
-                        <button class="btn-back" onclick="goToStep(1)">Back</button>
-                        <button class="btn-continue" onclick="validateStep2()">Continue to Payment</button>
+                    <div class="step-btns" style="border-top:none;padding-top:16px;">
+                        <button class="btn-back" onclick="goToStep(2)">Back</button>
+                        <button class="btn-continue" onclick="goToStep(4)">Pay Now</button>
                     </div>
                 </div>
-            </div><!-- /step-2 -->
 
+                <!-- Right: payment method -->
+                <div class="payment-method-card">
+                    <h3>Choose Payment Method</h3>
 
-            <!-- ════════════════════════════════════════
-                 STEP 3 — Payment Options
-            ════════════════════════════════════════ -->
-            <div class="booking-step" id="step-3">
-                <div class="payment-grid">
-
-                    <!-- Left: summary -->
-                    <div class="payment-summary-card">
-                        <h3>Payment Summary</h3>
-
-                        <div class="summary-row">
-                            <span class="s-label">Package Name</span>
-                            <span class="s-value" id="sum_pkg_name">Nepal Highlights Tour</span>
+                    <!-- Stripe -->
+                    <label class="method-option selected" id="method-stripe">
+                        <input type="radio" name="pay_method" value="stripe" checked onchange="selectMethod(this)" />
+                        <div class="method-label">
+                            <i class="fas fa-bolt" style="color:#635bff;"></i> Stripe
                         </div>
-                        <div class="summary-row">
-                            <span class="s-label">Duration</span>
-                            <span class="s-value" id="sum_duration">7 Days / 6 Nights</span>
+                        <div class="method-badges">
+                            <span class="badge-visa">VISA</span>
+                            <span class="badge-mc">MC</span>
+                            <span class="badge-amex">AMEX</span>
                         </div>
-                        <div class="summary-row">
-                            <span class="s-label">Travelers</span>
-                            <span class="s-value" id="sum_travelers">1</span>
+                    </label>
+
+                    <!-- Khalti -->
+                    <label class="method-option" id="method-khalti">
+                        <input type="radio" name="pay_method" value="khalti" onchange="selectMethod(this)" />
+                        <div class="method-label">
+                            <span
+                                style="background:#5C2D91;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;">K</span>
+                            Khalti <span style="font-size:11px;color:#9ca3af;font-weight:400;">(Nepal)</span>
                         </div>
-                        <div class="summary-row">
-                            <span class="s-label">Price per Person</span>
-                            <span class="s-value" id="sum_price_pp">$750</span>
+                    </label>
+
+                    <!-- eSewa -->
+                    <label class="method-option" id="method-esewa">
+                        <input type="radio" name="pay_method" value="esewa" onchange="selectMethod(this)" />
+                        <div class="method-label">
+                            <span
+                                style="background:#60BB46;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;">e</span>
+                            eSewa <span style="font-size:11px;color:#9ca3af;font-weight:400;">(Nepal)</span>
                         </div>
-                        <div class="summary-row total">
-                            <span class="s-label">Total Amount</span>
-                            <span class="s-value" id="sum_total">$750</span>
+                    </label>
+
+                    <!-- Bank Transfer -->
+                    <label class="method-option" id="method-bank">
+                        <input type="radio" name="pay_method" value="bank" onchange="selectMethod(this)" />
+                        <div class="method-label">
+                            <i class="fas fa-university" style="color:#6b7280;font-size:20px;"></i>
+                            Bank Transfer
                         </div>
-
-                        <div class="step-btns" style="border-top:none;padding-top:16px;">
-                            <button class="btn-back" onclick="goToStep(2)">Back</button>
-                            <button class="btn-continue" onclick="goToStep(4)">Pay Now</button>
-                        </div>
-                    </div>
-
-                    <!-- Right: payment method -->
-                    <div class="payment-method-card">
-                        <h3>Choose Payment Method</h3>
-
-                        <!-- Stripe -->
-                        <label class="method-option selected" id="method-stripe">
-                            <input type="radio" name="pay_method" value="stripe" checked
-                                onchange="selectMethod(this)" />
-                            <div class="method-label">
-                                <i class="fas fa-bolt" style="color:#635bff;"></i> Stripe
-                            </div>
-                            <div class="method-badges">
-                                <span class="badge-visa">VISA</span>
-                                <span class="badge-mc">MC</span>
-                                <span class="badge-amex">AMEX</span>
-                            </div>
-                        </label>
-
-                        <!-- Khalti -->
-                        <label class="method-option" id="method-khalti">
-                            <input type="radio" name="pay_method" value="khalti" onchange="selectMethod(this)" />
-                            <div class="method-label">
-                                <span
-                                    style="background:#5C2D91;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;">K</span>
-                                Khalti <span style="font-size:11px;color:#9ca3af;font-weight:400;">(Nepal)</span>
-                            </div>
-                        </label>
-
-                        <!-- eSewa -->
-                        <label class="method-option" id="method-esewa">
-                            <input type="radio" name="pay_method" value="esewa" onchange="selectMethod(this)" />
-                            <div class="method-label">
-                                <span
-                                    style="background:#60BB46;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;">e</span>
-                                eSewa <span style="font-size:11px;color:#9ca3af;font-weight:400;">(Nepal)</span>
-                            </div>
-                        </label>
-
-                        <!-- Bank Transfer -->
-                        <label class="method-option" id="method-bank">
-                            <input type="radio" name="pay_method" value="bank" onchange="selectMethod(this)" />
-                            <div class="method-label">
-                                <i class="fas fa-university" style="color:#6b7280;font-size:20px;"></i>
-                                Bank Transfer
-                            </div>
-                        </label>
-
-                    </div>
+                    </label>
 
                 </div>
-            </div><!-- /step-3 -->
+
+            </div>
+        </div><!-- /step-3 -->
 
 
-            <!-- ════════════════════════════════════════
-                 STEP 4 — Stripe Card Payment
-            ════════════════════════════════════════ -->
-            <div class="booking-step" id="step-4">
-                <div class="stripe-grid">
+        <!-- ════════════════════════════════════════
+                     STEP 4 — Stripe Card Payment
+                ════════════════════════════════════════ -->
+        <div class="booking-step" id="step-4">
+            <div class="stripe-grid">
 
-                    <!-- Left: Order Summary -->
-                    <div class="order-summary-card">
-                        <h3>Order Summary</h3>
+                <!-- Left: Order Summary -->
+                <div class="order-summary-card">
+                    <h3>Order Summary</h3>
 
-                        <div class="summary-row">
-                            <span class="s-label">Package Name</span>
-                            <span class="s-value" id="stripe_pkg_name">Nepal Highlights Tour</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Duration</span>
-                            <span class="s-value" id="stripe_duration">7 Days / 6 Nights</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="s-label">Travelers</span>
-                            <span class="s-value" id="stripe_travelers">1</span>
-                        </div>
-                        <div class="summary-row total"
-                            style="margin-top:12px;padding-top:12px;border-top:2px solid #e5e7eb;">
-                            <span class="s-label">Total Amount</span>
-                            <span class="s-value" id="stripe_total">$750</span>
-                        </div>
+                    <div class="summary-row">
+                        <span class="s-label">Package Name</span>
+                        <span class="s-value" id="stripe_pkg_name">Nepal Highlights Tour</span>
                     </div>
-
-                    <!-- Right: Card Form -->
-                    <div class="card-form-card">
-                        <h3>Pay with Card</h3>
-
-                        <div class="form-field" style="margin-bottom:14px;">
-                            <label>Card Number</label>
-                            <div class="card-number-wrap">
-                                <input type="text" id="card_number" placeholder="1234 1234 1234 1234" maxlength="19"
-                                    oninput="formatCardNumber(this)" />
-                                <div class="card-brand-badges">
-                                    <span class="badge-visa" style="font-size:9px;">VISA</span>
-                                    <span class="badge-mc" style="font-size:9px;">MC</span>
-                                    <span class="badge-amex" style="font-size:9px;">AMEX</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card-row-2" style="margin-bottom:14px;">
-                            <div class="form-field">
-                                <label>Expiry Date</label>
-                                <input type="text" id="card_expiry" placeholder="MM / YY" maxlength="7"
-                                    oninput="formatExpiry(this)" />
-                            </div>
-                            <div class="form-field">
-                                <label>CVC</label>
-                                <input type="text" id="card_cvc" placeholder="CVC" maxlength="4" />
-                            </div>
-                        </div>
-
-                        <div class="form-field" style="margin-bottom:0;">
-                            <label>Cardholder Name</label>
-                            <input type="text" id="card_name" placeholder="Name on card" />
-                        </div>
-
-                        <div class="save-card-row">
-                            <input type="checkbox" id="save_card" />
-                            <label for="save_card">Save card for future payments</label>
-                        </div>
-
-                        <div class="secure-note">
-                            <i class="fas fa-lock"></i>
-                            <span><strong>Secure Payment</strong> — Your payment information is safe with us.</span>
-                        </div>
-                        <div class="stripe-note">
-                            <span>Powered by</span>
-                            <strong style="color:#635bff;">Stripe</strong>
-                            <i class="fas fa-shield-alt" style="color:#22c55e;"></i>
-                            <span>SSL Secured</span>
-                        </div>
-
-                        <button class="btn-pay" id="payBtn" onclick="processPayment()">
-                            Pay <span id="pay_amount">$750</span>
-                        </button>
-
-                        <a class="btn-back-link" onclick="goToStep(3)">
-                            ← Back to Payment Options
-                        </a>
+                    <div class="summary-row">
+                        <span class="s-label">Duration</span>
+                        <span class="s-value" id="stripe_duration">7 Days / 6 Nights</span>
                     </div>
-
+                    <div class="summary-row">
+                        <span class="s-label">Travelers</span>
+                        <span class="s-value" id="stripe_travelers">1</span>
+                    </div>
+                    <div class="summary-row total" style="margin-top:12px;padding-top:12px;border-top:2px solid #e5e7eb;">
+                        <span class="s-label">Total Amount</span>
+                        <span class="s-value" id="stripe_total">$750</span>
+                    </div>
                 </div>
-            </div><!-- /step-4 -->
 
+                <!-- Right: Card Form -->
+                <div class="card-form-card">
+                    <h3>Pay with Card</h3>
 
-            <!-- ════════════════════════════════════════
-                 STEP 5 — Booking Confirmed
-            ════════════════════════════════════════ -->
-            <div class="booking-step" id="step-5">
-                <div class="confirmation-card">
-
-                    <div class="confirm-check">
-                        <i class="fas fa-check"></i>
-                    </div>
-
-                    <h2>Booking Confirmed!</h2>
-                    <p class="confirm-sub">
-                        Thank you for booking with Visit Nepal.<br>
-                        We have sent the booking details to your email.
-                    </p>
-
-                    <div class="confirm-details">
-                        <div class="confirm-row">
-                            <span class="cr-label">Booking ID</span>
-                            <span class="cr-value ref" id="conf_booking_id">#VN2505201234</span>
-                        </div>
-                        <div class="confirm-row">
-                            <span class="cr-label">Package</span>
-                            <span class="cr-value" id="conf_package">Nepal Highlights Tour</span>
-                        </div>
-                        <div class="confirm-row">
-                            <span class="cr-label">Duration</span>
-                            <span class="cr-value" id="conf_duration">7 Days / 6 Nights</span>
-                        </div>
-                        <div class="confirm-row">
-                            <span class="cr-label">Travelers</span>
-                            <span class="cr-value" id="conf_travelers">1</span>
-                        </div>
-                        <div class="confirm-row">
-                            <span class="cr-label">Total Amount</span>
-                            <span class="cr-value" id="conf_total">$750</span>
-                        </div>
-                        <div class="confirm-row">
-                            <span class="cr-label">Payment Status</span>
-                            <span class="cr-value paid">Paid</span>
+                    <div class="form-field" style="margin-bottom:14px;">
+                        <label>Card Number</label>
+                        <div class="card-number-wrap">
+                            <input type="text" id="card_number" placeholder="1234 1234 1234 1234" maxlength="19"
+                                oninput="formatCardNumber(this)" />
+                            <div class="card-brand-badges">
+                                <span class="badge-visa" style="font-size:9px;">VISA</span>
+                                <span class="badge-mc" style="font-size:9px;">MC</span>
+                                <span class="badge-amex" style="font-size:9px;">AMEX</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="confirm-btn-row">
-                        <a href="#" class="btn-download">
-                            <i class="fas fa-download"></i> Download Invoice
-                        </a>
-                        <a href="{{ route('home') }}" class="btn-home">
-                            Back to Home
-                        </a>
+                    <div class="card-row-2" style="margin-bottom:14px;">
+                        <div class="form-field">
+                            <label>Expiry Date</label>
+                            <input type="text" id="card_expiry" placeholder="MM / YY" maxlength="7"
+                                oninput="formatExpiry(this)" />
+                        </div>
+                        <div class="form-field">
+                            <label>CVC</label>
+                            <input type="text" id="card_cvc" placeholder="CVC" maxlength="4" />
+                        </div>
                     </div>
 
+                    <div class="form-field" style="margin-bottom:0;">
+                        <label>Cardholder Name</label>
+                        <input type="text" id="card_name" placeholder="Name on card" />
+                    </div>
+
+                    <div class="save-card-row">
+                        <input type="checkbox" id="save_card" />
+                        <label for="save_card">Save card for future payments</label>
+                    </div>
+
+                    <div class="secure-note">
+                        <i class="fas fa-lock"></i>
+                        <span><strong>Secure Payment</strong> — Your payment information is safe with us.</span>
+                    </div>
+                    <div class="stripe-note">
+                        <span>Powered by</span>
+                        <strong style="color:#635bff;">Stripe</strong>
+                        <i class="fas fa-shield-alt" style="color:#22c55e;"></i>
+                        <span>SSL Secured</span>
+                    </div>
+
+                    <button class="btn-pay" id="payBtn" onclick="processPayment()">
+                        Pay <span id="pay_amount">$750</span>
+                    </button>
+
+                    <a class="btn-back-link" onclick="goToStep(3)">
+                        ← Back to Payment Options
+                    </a>
                 </div>
-            </div><!-- /step-5 -->
 
-        </div><!-- /booking-wrap -->
+            </div>
+        </div><!-- /step-4 -->
+
+
+        <!-- ════════════════════════════════════════
+                     STEP 5 — Booking Confirmed
+                ════════════════════════════════════════ -->
+        <div class="booking-step" id="step-5">
+            <div class="confirmation-card">
+
+                <div class="confirm-check">
+                    <i class="fas fa-check"></i>
+                </div>
+
+                <h2>Booking Confirmed!</h2>
+                <p class="confirm-sub">
+                    Thank you for booking with Visit Nepal.<br>
+                    We have sent the booking details to your email.
+                </p>
+
+                <div class="confirm-details">
+                    <div class="confirm-row">
+                        <span class="cr-label">Booking ID</span>
+                        <span class="cr-value ref" id="conf_booking_id">#VN2505201234</span>
+                    </div>
+                    <div class="confirm-row">
+                        <span class="cr-label">Package</span>
+                        <span class="cr-value" id="conf_package">Nepal Highlights Tour</span>
+                    </div>
+                    <div class="confirm-row">
+                        <span class="cr-label">Duration</span>
+                        <span class="cr-value" id="conf_duration">7 Days / 6 Nights</span>
+                    </div>
+                    <div class="confirm-row">
+                        <span class="cr-label">Travelers</span>
+                        <span class="cr-value" id="conf_travelers">1</span>
+                    </div>
+                    <div class="confirm-row">
+                        <span class="cr-label">Total Amount</span>
+                        <span class="cr-value" id="conf_total">$750</span>
+                    </div>
+                    <div class="confirm-row">
+                        <span class="cr-label">Payment Status</span>
+                        <span class="cr-value paid">Paid</span>
+                    </div>
+                </div>
+
+                <div class="confirm-btn-row">
+                    <a href="#" class="btn-download">
+                        <i class="fas fa-download"></i> Download Invoice
+                    </a>
+                    <a href="{{ route('home') }}" class="btn-home">
+                        Back to Home
+                    </a>
+                </div>
+
+            </div>
+        </div><!-- /step-5 -->
+
+    </div><!-- /booking-wrap -->
     </div><!-- /booking-page -->
 
 @endsection
@@ -1255,8 +1221,8 @@
 @push('scripts')
     <script>
         /* ═══════════════════════════════════════════
-             BOOKING WIZARD STATE
-          ═══════════════════════════════════════════ */
+                 BOOKING WIZARD STATE
+              ═══════════════════════════════════════════ */
         let currentStep = 1;
 
         // Booking data collected across steps

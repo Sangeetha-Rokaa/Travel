@@ -23,12 +23,22 @@ Route::prefix('destinations')->name('destinations.')->group(function () {
     Route::get('/',         [DestinationController::class, 'index'])->name('index');
     Route::get('/{destination}', [DestinationController::class, 'show'])->name('show');
 });
+Route::get('/destinations', [DestinationController::class, 'index'])
+    ->name('destinations.index');
+
+Route::get('/destinations/{slug}', [DestinationController::class, 'show'])
+    ->name('destinations.show');
 
 // Treks  (under Destinations dropdown in nav)
 Route::prefix('treks')->name('treks.')->group(function () {
     Route::get('/',       [TrekController::class, 'index'])->name('index');
     Route::get('/{trek}', [TrekController::class, 'show'])->name('show');
 });
+Route::get('/treks', [TrekController::class, 'index'])
+    ->name('treks.index');
+
+Route::get('/treks/{slug}', [TrekController::class, 'show'])
+    ->name('treks.show');
 
 // Packages  (under Destinations dropdown in nav)
 Route::prefix('packages')->name('packages.')->group(function () {
@@ -52,6 +62,8 @@ Route::get('/about', function () {
 // Contact
 Route::get('/contact',       [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact',      [ContactController::class, 'store'])->name('contact.store');
+Route::get('/contact', [ContactController::class, 'index'])
+    ->name('contact');
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -80,6 +92,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 });
+
 
 /*
 |--------------------------------------------------------------------------

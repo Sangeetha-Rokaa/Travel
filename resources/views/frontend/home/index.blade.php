@@ -4,8 +4,8 @@
 @section('content')
 
     <!-- ══════════════════════════════════════════════
-             HERO
-        ══════════════════════════════════════════════ -->
+                                 HERO
+                            ══════════════════════════════════════════════ -->
     <section class="hero" id="home">
         <img id="heroBg" class="hero-bg-img" src="{{ asset('images/landingimg.png') }}" alt="Nepal Himalayan Banner" />
         <div class="hero-overlay"></div>
@@ -42,8 +42,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-             TRUST BAR
-        ══════════════════════════════════════════════ -->
+                                 TRUST BAR
+                            ══════════════════════════════════════════════ -->
     <div class="trust-bar">
         <div class="trust-item">
             <div class="trust-icon"><i class="fas fa-tag"></i></div>
@@ -80,8 +80,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-             WHY CHOOSE US
-        ══════════════════════════════════════════════ -->
+                                 WHY CHOOSE US
+                            ══════════════════════════════════════════════ -->
     <section id="why-us">
         <div class="why-inner">
             <div>
@@ -133,250 +133,298 @@
 
 
     <!-- ══════════════════════════════════════════════
-             POPULAR DESTINATIONS
-        ══════════════════════════════════════════════ -->
+                                 POPULAR DESTINATIONS
+                            ══════════════════════════════════════════════ -->
     <section id="destinations">
         <div class="section-header reveal">
             <h2>Popular Destinations</h2>
-            <div class="divider-line"><span></span><i class="fas fa-mountain"></i><span></span></div>
+
+            <div class="divider-line">
+                <span></span>
+                <i class="fas fa-mountain"></i>
+                <span></span>
+            </div>
+
             <p>Explore the most breathtaking places Nepal has to offer</p>
         </div>
+
         <div class="dest-grid reveal">
 
-            <div class="dest-card">
-                <img src="{{ asset('images/pokhara.jpg') }}" alt="Pokhara"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="dest-img-placeholder"
-                    style="display:none;background:linear-gradient(135deg,#1a4a7c,#27ae60);">
-                    <i class="fas fa-water" style="font-size:36px;opacity:0.5;"></i>
-                    <span>Pokhara</span>
-                </div>
-                <div class="dest-info">
-                    <span class="dest-name">Pokhara</span>
-                    <span class="dest-sub">The City of Lakes</span>
-                </div>
-            </div>
+            @forelse($featuredDestinations as $destination)
+                <div class="dest-card">
 
-            <div class="dest-card">
-                <img src="{{ asset('images/everest.jpg') }}" alt="Everest Region"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="dest-img-placeholder"
-                    style="display:none;background:linear-gradient(135deg,#0d2b55,#1a6fc4);">
-                    <i class="fas fa-mountain" style="font-size:36px;opacity:0.5;"></i>
-                    <span>Everest Region</span>
-                </div>
-                <div class="dest-info">
-                    <span class="dest-name">Everest Region</span>
-                    <span class="dest-sub">Roof of the World</span>
-                </div>
-            </div>
+                    {{-- IMAGE --}}
+                    <img src="{{ asset('storage/' . $destination->featured_image) }}" alt="{{ $destination->name }}"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
 
-            <div class="dest-card">
-                <img src="{{ asset('images/annapurna.jpg') }}" alt="Annapurna Region"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="dest-img-placeholder"
-                    style="display:none;background:linear-gradient(135deg,#1a5c3a,#2ecc71);">
-                    <i class="fas fa-hiking" style="font-size:36px;opacity:0.5;"></i>
-                    <span>Annapurna</span>
-                </div>
-                <div class="dest-info">
-                    <span class="dest-name">Annapurna Region</span>
-                    <span class="dest-sub">Diverse Natural Beauty</span>
-                </div>
-            </div>
+                    {{-- PLACEHOLDER --}}
+                    <div class="dest-img-placeholder"
+                        style="display:none;
+                    background:linear-gradient(135deg,#1a4a7c,#27ae60);">
 
-            <div class="dest-card">
-                <img src="{{ asset('images/ktm.png') }}" alt="Kathmandu"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="dest-img-placeholder"
-                    style="display:none;background:linear-gradient(135deg,#5c2d1a,#c0392b);">
-                    <i class="fas fa-gopuram" style="font-size:36px;opacity:0.5;"></i>
-                    <span>Kathmandu</span>
+                        <i class="fas fa-mountain" style="font-size:36px;opacity:0.5;"></i>
+
+                        <span>{{ $destination->name }}</span>
+                    </div>
+
+                    {{-- INFO --}}
+                    <div class="dest-info">
+
+                        <span class="dest-name">
+                            {{ $destination->name }}
+                        </span>
+
+                        <span class="dest-sub">
+                            {{ $destination->short_description }}
+                        </span>
+
+                    </div>
+
+                    {{-- LINK --}}
+                    <a href="{{ route('destinations.show', $destination->slug) }}" class="dest-overlay-link">
+                    </a>
+
                 </div>
-                <div class="dest-info">
-                    <span class="dest-name">Kathmandu</span>
-                    <span class="dest-sub">Cultural Heart of Nepal</span>
+
+            @empty
+
+                <div class="no-destination">
+                    <p>No destinations available right now.</p>
                 </div>
-            </div>
+            @endforelse
 
         </div>
+
         <div class="dest-btn-wrap reveal">
-            <a href="#" class="btn-primary">View All Destinations</a>
+            <a href="{{ route('destinations.index') }}" class="btn-primary">
+                View All Destinations
+            </a>
         </div>
     </section>
 
 
     <!-- ══════════════════════════════════════════════
-             TOP TREKKING PLANS
-        ══════════════════════════════════════════════ -->
+                                 TOP TREKKING PLANS
+                            ══════════════════════════════════════════════ -->
     <section id="treks">
+
         <div class="section-header reveal">
             <h2>Top Trekking Plans</h2>
-            <div class="divider-line"><span></span><i class="fas fa-hiking"></i><span></span></div>
-            <p>Choose from our expertly crafted trekking adventures</p>
+
+            <div class="divider-line">
+                <span></span>
+                <i class="fas fa-hiking"></i>
+                <span></span>
+            </div>
+
+            <p>
+                Choose from our expertly crafted trekking adventures
+            </p>
         </div>
+
         <div class="trek-grid reveal">
 
-            <div class="trek-card">
-                <img src="{{ asset('images/everestcamp.png') }}" alt="Everest Base Camp"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="tk-img-placeholder" style="display:none;background:linear-gradient(135deg,#0d2b55,#1a6fc4);">
-                    <i class="fas fa-mountain" style="font-size:36px;opacity:0.4;"></i><span>EBC Trek</span>
-                </div>
-                <div class="trek-body">
-                    <h3>Everest Base Camp Trek</h3>
-                    <div class="trek-meta">
-                        <span><i class="far fa-calendar-alt"></i> 14 Days</span>
-                        <span><i class="fas fa-signal"></i> Moderate</span>
-                    </div>
-                    <div class="trek-footer">
-                        <span class="trek-price">$1,400</span>
-                        <a href="#">View Details</a>
-                    </div>
-                </div>
-            </div>
+            @forelse($featuredTreks as $trek)
+                <div class="trek-card">
 
-            <div class="trek-card">
-                <img src="{{ asset('images/annapurnacamp.jpg') }}" alt="Annapurna Circuit"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="tk-img-placeholder" style="display:none;background:linear-gradient(135deg,#1a5c3a,#27ae60);">
-                    <i class="fas fa-hiking" style="font-size:36px;opacity:0.4;"></i><span>Annapurna</span>
-                </div>
-                <div class="trek-body">
-                    <h3>Annapurna Circuit Trek</h3>
-                    <div class="trek-meta">
-                        <span><i class="far fa-calendar-alt"></i> 16 Days</span>
-                        <span><i class="fas fa-signal"></i> Moderate</span>
-                    </div>
-                    <div class="trek-footer">
-                        <span class="trek-price">$1,250</span>
-                        <a href="#">View Details</a>
-                    </div>
-                </div>
-            </div>
+                    {{-- IMAGE --}}
+                    <img src="{{ asset('storage/' . $trek->featured_image) }}" alt="{{ $trek->name }}" loading="lazy"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
 
-            <div class="trek-card">
-                <img src="{{ asset('images/langtang.jpg') }}" alt="Langtang Valley"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="tk-img-placeholder" style="display:none;background:linear-gradient(135deg,#2c1a5c,#8e44ad);">
-                    <i class="fas fa-tree" style="font-size:36px;opacity:0.4;"></i><span>Langtang</span>
-                </div>
-                <div class="trek-body">
-                    <h3>Langtang Valley Trek</h3>
-                    <div class="trek-meta">
-                        <span><i class="far fa-calendar-alt"></i> 10 Days</span>
-                        <span><i class="fas fa-signal"></i> Easy</span>
+                    {{-- PLACEHOLDER --}}
+                    <div class="tk-img-placeholder"
+                        style="display:none;
+                    background:linear-gradient(135deg,#0d2b55,#1a6fc4);">
+
+                        <i class="fas fa-mountain" style="font-size:36px;opacity:0.4;"></i>
+
+                        <span>{{ $trek->name }}</span>
                     </div>
-                    <div class="trek-footer">
-                        <span class="trek-price">$950</span>
-                        <a href="#">View Details</a>
+
+                    {{-- BODY --}}
+                    <div class="trek-body">
+
+                        <h3>
+                            {{ $trek->name }}
+                        </h3>
+
+                        {{-- META --}}
+                        <div class="trek-meta">
+
+                            <span>
+                                <i class="far fa-calendar-alt"></i>
+
+                                {{ $trek->duration_days }} Days
+                            </span>
+
+                            <span>
+                                <i class="fas fa-signal"></i>
+
+                                {{ $trek->difficulty }}
+                            </span>
+
+                        </div>
+
+                        {{-- FOOTER --}}
+                        <div class="trek-footer">
+
+                            <span class="trek-price">
+
+                                @if ($trek->price_usd)
+                                    ${{ number_format($trek->price_usd, 0) }}
+                                @else
+                                    Contact Us
+                                @endif
+
+                            </span>
+
+                            <a href="{{ route('treks.show', $trek->slug) }}">
+                                View Details
+                            </a>
+
+                        </div>
+
                     </div>
+
                 </div>
-            </div>
+
+            @empty
+
+                <div style="grid-column:1/-1;text-align:center;padding:50px 20px;">
+                    <p style="color:#64748b;font-size:16px;">
+                        No trekking plans available right now.
+                    </p>
+                </div>
+            @endforelse
 
         </div>
+
         <div class="trek-btn-wrap reveal">
-            <a href="#" class="btn-primary">View All Treks</a>
+
+            <a href="{{ route('treks.index') }}" class="btn-primary">
+                View All Treks
+            </a>
+
         </div>
+
     </section>
 
 
     <!-- ══════════════════════════════════════════════
-             POPULAR TOUR PACKAGES
-        ══════════════════════════════════════════════ -->
-    <section id="packages">
-        <div class="section-header reveal">
-            <h2>Popular Tour Packages</h2>
-            <div class="divider-line"><span></span><i class="fas fa-suitcase-rolling"></i><span></span></div>
-            <p>Carefully designed packages for every kind of traveler</p>
-        </div>
-        <div class="pkg-grid reveal">
+                                 POPULAR TOUR PACKAGES
+                            ══════════════════════════════════════════════ -->
+    <div class="pkg-grid reveal">
+
+        @forelse($featuredPackages as $package)
+
+            @php
+                $price = $package->price_usd_discounted ?? $package->price_usd;
+
+                $services = is_array($package->included) ? array_slice($package->included, 0, 4) : [];
+            @endphp
 
             <div class="pkg-card">
-                <img src="{{ asset('images/landingimg.png') }}" alt="Nepal Highlights Tour"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="pk-img-placeholder" style="display:none;background:linear-gradient(135deg,#0d2b55,#1a6fc4);">
-                    <i class="fas fa-mountain" style="font-size:36px;opacity:0.4;"></i><span>Nepal Highlights</span>
+
+                {{-- IMAGE --}}
+                <div class="pkg-image-wrap">
+
+                    @if ($package->featured_image)
+                        <img src="{{ asset('storage/' . $package->featured_image) }}" alt="{{ $package->name }}"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    @endif
+
+                    {{-- FALLBACK --}}
+                    <div class="pk-img-placeholder"
+                        style="{{ $package->featured_image ? 'display:none;' : 'display:flex;' }}">
+                        <i class="fas fa-mountain"></i>
+                        <span>{{ $package->name }}</span>
+                    </div>
+
+                    @if ($package->is_featured)
+                        <div class="featured-badge">
+                            Featured
+                        </div>
+                    @endif
                 </div>
+
+                {{-- BODY --}}
                 <div class="pkg-body">
+
                     <div class="pkg-header">
-                        <h3>Nepal Highlights Tour</h3>
-                        <span class="pkg-price">$750</span>
+
+                        <h3>{{ $package->name }}</h3>
+
+                        <div class="price-wrap">
+
+                            @if ($package->price_usd_discounted)
+                                <span class="old-price">
+                                    ${{ number_format($package->price_usd, 0) }}
+                                </span>
+                            @endif
+
+                            <span class="pkg-price">
+                                ${{ number_format($price, 0) }}
+                            </span>
+
+                        </div>
+
                     </div>
-                    <p class="pkg-duration"><i class="far fa-clock"></i> 7 Days</p>
-                    <div class="pkg-services">
-                        <p>Services:</p>
-                        <ul>
-                            <li>Hotel Accommodation</li>
-                            <li>Breakfast</li>
-                            <li>Sightseeing</li>
-                            <li>Private Transport</li>
-                        </ul>
+
+                    <p class="pkg-desc">
+                        {{ \Illuminate\Support\Str::limit($package->short_description, 100) }}
+                    </p>
+
+                    <div class="pkg-meta">
+
+                        <span>
+                            <i class="far fa-clock"></i>
+                            {{ $package->duration_days }} Days
+                        </span>
+
+                        @if ($package->best_season)
+                            <span>
+                                <i class="fas fa-cloud-sun"></i>
+                                {{ $package->best_season }}
+                            </span>
+                        @endif
+
                     </div>
-                    <a href="#" class="pkg-book-btn">Book Now</a>
+
+                    @if (count($services))
+                        <div class="pkg-services">
+
+                            <p>Included:</p>
+
+                            <ul>
+                                @foreach ($services as $service)
+                                    <li>{{ $service }}</li>
+                                @endforeach
+                            </ul>
+
+                        </div>
+                    @endif
+
+                    <a href="{{ route('packages.show', $package->slug) }}" class="pkg-book-btn">
+                        View Package
+                    </a>
+
                 </div>
+
             </div>
 
-            <div class="pkg-card">
-                <img src="{{ asset('images/landingimg.png') }}" alt="Cultural & Heritage Tour"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="pk-img-placeholder" style="display:none;background:linear-gradient(135deg,#5c2d1a,#e67e22);">
-                    <i class="fas fa-gopuram" style="font-size:36px;opacity:0.4;"></i><span>Cultural Tour</span>
-                </div>
-                <div class="pkg-body">
-                    <div class="pkg-header">
-                        <h3>Cultural &amp; Heritage Tour</h3>
-                        <span class="pkg-price">$1,050</span>
-                    </div>
-                    <p class="pkg-duration"><i class="far fa-clock"></i> 10 Days</p>
-                    <div class="pkg-services">
-                        <p>Services:</p>
-                        <ul>
-                            <li>Hotel Accommodation</li>
-                            <li>Breakfast</li>
-                            <li>Sightseeing</li>
-                            <li>Private Transport</li>
-                        </ul>
-                    </div>
-                    <a href="#" class="pkg-book-btn">Book Now</a>
-                </div>
+        @empty
+
+            <div class="no-packages">
+                <p>No packages available.</p>
             </div>
 
-            <div class="pkg-card">
-                <img src="{{ asset('images/landingimg.png') }}" alt="Himalayan Adventure Tour"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="pk-img-placeholder" style="display:none;background:linear-gradient(135deg,#1a3a5c,#2980b9);">
-                    <i class="fas fa-hiking" style="font-size:36px;opacity:0.4;"></i><span>Himalayan Adventure</span>
-                </div>
-                <div class="pkg-body">
-                    <div class="pkg-header">
-                        <h3>Himalayan Adventure Tour</h3>
-                        <span class="pkg-price">$1,850</span>
-                    </div>
-                    <p class="pkg-duration"><i class="far fa-clock"></i> 14 Days</p>
-                    <div class="pkg-services">
-                        <p>Services:</p>
-                        <ul>
-                            <li>Hotel Accommodation</li>
-                            <li>Breakfast</li>
-                            <li>Sightseeing</li>
-                            <li>Private Transport</li>
-                        </ul>
-                    </div>
-                    <a href="#" class="pkg-book-btn">Book Now</a>
-                </div>
-            </div>
+        @endforelse
 
-        </div>
-        <div class="pkg-btn-wrap reveal">
-            <a href="#" class="btn-primary">View All Packages</a>
-        </div>
-    </section>
-
+    </div>
 
     <!-- ══════════════════════════════════════════════
-             TESTIMONIALS
-        ══════════════════════════════════════════════ -->
+                                 TESTIMONIALS
+                            ══════════════════════════════════════════════ -->
     <section id="testimonials">
         <div class="section-header reveal">
             <h2>Happy Customers</h2>
@@ -451,8 +499,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-             CONTACT CTA SECTION
-        ══════════════════════════════════════════════ -->
+                                 CONTACT CTA SECTION
+                            ══════════════════════════════════════════════ -->
     <section id="contact-cta">
         <img class="cta-bg" src="{{ asset('images/landingimg.png') }}" alt="Nepal"
             onerror="this.style.display='none';" />

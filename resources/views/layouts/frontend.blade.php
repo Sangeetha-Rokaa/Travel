@@ -22,7 +22,7 @@
     <nav class="navbar" id="navbar">
         <a href="#" class="logo">
             <div class="logo-icon-box">
-                <img src="{{ asset('images/logot.png') }}" alt="Visit Nepal"
+                <img src="{{ asset('images/apeak.jpeg') }}" alt="Visit Nepal"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                 <i class="fas fa-mountain fallback-icon"></i>
             </div>
@@ -32,14 +32,42 @@
             </div>
         </a>
         <ul class="nav-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="#destinations">Destinations <i class="fa fa-chevron-down chevron"></i></a></li>
-            <li><a href="#treks">Treks</a></li>
-            <li><a href="#packages">Packages</a></li>
-            <li><a href="#why-us">About Us</a></li>
-            <li><a href="#contact-cta">Contact</a></li>
+            <li><a href="{{ route('home') }}">Home</a></li>
+
+            <li>
+                <a href="{{ route('destinations.index') }}">
+                    Destinations <i class="fa fa-chevron-down chevron"></i>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('treks.index') }}">
+                    Treks
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('packages.index') }}">
+                    Packages
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('about') }}">
+                    About Us
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('contact') }}">
+                    Contact
+                </a>
+            </li>
         </ul>
-        <a href="#packages" class="btn-cta-nav">Explore Packages</a>
+
+        <a href="{{ route('packages.index') }}" class="btn-cta-nav">
+            Explore Packages
+        </a>
     </nav>
 
 

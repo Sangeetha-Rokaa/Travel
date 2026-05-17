@@ -2,14 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class Trek extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'destination_id',
         'name',
@@ -38,38 +34,40 @@ class Trek extends Model
     ];
 
     protected $casts = [
-        'highlights'    => 'array',
-        'itinerary'     => 'array',
-        'included'      => 'array',
-        'excluded'      => 'array',
-        'required_gear' => 'array',
-        'gallery_images' => 'array',
-        'is_featured'   => 'boolean',
-        'is_active'     => 'boolean',
-        'price_usd'     => 'decimal:2',
+        'highlights'      => 'array',
+        'itinerary'       => 'array',
+        'included'        => 'array',
+        'excluded'        => 'array',
+        'required_gear'   => 'array',
+        'gallery_images'  => 'array',
+        'is_featured'     => 'boolean',
+        'is_active'       => 'boolean',
+        'price_usd'       => 'decimal:2',
     ];
 
-    const DIFFICULTIES = ['Easy', 'Moderate', 'Strenuous', 'Extreme'];
+    const DIFFICULTIES = [
+        'Easy',
+        'Moderate',
+        'Strenuous',
+        'Extreme',
+    ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->slug)) {
-                $model->slug = Str::slug($model->name);
-            }
-        });
-    }
-
-    // ─── Relationships ───────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
 
     public function destination()
     {
         return $this->belongsTo(Destination::class);
     }
 
-    // ─── Scopes ──────────────────────────────────────────────────────────────────
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes
+    |--------------------------------------------------------------------------
+    */
 
     public function scopeActive($query)
     {
@@ -81,35 +79,25 @@ class Trek extends Model
         return $query->where('is_featured', true);
     }
 
-    public function scopeByDifficulty($query, string $difficulty)
+    public function scopeOrdered($query)
+    {
+        return $query
+            ->orderBy('sort_order')
+            ->latest();
+    }
+
+    public function scopeByDifficulty($query, $difficulty)
     {
         return $query->where('difficulty', $difficulty);
     }
 
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('sort_order')->orderBy('name');
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | Route Model Binding
+    |--------------------------------------------------------------------------
+    */
 
-    // ─── Accessors ───────────────────────────────────────────────────────────────
-
-    public function getFeaturedImageUrlAttribute(): string
-    {
-        return asset('storage/' . $this->featured_image);
-    }
-
-    public function getDifficultyColorAttribute(): string
-    {
-        return match ($this->difficulty) {
-            'Easy'      => 'green',
-            'Moderate'  => 'yellow',
-            'Strenuous' => 'orange',
-            'Extreme'   => 'red',
-            default     => 'gray',
-        };
-    }
-
-    public function getRouteKeyName(): string
+    public function getRouteKeyName()
     {
         return 'slug';
     }

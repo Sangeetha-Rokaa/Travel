@@ -64,6 +64,7 @@ Route::get('/contact',       [ContactController::class, 'index'])->name('contact
 Route::post('/contact',      [ContactController::class, 'store'])->name('contact.store');
 Route::get('/contact', [ContactController::class, 'index'])
     ->name('contact');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -104,6 +105,42 @@ Route::prefix('admin')
     ->middleware(['auth'])
     ->group(function () {
 
+        // Dashboard
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        // DESTINATIONS CRUD
+
+        // List
+        Route::get('/destinations', [AdminDestinationController::class, 'index'])
+            ->name('destinations.index');
+
+        // Create Form
+        Route::get('/destinations/create', [AdminDestinationController::class, 'create'])
+            ->name('destinations.create');
+
+        // Store
+        Route::post('/destinations', [AdminDestinationController::class, 'store'])
+            ->name('destinations.store');
+
+        // Edit Form
+        Route::get('/destinations/{id}/edit', [AdminDestinationController::class, 'edit'])
+            ->name('destinations.edit');
+
+        // Update
+        Route::put('/destinations/{id}', [AdminDestinationController::class, 'update'])
+            ->name('destinations.update');
+
+        // Delete
+        Route::delete('/destinations/{id}', [AdminDestinationController::class, 'destroy'])
+            ->name('destinations.destroy');
+        Route::get('/destinations/{id}', [AdminDestinationController::class, 'show'])
+            ->name('destinations.show');
+    });
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth'])
+    ->group(function () {
+
         // Logout
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -114,8 +151,7 @@ Route::prefix('admin')
 
 
         // Destinations CRUD
-        Route::resource('destinations', AdminDestinationController::class);
-        // 
+
 
         // Treks CRUD
         Route::resource('treks', AdminTrekController::class);
@@ -124,6 +160,10 @@ Route::prefix('admin')
         // Packages CRUD
         Route::resource('packages', AdminPackageController::class)
             ->except(['show']);
+        Route::post('/packages/{package}/remove-image', [AdminPackageController::class, 'removeImage'])
+            ->name('admin.packages.remove-image');
+        Route::post('/packages/{package}/remove-gallery-image', [AdminPackageController::class, 'removeGalleryImage'])
+            ->name('admin.packages.remove-gallery-image');
 
         // Contacts
         Route::get('contacts', [AdminContactController::class, 'index'])->name('contacts.index');

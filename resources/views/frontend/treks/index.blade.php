@@ -1,430 +1,760 @@
 @extends('layouts.frontend')
 
-@section('title', 'Treks – Visit Nepal')
+@section('title', 'Himalayan Treks - Visit Nepal')
 
-@section('content')
-
-    <div class="trek-wrapper">
-
-        {{-- HERO HEADER --}}
-        <div class="trek-header">
-            <h1>Explore Treks in Nepal</h1>
-            <p>Choose from world-class trekking adventures across the Himalayas</p>
-        </div>
-
-        {{-- GRID --}}
-        <div class="trek-grid">
-
-            @forelse($treks as $trek)
-                <a href="{{ route('treks.show', $trek->slug) }}" class="trek-card group">
-
-                    {{-- IMAGE --}}
-                    <div class="trek-image">
-                        <img src="{{ asset('storage/' . $trek->featured_image) }}" alt="{{ $trek->name }}"
-                            class="group-hover:scale-110 transition duration-500">
-
-                        <div class="overlay"></div>
-
-                        <div class="badge">
-                            {{ ucfirst($trek->difficulty) }}
-                        </div>
-                    </div>
-
-                    {{-- CONTENT --}}
-                    <div class="trek-content">
-
-                        <h2>{{ $trek->name }}</h2>
-
-                        <p>
-                            {{ \Illuminate\Support\Str::limit($trek->short_description, 100) }}
-                        </p>
-
-                        <div class="meta">
-
-                            <span>
-                                <i class="fas fa-calendar"></i>
-                                {{ $trek->duration_days }} Days
-                            </span>
-
-                            <span>
-                                <i class="fas fa-mountain"></i>
-                                {{ $trek->max_altitude ?? 'N/A' }}
-                            </span>
-
-                        </div>
-
-                        <div class="footer">
-
-                            <div class="price">
-                                ${{ number_format($trek->price_usd ?? 0) }}
-                            </div>
-
-                            <span class="view-btn">
-                                View Details →
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </a>
-
-            @empty
-
-                <div class="empty">
-                    No treks available at the moment.
-                </div>
-            @endforelse
-
-        </div>
-
-    </div>
-
-@endsection
-
-
-{{-- CUSTOM CSS --}}
 @push('styles')
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* =============================================
+                       TREKS INDEX PAGE STYLES
+                    ============================================= */
 
-        .trek-wrapper {
-            max-width: 1400px;
-            margin: auto;
-            padding: 80px 20px;
+        /* ---- Hero Section ---- */
+        .trek-hero {
             position: relative;
-            min-height: 100vh;
-
-            /* Premium Background Image - High resolution mountain trek */
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),
-                url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-            background-size: cover;
-            background-position: center 30%;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+            width: 100%;
+            height: 420px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 48px;
+            background: url('https://images.unsplash.com/photo-1626016632784-7b9f22a0a92c?w=1400&q=85') center center / cover no-repeat;
         }
 
-        /* Optional fallback local background image - uncomment if you have local image */
-        /*
-            .trek-wrapper {
-                background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
-                                  url('{{ asset('images/trek-background.jpg') }}');
-            }
-            */
-
-        /* Animated gradient overlay */
-        .trek-wrapper::before {
+        .trek-hero::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
-            z-index: 0;
-            pointer-events: none;
+            inset: 0;
+            background: linear-gradient(to right,
+                    rgba(10, 20, 50, 0.88) 0%,
+                    rgba(10, 20, 50, 0.60) 45%,
+                    rgba(10, 20, 50, 0.10) 100%);
+            z-index: 1;
         }
 
-        /* Ensure content appears above the overlay */
-        .trek-header,
-        .trek-grid {
-            position: relative;
+        .trek-hero-content {
+            position: absolute;
+            top: 50%;
+            left: 52px;
+            transform: translateY(-50%);
             z-index: 2;
+            max-width: 500px;
         }
 
-        /* Enhanced Hero Header */
-        .trek-header {
-            text-align: center;
-            margin-bottom: 60px;
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .trek-header h1 {
-            font-size: 3.5rem;
+        .trek-hero-content h1 {
+            font-size: 48px;
             font-weight: 800;
-            background: linear-gradient(135deg, #FFFFFF 0%, #FFD700 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            line-height: 1.15;
+            margin: 0 0 14px 0;
+            letter-spacing: -0.5px;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .trek-header p {
-            color: #f0f0f0;
-            margin-top: 10px;
-            font-size: 1.2rem;
-            font-weight: 400;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        .trek-hero-content p {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.82);
+            line-height: 1.6;
+            margin: 0 0 28px 0;
         }
 
-        /* Enhanced Grid */
-        .trek-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-        }
-
-        /* Enhanced CARD */
-        .trek-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        .btn-book-now {
+            display: inline-block;
+            background: #2b7be0;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px 28px;
+            border-radius: 50px;
             text-decoration: none;
-            color: inherit;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(0px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+
+        .btn-book-now:hover {
+            background: #1a65c9;
+            transform: translateY(-1px);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* ---- Main Content Layout ---- */
+        .treks-main {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        /* ---- Cards Section ---- */
+        .treks-cards-section {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #111827;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .filter-dropdown {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .filter-dropdown:hover {
+            border-color: #2b7be0;
+            color: #2b7be0;
+        }
+
+        .filter-dropdown svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ---- Trek Cards Grid ---- */
+        .trek-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .trek-card {
+            background: #ffffff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+            border: 1px solid #f0f0f0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .trek-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3);
-            background: white;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
         }
 
-        /* Enhanced IMAGE */
-        .trek-image {
-            position: relative;
-            height: 240px;
-            overflow: hidden;
-        }
-
-        .trek-image img {
+        .trek-card-image {
             width: 100%;
-            height: 100%;
+            height: 170px;
             object-fit: cover;
-            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: block;
         }
 
-        .trek-card:hover .trek-image img {
-            transform: scale(1.15);
+        .trek-card-body {
+            padding: 16px 18px 18px;
         }
 
-        .overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 60%);
-        }
-
-        /* Enhanced BADGE */
-        .badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #000;
-            padding: 6px 14px;
-            font-size: 12px;
-            border-radius: 25px;
+        .trek-card-title {
+            font-size: 15.5px;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            z-index: 2;
+            color: #111827;
+            margin: 0 0 6px 0;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        /* Enhanced CONTENT */
-        .trek-content {
-            padding: 20px;
-        }
-
-        .trek-content h2 {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #1e293b;
-            margin-bottom: 8px;
-            transition: color 0.3s;
-        }
-
-        .trek-card:hover .trek-content h2 {
-            color: #2563eb;
-        }
-
-        .trek-content p {
-            font-size: 0.9rem;
-            color: #64748b;
-            margin-top: 8px;
+        .trek-card-desc {
+            font-size: 13px;
+            color: #6b7280;
             line-height: 1.5;
+            margin: 0 0 14px 0;
         }
 
-        /* Enhanced META */
-        .meta {
+        .trek-card-meta {
             display: flex;
-            gap: 15px;
-            font-size: 12px;
-            color: #475569;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #e2e8f0;
+            align-items: center;
+            gap: 18px;
+            font-size: 13px;
+            color: #374151;
+            margin-bottom: 14px;
         }
 
-        .meta span {
+        .trek-card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
+        .meta-icon {
+            width: 15px;
+            height: 15px;
+            opacity: 0.6;
+        }
+
+        .difficulty-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .btn-book-card {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: transparent;
+            border: 1.5px solid #2b7be0;
+            color: #2b7be0;
+            font-size: 13.5px;
+            font-weight: 600;
+            padding: 9px 0;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-book-card:hover {
+            background: #2b7be0;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* ---- Sidebar Filters ---- */
+        .treks-sidebar {
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .filter-group {
+            margin-bottom: 28px;
+        }
+
+        .filter-group-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 14px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .filter-group-title svg {
+            width: 16px;
+            height: 16px;
+            color: #6b7280;
+            transition: transform 0.2s;
+        }
+
+        .filter-group-title.collapsed svg {
+            transform: rotate(-90deg);
+        }
+
+        /* Radio Buttons */
+        .filter-radio-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-radio-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .filter-radio-item input[type="radio"] {
+            accent-color: #2b7be0;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* Range Slider */
+        .duration-slider-wrapper {
+            padding: 4px 0;
+        }
+
+        .trek-range-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #2b7be0 0%, #2b7be0 60%, #d1d5db 60%, #d1d5db 100%);
+            outline: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .trek-range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2.5px solid #2b7be0;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .trek-range-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2.5px solid #2b7be0;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .duration-label {
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-
-        .meta i {
-            color: #f59e0b;
-        }
-
-        /* Enhanced FOOTER */
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 18px;
-            padding-top: 12px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .price {
-            font-weight: 800;
-            color: #16a34a;
-            font-size: 1.2rem;
-        }
-
-        .view-btn {
             font-size: 13px;
-            color: #2563eb;
-            font-weight: 700;
-            transition: all 0.3s;
-            display: inline-flex;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .duration-label svg {
+            width: 14px;
+            height: 14px;
+            color: #6b7280;
+        }
+
+        /* Checkbox List */
+        .filter-check-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-check-item {
+            display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 9px;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
         }
 
-        .trek-card:hover .view-btn {
-            transform: translateX(5px);
-            color: #1d4ed8;
+        .filter-check-item input[type="checkbox"] {
+            accent-color: #2b7be0;
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            cursor: pointer;
         }
 
-        /* EMPTY STATE */
-        .empty {
-            text-align: center;
-            color: white;
-            grid-column: 1 / -1;
-            padding: 60px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 20px;
-            font-size: 1.2rem;
+        /* Divider between filter groups */
+        .filter-divider {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 0 0 24px 0;
         }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* ---- Page Wrapper ---- */
+        .treks-page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 36px 24px 60px;
+            background: #f1ede6;
+            min-height: 100vh;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .trek-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        .trek-card {
-            animation: fadeIn 0.6s ease-out;
-            animation-fill-mode: both;
-        }
-
-        .trek-card:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .trek-card:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .trek-card:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        .trek-card:nth-child(4) {
-            animation-delay: 0.4s;
-        }
-
-        .trek-card:nth-child(5) {
-            animation-delay: 0.5s;
-        }
-
-        .trek-card:nth-child(6) {
-            animation-delay: 0.6s;
-        }
-
-        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .trek-wrapper {
-                padding: 50px 15px;
-                background-attachment: scroll;
-                background-position: center;
+            .treks-main {
+                flex-direction: column-reverse;
             }
 
-            .trek-header h1 {
-                font-size: 2.2rem;
+            .treks-sidebar {
+                width: 100%;
             }
 
-            .trek-header p {
-                font-size: 1rem;
+            .trek-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .trek-grid {
-                gap: 20px;
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            .trek-hero-content h1 {
+                font-size: 32px;
             }
 
-            .trek-image {
-                height: 200px;
+            .trek-hero {
+                height: 300px;
             }
         }
 
-        @media (max-width: 480px) {
-            .trek-header h1 {
-                font-size: 1.8rem;
+        @media (max-width: 540px) {
+            .trek-cards-grid {
+                grid-template-columns: 1fr;
             }
-
-            .trek-content h2 {
-                font-size: 1.2rem;
-            }
-
-            .meta {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-        }
-
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #FFA500, #FF8C00);
         }
     </style>
+@endpush
+
+@section('content')
+    <div class="treks-page-wrapper">
+
+        {{-- ===================== HERO SECTION ===================== --}}
+        <div class="trek-hero">
+
+            {{-- BACKGROUND IMAGE --}}
+            <img src="{{ asset('images/himal.png') }}" alt="Himalayan Treks">
+
+            {{-- OVERLAY --}}
+            <div class="trek-hero-overlay"></div>
+
+            {{-- CONTENT --}}
+            <div class="trek-hero-content">
+                <h1>Himalayan Treks</h1>
+                <p>
+                    Lorem located trekking experiences across the Himalayas<br>
+                    for your adventure and unforgettable journey in Nepal.
+                </p>
+                <a href="{{ route('treks.index') }}" class="btn-book-now">Book now</a>
+            </div>
+
+        </div>
+
+        {{-- ===================== MAIN CONTENT ===================== --}}
+        <div class="treks-main">
+
+            {{-- Cards Section --}}
+            <div class="treks-cards-section">
+
+                {{-- Section Header --}}
+                <div class="section-header">
+                    <h2>Feature Cards</h2>
+                    <button class="filter-dropdown" type="button">
+                        All Filters
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Trek Cards Grid --}}
+                <div class="trek-cards-grid">
+
+                    {{-- Card 1: Everest Base Camp --}}
+                    <div class="trek-card">
+                        <img src="https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=600&q=80"
+                            alt="Everest Base Camp" class="trek-card-image" />
+                        <div class="trek-card-body">
+                            <h3 class="trek-card-title">Everest Base Camp (EBC)</h3>
+                            <p class="trek-card-desc">The best price for your dream adventure in Nepal.</p>
+                            <div class="trek-card-meta">
+                                <span>
+                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    14 Days
+                                </span>
+                                <span>
+                                    <span class="difficulty-dot"></span>
+                                    Strenuous
+                                </span>
+                            </div>
+                            <a href="#" class="btn-book-card">Book Now</a>
+                        </div>
+                    </div>
+
+                    {{-- Card 2: Annapurna Circuit --}}
+                    <div class="trek-card">
+                        <img src="https://images.unsplash.com/photo-1623323838603-e6df2ef58f32?w=600&q=80"
+                            alt="Annapurna Circuit" class="trek-card-image" />
+                        <div class="trek-card-body">
+                            <h3 class="trek-card-title">Annapurna Circuit</h3>
+                            <p class="trek-card-desc">Our experienced local guides ensure adventure in Nepal.</p>
+                            <div class="trek-card-meta">
+                                <span>
+                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    14 Days
+                                </span>
+                                <span>
+                                    <span class="difficulty-dot"></span>
+                                    Strenuous
+                                </span>
+                            </div>
+                            <a href="#" class="btn-book-card">Book Now</a>
+                        </div>
+                    </div>
+
+                    {{-- Card 3: Langtang Valley --}}
+                    <div class="trek-card">
+                        <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=80"
+                            alt="Langtang Valley" class="trek-card-image" />
+                        <div class="trek-card-body">
+                            <h3 class="trek-card-title">Langtang Valley</h3>
+                            <p class="trek-card-desc">Our experienced local guide Langtang adventure in Nepal.</p>
+                            <div class="trek-card-meta">
+                                <span>
+                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    14 Days
+                                </span>
+                                <span>
+                                    <span class="difficulty-dot"></span>
+                                    Strenuous
+                                </span>
+                            </div>
+                            <a href="#" class="btn-book-card">Book Now</a>
+                        </div>
+                    </div>
+
+                    {{-- Card 4: Manaslu Circuit --}}
+                    <div class="trek-card">
+                        <img src="https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=600&q=80"
+                            alt="Manaslu Circuit" class="trek-card-image" />
+                        <div class="trek-card-body">
+                            <h3 class="trek-card-title">Manaslu Circuit</h3>
+                            <p class="trek-card-desc">Experience the remote Manaslu region in all its glory.</p>
+                            <div class="trek-card-meta">
+                                <span>
+                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    16 Days
+                                </span>
+                                <span>
+                                    <span class="difficulty-dot"></span>
+                                    Strenuous
+                                </span>
+                            </div>
+                            <a href="#" class="btn-book-card">Book Now</a>
+                        </div>
+                    </div>
+
+                    {{-- Card 5: Upper Mustang --}}
+                    <div class="trek-card">
+                        <img src="https://images.unsplash.com/photo-1549880338-65ddcdfd017b?w=600&q=80"
+                            alt="Upper Mustang" class="trek-card-image" />
+                        <div class="trek-card-body">
+                            <h3 class="trek-card-title">Upper Mustang</h3>
+                            <p class="trek-card-desc">Explore the forbidden kingdom of Lo Manthang.</p>
+                            <div class="trek-card-meta">
+                                <span>
+                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    12 Days
+                                </span>
+                                <span>
+                                    <span class="difficulty-dot" style="background:#f59e0b;"></span>
+                                    Low
+                                </span>
+                            </div>
+                            <a href="#" class="btn-book-card">Book Now</a>
+                        </div>
+                    </div>
+
+                    {{-- Card 6: Gokyo Lakes --}}
+                    <div class="trek-card">
+                        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80"
+                            alt="Gokyo Lakes" class="trek-card-image" />
+                        <div class="trek-card-body">
+                            <h3 class="trek-card-title">Gokyo Lakes</h3>
+                            <p class="trek-card-desc">Stunning turquoise lakes with Everest panorama views.</p>
+                            <div class="trek-card-meta">
+                                <span>
+                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    15 Days
+                                </span>
+                                <span>
+                                    <span class="difficulty-dot" style="background:#f59e0b;"></span>
+                                    Low
+                                </span>
+                            </div>
+                            <a href="#" class="btn-book-card">Book Now</a>
+                        </div>
+                    </div>
+
+                </div>{{-- end .trek-cards-grid --}}
+            </div>{{-- end .treks-cards-section --}}
+
+            {{-- ===================== SIDEBAR FILTERS ===================== --}}
+            <aside class="treks-sidebar">
+
+                {{-- Difficulty --}}
+                <div class="filter-group">
+                    <h4 class="filter-group-title">
+                        Difficulty
+                    </h4>
+                    <div class="filter-radio-list">
+                        <label class="filter-radio-item">
+                            <input type="radio" name="difficulty" value="difficulty" checked />
+                            Difficulty
+                        </label>
+                        <label class="filter-radio-item">
+                            <input type="radio" name="difficulty" value="low" />
+                            Low
+                        </label>
+                        <label class="filter-radio-item">
+                            <input type="radio" name="difficulty" value="moderate" />
+                            Moderate
+                        </label>
+                        <label class="filter-radio-item">
+                            <input type="radio" name="difficulty" value="strenuous" />
+                            Strenuous
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="filter-divider" />
+
+                {{-- Duration --}}
+                <div class="filter-group">
+                    <h4 class="filter-group-title">
+                        Duration
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                    </h4>
+                    <div class="duration-slider-wrapper">
+                        <input type="range" min="1" max="30" value="15" class="trek-range-slider"
+                            id="durationSlider" oninput="updateDuration(this.value)" />
+                        <div class="duration-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span id="durationLabel">15 Days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="filter-divider" />
+
+                {{-- Region --}}
+                <div class="filter-group">
+                    <h4 class="filter-group-title">
+                        Region
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                    </h4>
+                    <div class="filter-check-list">
+                        <label class="filter-check-item">
+                            <input type="checkbox" name="region[]" value="kbd" />
+                            Kbd
+                        </label>
+                        <label class="filter-check-item">
+                            <input type="checkbox" name="region[]" value="annapurna" />
+                            Annapurna
+                        </label>
+                        <label class="filter-check-item">
+                            <input type="checkbox" name="region[]" value="circuit" />
+                            Circuit
+                        </label>
+                        <label class="filter-check-item">
+                            <input type="checkbox" name="region[]" value="manaslu" />
+                            Manaslu
+                        </label>
+                        <label class="filter-check-item">
+                            <input type="checkbox" name="region[]" value="mustang" />
+                            Mustang
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="filter-divider" />
+
+                {{-- Price Range (optional extra) --}}
+                <div class="filter-group">
+                    <h4 class="filter-group-title">
+                        Price Range
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                    </h4>
+                    <div class="filter-check-list">
+                        <label class="filter-check-item">
+                            <input type="checkbox" name="price[]" value="budget" />
+                            Budget
+                        </label>
+                        <label class="filter-check-item">
+                            <input type="checkbox" name="price[]" value="mid" />
+                            Mid Range
+                        </label>
+                        <label class="filter-check-item">
+                            <input type="checkbox" name="price[]" value="luxury" />
+                            Luxury
+                        </label>
+                    </div>
+                </div>
+
+            </aside>{{-- end .treks-sidebar --}}
+
+        </div>{{-- end .treks-main --}}
+
+    </div>{{-- end .treks-page-wrapper --}}
+@endsection
+
+@push('scripts')
+    <script>
+        // Duration Slider
+        function updateDuration(val) {
+            document.getElementById('durationLabel').textContent = val + ' Days';
+
+            // Update slider gradient fill
+            const slider = document.getElementById('durationSlider');
+            const percent = ((val - slider.min) / (slider.max - slider.min)) * 100;
+            slider.style.background =
+                `linear-gradient(to right, #2b7be0 0%, #2b7be0 ${percent}%, #d1d5db ${percent}%, #d1d5db 100%)`;
+        }
+
+        // Initialize slider on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const slider = document.getElementById('durationSlider');
+            if (slider) updateDuration(slider.value);
+        });
+    </script>
 @endpush

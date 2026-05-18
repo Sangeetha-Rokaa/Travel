@@ -7,6 +7,7 @@ use App\Models\Package;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class PackageController extends Controller
 {
@@ -138,5 +139,42 @@ class PackageController extends Controller
     private function textToArray(string $text): array
     {
         return array_values(array_filter(array_map('trim', explode("\n", $text))));
+    }
+    // In your AdminPackageController.php
+
+    public function removeImage(Request $request, Package $package)
+    {
+        $imageType = $request->image_type;
+
+        if ($imageType === 'featured_image') {
+            // Delete the file
+            if ($package->featured_image && Storage::disk('public')->exists($package->featured_image)) {
+                Storage::disk('public')->delete($package->featured_image);
+            }
+            $package->featured_image = null;
+            $package->save();
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function removeGalleryImage(Request $request, Package $package)
+    {
+        $index = $request->image_index;
+        $galleryImages = $package->gallery_images ?? [];
+
+        if (isset($galleryImages[$index])) {
+            // Delete the file
+            if (Storage::disk('public')->exists($galleryImages[$index])) {
+                Storage::disk('public')->delete($galleryImages[$index]);
+            }
+
+            // Remove from array
+            array_splice($galleryImages, $index, 1);
+            $package->gallery_images = $galleryImages;
+            $package->save();
+        }
+
+        return response()->json(['success' => true]);
     }
 }

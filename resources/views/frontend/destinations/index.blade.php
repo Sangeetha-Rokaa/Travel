@@ -1,307 +1,310 @@
 @extends('layouts.frontend')
 
-@section('title', 'Explore Destinations')
+@section('title', 'Destinations - Visit Nepal')
 
-@section('content')
-
+@push('styles')
     <style>
-        .destination-page {
-            background: #f8fafc;
+        /* =============================================
+           DESTINATIONS PAGE STYLES
+        ============================================= */
+
+        .dest-page-wrapper {
+            background: #e8e4dc;
             min-height: 100vh;
-            padding: 80px 0;
+            padding: 32px 32px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .destination-header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .destination-header h1 {
-            font-size: 42px;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 14px;
-        }
-
-        .destination-header p {
-            color: #64748b;
-            max-width: 700px;
-            margin: auto;
-            font-size: 16px;
-            line-height: 1.7;
-        }
-
-        .destination-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-        }
-
-        .destination-card {
-            background: #fff;
-            border-radius: 24px;
-            overflow: hidden;
+        /* ---- HERO ---- */
+        .dest-hero {
             position: relative;
-            transition: all .35s ease;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-            border: 1px solid #e2e8f0;
-        }
-
-        .destination-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
-        }
-
-        .destination-image-wrap {
-            position: relative;
-            overflow: hidden;
-            height: 260px;
-        }
-
-        .destination-image {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform .5s ease;
+            height: 400px;
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 40px;
+            background: url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1400&q=85') center center / cover no-repeat;
         }
 
-        .destination-card:hover .destination-image {
-            transform: scale(1.08);
-        }
-
-        .destination-overlay {
+        .dest-hero::before {
+            content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top,
-                    rgba(0, 0, 0, 0.75),
-                    rgba(0, 0, 0, 0.1),
-                    transparent);
+            background: linear-gradient(to right,
+                    rgba(8, 18, 48, 0.92) 0%,
+                    rgba(8, 18, 48, 0.65) 42%,
+                    rgba(8, 18, 48, 0.05) 100%);
+            z-index: 1;
         }
 
-        .destination-region {
+        .dest-hero-content {
             position: absolute;
-            top: 18px;
-            left: 18px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #0f172a;
-            padding: 7px 14px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            backdrop-filter: blur(10px);
+            top: 50%;
+            left: 52px;
+            transform: translateY(-50%);
+            z-index: 2;
+            max-width: 460px;
         }
 
-        .destination-content {
-            padding: 24px;
-        }
-
-        .destination-name {
-            font-size: 24px;
+        .dest-hero-content h1 {
+            font-size: 46px;
             font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 10px;
+            color: #ffffff;
+            line-height: 1.15;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.3px;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .destination-location {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #475569;
+        .dest-hero-content p {
             font-size: 14px;
-            margin-bottom: 16px;
+            color: rgba(255, 255, 255, 0.80);
+            line-height: 1.65;
+            margin: 0 0 28px 0;
         }
 
-        .destination-description {
-            color: #64748b;
-            font-size: 15px;
-            line-height: 1.7;
-            margin-bottom: 24px;
-        }
-
-        .destination-meta {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-        }
-
-        .meta-item {
-            background: #f1f5f9;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #334155;
+        .btn-explore-now {
+            display: inline-block;
+            background: #2b7be0;
+            color: #fff;
+            font-size: 14px;
             font-weight: 600;
+            padding: 12px 26px;
+            border-radius: 50px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.15s ease;
         }
 
-        .destination-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
+        .btn-explore-now:hover {
+            background: #1a65c9;
+            transform: translateY(-1px);
             color: #fff;
             text-decoration: none;
+        }
+
+        /* ---- DESTINATION CARDS GRID ---- */
+        .dest-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dest-card {
+            background: #ffffff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+            border: 1px solid #ebebeb;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .dest-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.13);
+        }
+
+        .dest-card-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .dest-card-body {
+            padding: 14px 16px 16px;
+        }
+
+        .dest-card-title {
+            font-size: 15px;
             font-weight: 700;
-            transition: .3s ease;
+            color: #111827;
+            margin: 0 0 3px 0;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .destination-btn:hover {
-            background: linear-gradient(135deg, #1e293b, #334155);
-            color: #fff;
+        .dest-card-tag {
+            font-size: 13px;
+            color: #6b7280;
+            margin: 0;
         }
 
-        .empty-box {
-            background: #fff;
-            padding: 80px 30px;
-            border-radius: 24px;
-            text-align: center;
-            border: 1px dashed #cbd5e1;
+        /* ---- BOTTOM ROW: 2 cards + map ---- */
+        .dest-bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr;
+            gap: 20px;
         }
 
-        .empty-box i {
-            font-size: 55px;
-            color: #94a3b8;
-            margin-bottom: 18px;
+        /* Map container */
+        .dest-map-container {
+            border-radius: 14px;
+            overflow: hidden;
+            min-height: 220px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #ebebeb;
+            position: relative;
         }
 
-        .empty-box h3 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 10px;
+        .dest-map-container iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 220px;
+            border: none;
+            display: block;
         }
 
-        .empty-box p {
-            color: #64748b;
-        }
-
-        .pagination-wrapper {
-            margin-top: 60px;
-            display: flex;
-            justify-content: center;
-        }
-
-        @media(max-width:768px) {
-
-            .destination-header h1 {
-                font-size: 32px;
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dest-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .destination-page {
-                padding: 60px 0;
+            .dest-bottom-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .dest-map-container {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .dest-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .dest-bottom-row {
+                grid-template-columns: 1fr;
+            }
+
+            .dest-hero-content h1 {
+                font-size: 30px;
+            }
+
+            .dest-hero {
+                height: 280px;
+            }
+
+            .dest-hero-content {
+                left: 24px;
+            }
+
+            .dest-page-wrapper {
+                padding: 20px 16px 40px;
             }
         }
     </style>
+@endpush
 
-    <section class="destination-page">
+@section('content')
+    <div class="dest-page-wrapper">
 
-        <div class="container mx-auto px-4">
-
-            {{-- HEADER --}}
-            <div class="destination-header">
-                <h1>Explore Beautiful Destinations</h1>
-
+        {{-- ===================== HERO ===================== --}}
+        <div class="dest-hero">
+            <div class="dest-hero-content">
+                <h1>Discover Nepal's<br>Destinations</h1>
                 <p>
-                    Discover Nepal’s most iconic mountains, lakes, heritage sites,
-                    trekking regions, and hidden natural wonders with unforgettable experiences.
+                    Discover Nepal's destinations and Macical one timeline online<br>
+                    landscape obtinnoes oaee ooot omcure net Nepal.
                 </p>
+                <a href="#" class="btn-explore-now">Explore now</a>
             </div>
-
-            {{-- GRID --}}
-            @if ($destinations->count())
-
-                <div class="destination-grid">
-
-                    @foreach ($destinations as $destination)
-                        <div class="destination-card">
-
-                            {{-- IMAGE --}}
-                            <div class="destination-image-wrap">
-
-                                <img src="{{ asset('storage/' . $destination->featured_image) }}"
-                                    alt="{{ $destination->name }}" class="destination-image">
-
-                                <div class="destination-overlay"></div>
-
-                                {{-- REGION --}}
-                                @if ($destination->region)
-                                    <span class="destination-region">
-                                        {{ $destination->region }}
-                                    </span>
-                                @endif
-
-                            </div>
-
-                            {{-- CONTENT --}}
-                            <div class="destination-content">
-
-                                <h2 class="destination-name">
-                                    {{ $destination->name }}
-                                </h2>
-
-                                <div class="destination-location">
-                                    <i class="fas fa-location-dot"></i>
-                                    <span>{{ $destination->location }}</span>
-                                </div>
-
-                                <p class="destination-description">
-                                    {{ \Illuminate\Support\Str::limit($destination->short_description, 120) }}
-                                </p>
-
-                                {{-- META --}}
-                                <div class="destination-meta">
-
-                                    @if ($destination->altitude)
-                                        <div class="meta-item">
-                                            ⛰ {{ $destination->altitude }}
-                                        </div>
-                                    @endif
-
-                                    @if ($destination->best_season)
-                                        <div class="meta-item">
-                                            🌤 {{ $destination->best_season }}
-                                        </div>
-                                    @endif
-
-                                </div>
-
-                                {{-- BUTTON --}}
-                                <a href="{{ route('destinations.show', $destination->slug) }}" class="destination-btn">
-                                    Explore Destination
-                                </a>
-
-                            </div>
-
-                        </div>
-                    @endforeach
-
-                </div>
-
-                {{-- PAGINATION --}}
-                <div class="pagination-wrapper">
-                    {{ $destinations->links() }}
-                </div>
-            @else
-                {{-- EMPTY --}}
-                <div class="empty-box">
-
-                    <i class="fas fa-mountain"></i>
-
-                    <h3>No Destinations Found</h3>
-
-                    <p>
-                        Destinations will appear here once added by the admin.
-                    </p>
-
-                </div>
-
-            @endif
-
         </div>
 
-    </section>
+        {{-- ===================== TOP 4 DESTINATION CARDS ===================== --}}
+        <div class="dest-grid">
 
+            {{-- Kathmandu Valley --}}
+            <div class="dest-card">
+                <img src="https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=600&q=80" alt="Kathmandu Valley"
+                    class="dest-card-img" />
+                <div class="dest-card-body">
+                    <h3 class="dest-card-title">Kathmandu Valley</h3>
+                    <p class="dest-card-tag">(Culture)</p>
+                </div>
+            </div>
+
+            {{-- Pokhara --}}
+            <div class="dest-card">
+                <img src="https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=600&q=80" alt="Pokhara"
+                    class="dest-card-img" />
+                <div class="dest-card-body">
+                    <h3 class="dest-card-title">Pokhara</h3>
+                    <p class="dest-card-tag">(Adventure)</p>
+                </div>
+            </div>
+
+            {{-- Chitwan --}}
+            <div class="dest-card">
+                <img src="https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=600&q=80" alt="Chitwan"
+                    class="dest-card-img" />
+                <div class="dest-card-body">
+                    <h3 class="dest-card-title">Chitwan</h3>
+                    <p class="dest-card-tag">(Wildlife)</p>
+                </div>
+            </div>
+
+            {{-- Mustang --}}
+            <div class="dest-card">
+                <img src="https://images.unsplash.com/photo-1549880338-65ddcdfd017b?w=600&q=80" alt="Mustang"
+                    class="dest-card-img" />
+                <div class="dest-card-body">
+                    <h3 class="dest-card-title">Mustang</h3>
+                    <p class="dest-card-tag">(Hidden Kingdom)</p>
+                </div>
+            </div>
+
+        </div>{{-- end .dest-grid --}}
+
+        {{-- ===================== BOTTOM ROW: 2 cards + map ===================== --}}
+        <div class="dest-bottom-row">
+
+            {{-- Annapurna --}}
+            <div class="dest-card">
+                <img src="https://images.unsplash.com/photo-1623323838603-e6df2ef58f32?w=600&q=80" alt="Annapurna"
+                    class="dest-card-img" />
+                <div class="dest-card-body">
+                    <h3 class="dest-card-title">Annapurna</h3>
+                    <p class="dest-card-tag">(Trekking)</p>
+                </div>
+            </div>
+
+            {{-- Lumbini --}}
+            <div class="dest-card">
+                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Lumbini"
+                    class="dest-card-img" />
+                <div class="dest-card-body">
+                    <h3 class="dest-card-title">Lumbini</h3>
+                    <p class="dest-card-tag">(Spiritual)</p>
+                </div>
+            </div>
+
+            {{-- Nepal Map --}}
+            <div class="dest-map-container">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3642089.7864566!2d82.34808!3d28.394857!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3995e8c77d506e17%3A0x5a4b9a1ed82e21e!2sNepal!5e0!3m2!1sen!2snp!4v1699999999999!5m2!1sen!2snp"
+                    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                    title="Nepal Map"></iframe>
+            </div>
+
+        </div>{{-- end .dest-bottom-row --}}
+
+    </div>{{-- end .dest-page-wrapper --}}
 @endsection
+
+@push('scripts')
+    <script>
+        // Destination card click — navigate to detail page
+        document.querySelectorAll('.dest-card').forEach(function(card) {
+            card.addEventListener('click', function() {
+                // You can wire up routing here, e.g.:
+                // window.location.href = card.dataset.url;
+            });
+        });
+    </script>
+@endpush

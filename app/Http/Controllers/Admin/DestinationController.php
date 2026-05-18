@@ -65,14 +65,17 @@ class DestinationController extends Controller
         return redirect()->route('admin.destinations.index')
             ->with('success', 'Destination created successfully.');
     }
-
-    public function edit(Destination $destination): View
+    public function edit($id): View
     {
+        $destination = Destination::findOrFail($id);
+
         return view('admin.destinations.edit', compact('destination'));
     }
 
-    public function update(Request $request, Destination $destination): RedirectResponse
+    public function update(Request $request, $id): RedirectResponse
     {
+        $destination = Destination::findOrFail($id);
+
         $validated = $this->validateRequest($request, $destination->id);
 
         if ($request->hasFile('featured_image')) {
@@ -86,9 +89,12 @@ class DestinationController extends Controller
             ->with('success', 'Destination updated successfully.');
     }
 
-    public function destroy(Destination $destination): RedirectResponse
+    public function destroy($id): RedirectResponse
     {
+        $destination = Destination::findOrFail($id);
+
         $destination->delete();
+
         return redirect()->route('admin.destinations.index')
             ->with('success', 'Destination deleted.');
     }

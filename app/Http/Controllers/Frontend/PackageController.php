@@ -36,13 +36,13 @@ class PackageController extends Controller
     {
         abort_if(! $package->is_active, 404);
 
-        $packages = Package::active()
+        $relatedPackages = Package::active()
             ->where('id', '!=', $package->id)
             ->where('type', $package->type)
             ->ordered()
             ->take(3)
             ->get();
 
-        return view('frontend.packages.show', compact('package', 'packages'));
+        return view('frontend.packages.show', compact('package', 'relatedPackages'));
     }
 }

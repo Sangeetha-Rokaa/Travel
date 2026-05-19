@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* =============================================
-                       TREKS INDEX PAGE STYLES
-                    ============================================= */
+                               TREKS INDEX PAGE STYLES
+                            ============================================= */
 
         /* ---- Hero Section ---- */
         .trek-hero {
@@ -423,23 +423,18 @@
 
         {{-- ===================== HERO SECTION ===================== --}}
         <div class="trek-hero">
-
-            {{-- BACKGROUND IMAGE --}}
             <img src="{{ asset('images/himal.png') }}" alt="Himalayan Treks">
-
-            {{-- OVERLAY --}}
             <div class="trek-hero-overlay"></div>
-
-            {{-- CONTENT --}}
             <div class="trek-hero-content">
                 <h1>Himalayan Treks</h1>
                 <p>
                     Lorem located trekking experiences across the Himalayas<br>
                     for your adventure and unforgettable journey in Nepal.
                 </p>
-                <a href="{{ route('treks.index') }}" class="btn-book-now">Book now</a>
+                <a href="{{ route('bookings.create', ['trek' => $trek->slug]) }}" class="btn-book-card">
+                    Book Now
+                </a>
             </div>
-
         </div>
 
         {{-- ===================== MAIN CONTENT ===================== --}}
@@ -463,155 +458,36 @@
                 {{-- Trek Cards Grid --}}
                 <div class="trek-cards-grid">
 
-                    {{-- Card 1: Everest Base Camp --}}
-                    <div class="trek-card">
-                        <img src="https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=600&q=80"
-                            alt="Everest Base Camp" class="trek-card-image" />
-                        <div class="trek-card-body">
-                            <h3 class="trek-card-title">Everest Base Camp (EBC)</h3>
-                            <p class="trek-card-desc">The best price for your dream adventure in Nepal.</p>
-                            <div class="trek-card-meta">
-                                <span>
-                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    14 Days
-                                </span>
-                                <span>
-                                    <span class="difficulty-dot"></span>
-                                    Strenuous
-                                </span>
+                    @forelse($treks as $trek)
+                        <div class="trek-card">
+                            <img src="{{ Str::startsWith($trek->featured_image, 'http')
+                                ? $trek->featured_image
+                                : asset('storage/' . $trek->featured_image) }}"
+                                alt="{{ $trek->name }}" class="trek-card-image" />
+                            <div class="trek-card-body">
+                                <h3 class="trek-card-title">{{ $trek->name }}</h3>
+                                <p class="trek-card-desc">{{ $trek->short_description }}</p>
+                                <div class="trek-card-meta">
+                                    <span>
+                                        <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        {{ $trek->duration_days }} Days
+                                    </span>
+                                    <span>
+                                        <span class="difficulty-dot"
+                                            style="background: {{ $trek->difficultyColor() }};"></span>
+                                        {{ $trek->difficulty }}
+                                    </span>
+                                </div>
+                                <a href="{{ route('treks.show', $trek->slug) }}" class="btn-book-card">Book Now</a>
                             </div>
-                            <a href="#" class="btn-book-card">Book Now</a>
                         </div>
-                    </div>
-
-                    {{-- Card 2: Annapurna Circuit --}}
-                    <div class="trek-card">
-                        <img src="https://images.unsplash.com/photo-1623323838603-e6df2ef58f32?w=600&q=80"
-                            alt="Annapurna Circuit" class="trek-card-image" />
-                        <div class="trek-card-body">
-                            <h3 class="trek-card-title">Annapurna Circuit</h3>
-                            <p class="trek-card-desc">Our experienced local guides ensure adventure in Nepal.</p>
-                            <div class="trek-card-meta">
-                                <span>
-                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    14 Days
-                                </span>
-                                <span>
-                                    <span class="difficulty-dot"></span>
-                                    Strenuous
-                                </span>
-                            </div>
-                            <a href="#" class="btn-book-card">Book Now</a>
-                        </div>
-                    </div>
-
-                    {{-- Card 3: Langtang Valley --}}
-                    <div class="trek-card">
-                        <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=80"
-                            alt="Langtang Valley" class="trek-card-image" />
-                        <div class="trek-card-body">
-                            <h3 class="trek-card-title">Langtang Valley</h3>
-                            <p class="trek-card-desc">Our experienced local guide Langtang adventure in Nepal.</p>
-                            <div class="trek-card-meta">
-                                <span>
-                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    14 Days
-                                </span>
-                                <span>
-                                    <span class="difficulty-dot"></span>
-                                    Strenuous
-                                </span>
-                            </div>
-                            <a href="#" class="btn-book-card">Book Now</a>
-                        </div>
-                    </div>
-
-                    {{-- Card 4: Manaslu Circuit --}}
-                    <div class="trek-card">
-                        <img src="https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=600&q=80"
-                            alt="Manaslu Circuit" class="trek-card-image" />
-                        <div class="trek-card-body">
-                            <h3 class="trek-card-title">Manaslu Circuit</h3>
-                            <p class="trek-card-desc">Experience the remote Manaslu region in all its glory.</p>
-                            <div class="trek-card-meta">
-                                <span>
-                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    16 Days
-                                </span>
-                                <span>
-                                    <span class="difficulty-dot"></span>
-                                    Strenuous
-                                </span>
-                            </div>
-                            <a href="#" class="btn-book-card">Book Now</a>
-                        </div>
-                    </div>
-
-                    {{-- Card 5: Upper Mustang --}}
-                    <div class="trek-card">
-                        <img src="https://images.unsplash.com/photo-1549880338-65ddcdfd017b?w=600&q=80"
-                            alt="Upper Mustang" class="trek-card-image" />
-                        <div class="trek-card-body">
-                            <h3 class="trek-card-title">Upper Mustang</h3>
-                            <p class="trek-card-desc">Explore the forbidden kingdom of Lo Manthang.</p>
-                            <div class="trek-card-meta">
-                                <span>
-                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    12 Days
-                                </span>
-                                <span>
-                                    <span class="difficulty-dot" style="background:#f59e0b;"></span>
-                                    Low
-                                </span>
-                            </div>
-                            <a href="#" class="btn-book-card">Book Now</a>
-                        </div>
-                    </div>
-
-                    {{-- Card 6: Gokyo Lakes --}}
-                    <div class="trek-card">
-                        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80"
-                            alt="Gokyo Lakes" class="trek-card-image" />
-                        <div class="trek-card-body">
-                            <h3 class="trek-card-title">Gokyo Lakes</h3>
-                            <p class="trek-card-desc">Stunning turquoise lakes with Everest panorama views.</p>
-                            <div class="trek-card-meta">
-                                <span>
-                                    <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    15 Days
-                                </span>
-                                <span>
-                                    <span class="difficulty-dot" style="background:#f59e0b;"></span>
-                                    Low
-                                </span>
-                            </div>
-                            <a href="#" class="btn-book-card">Book Now</a>
-                        </div>
-                    </div>
+                    @empty
+                        <p class="text-muted">No treks found matching your filters.</p>
+                    @endforelse
 
                 </div>{{-- end .trek-cards-grid --}}
             </div>{{-- end .treks-cards-section --}}
@@ -619,117 +495,106 @@
             {{-- ===================== SIDEBAR FILTERS ===================== --}}
             <aside class="treks-sidebar">
 
-                {{-- Difficulty --}}
-                <div class="filter-group">
-                    <h4 class="filter-group-title">
-                        Difficulty
-                    </h4>
-                    <div class="filter-radio-list">
-                        <label class="filter-radio-item">
-                            <input type="radio" name="difficulty" value="difficulty" checked />
-                            Difficulty
-                        </label>
-                        <label class="filter-radio-item">
-                            <input type="radio" name="difficulty" value="low" />
-                            Low
-                        </label>
-                        <label class="filter-radio-item">
-                            <input type="radio" name="difficulty" value="moderate" />
-                            Moderate
-                        </label>
-                        <label class="filter-radio-item">
-                            <input type="radio" name="difficulty" value="strenuous" />
-                            Strenuous
-                        </label>
-                    </div>
-                </div>
+                <form method="GET" action="{{ route('treks.index') }}" id="trek-filter-form">
 
-                <hr class="filter-divider" />
-
-                {{-- Duration --}}
-                <div class="filter-group">
-                    <h4 class="filter-group-title">
-                        Duration
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                        </svg>
-                    </h4>
-                    <div class="duration-slider-wrapper">
-                        <input type="range" min="1" max="30" value="15" class="trek-range-slider"
-                            id="durationSlider" oninput="updateDuration(this.value)" />
-                        <div class="duration-label">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span id="durationLabel">15 Days</span>
+                    {{-- Difficulty --}}
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">Difficulty</h4>
+                        <div class="filter-radio-list">
+                            <label class="filter-radio-item">
+                                <input type="radio" name="difficulty" value="difficulty"
+                                    {{ !request('difficulty') || request('difficulty') === 'difficulty' ? 'checked' : '' }} />
+                                All
+                            </label>
+                            @foreach ($difficulties as $level)
+                                <label class="filter-radio-item">
+                                    <input type="radio" name="difficulty" value="{{ strtolower($level) }}"
+                                        {{ request('difficulty') === strtolower($level) ? 'checked' : '' }} />
+                                    {{ $level }}
+                                </label>
+                            @endforeach
                         </div>
                     </div>
-                </div>
 
-                <hr class="filter-divider" />
+                    <hr class="filter-divider" />
 
-                {{-- Region --}}
-                <div class="filter-group">
-                    <h4 class="filter-group-title">
-                        Region
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                        </svg>
-                    </h4>
-                    <div class="filter-check-list">
-                        <label class="filter-check-item">
-                            <input type="checkbox" name="region[]" value="kbd" />
-                            Kbd
-                        </label>
-                        <label class="filter-check-item">
-                            <input type="checkbox" name="region[]" value="annapurna" />
-                            Annapurna
-                        </label>
-                        <label class="filter-check-item">
-                            <input type="checkbox" name="region[]" value="circuit" />
-                            Circuit
-                        </label>
-                        <label class="filter-check-item">
-                            <input type="checkbox" name="region[]" value="manaslu" />
-                            Manaslu
-                        </label>
-                        <label class="filter-check-item">
-                            <input type="checkbox" name="region[]" value="mustang" />
-                            Mustang
-                        </label>
+                    {{-- Duration --}}
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">
+                            Duration
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                            </svg>
+                        </h4>
+                        <div class="duration-slider-wrapper">
+                            <input type="range" min="1" max="{{ $maxDuration }}"
+                                value="{{ request('duration', $maxDuration) }}" class="trek-range-slider"
+                                id="durationSlider" name="duration" oninput="updateDuration(this.value)" />
+                            <div class="duration-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span id="durationLabel">{{ request('duration', $maxDuration) }} Days</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <hr class="filter-divider" />
+                    <hr class="filter-divider" />
 
-                {{-- Price Range (optional extra) --}}
-                <div class="filter-group">
-                    <h4 class="filter-group-title">
-                        Price Range
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                        </svg>
-                    </h4>
-                    <div class="filter-check-list">
-                        <label class="filter-check-item">
-                            <input type="checkbox" name="price[]" value="budget" />
-                            Budget
-                        </label>
-                        <label class="filter-check-item">
-                            <input type="checkbox" name="price[]" value="mid" />
-                            Mid Range
-                        </label>
-                        <label class="filter-check-item">
-                            <input type="checkbox" name="price[]" value="luxury" />
-                            Luxury
-                        </label>
+                    {{-- Region --}}
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">
+                            Region
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                            </svg>
+                        </h4>
+                        <div class="filter-check-list">
+                            @foreach ($regions as $slug => $name)
+                                <label class="filter-check-item">
+                                    <input type="checkbox" name="region[]" value="{{ $name }}"
+                                        {{ in_array($name, (array) request('region', [])) ? 'checked' : '' }} />
+                                    {{ $name }}
+                                </label>
+                            @endforeach
+                        </div>
                     </div>
-                </div>
+
+                    <hr class="filter-divider" />
+
+                    {{-- Price Range --}}
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">
+                            Price Range
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                            </svg>
+                        </h4>
+                        <div class="filter-check-list">
+                            <label class="filter-check-item">
+                                <input type="checkbox" name="price[]" value="budget"
+                                    {{ in_array('budget', (array) request('price', [])) ? 'checked' : '' }} />
+                                Budget
+                            </label>
+                            <label class="filter-check-item">
+                                <input type="checkbox" name="price[]" value="mid"
+                                    {{ in_array('mid', (array) request('price', [])) ? 'checked' : '' }} />
+                                Mid Range
+                            </label>
+                            <label class="filter-check-item">
+                                <input type="checkbox" name="price[]" value="luxury"
+                                    {{ in_array('luxury', (array) request('price', [])) ? 'checked' : '' }} />
+                                Luxury
+                            </label>
+                        </div>
+                    </div>
+
+                </form>
 
             </aside>{{-- end .treks-sidebar --}}
 
@@ -743,18 +608,29 @@
         // Duration Slider
         function updateDuration(val) {
             document.getElementById('durationLabel').textContent = val + ' Days';
-
-            // Update slider gradient fill
             const slider = document.getElementById('durationSlider');
             const percent = ((val - slider.min) / (slider.max - slider.min)) * 100;
             slider.style.background =
                 `linear-gradient(to right, #2b7be0 0%, #2b7be0 ${percent}%, #d1d5db ${percent}%, #d1d5db 100%)`;
         }
 
-        // Initialize slider on page load
         document.addEventListener('DOMContentLoaded', function() {
             const slider = document.getElementById('durationSlider');
             if (slider) updateDuration(slider.value);
+
+            // Auto-submit form when any filter changes
+            document.querySelectorAll(
+                '#trek-filter-form input[type="radio"], #trek-filter-form input[type="checkbox"]'
+            ).forEach(function(input) {
+                input.addEventListener('change', function() {
+                    document.getElementById('trek-filter-form').submit();
+                });
+            });
+
+            // Submit on slider release
+            slider?.addEventListener('change', function() {
+                document.getElementById('trek-filter-form').submit();
+            });
         });
     </script>
 @endpush

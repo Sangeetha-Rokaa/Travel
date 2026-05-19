@@ -16,6 +16,8 @@ use App\Http\Controllers\Frontend\BookingController;
 
 
 // Home
+Route::get('/book',  [BookingController::class, 'create'])->name('bookings.create');
+Route::post('/book', [BookingController::class, 'store'])->name('bookings.store');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Destinations
@@ -45,12 +47,14 @@ Route::prefix('packages')->name('packages.')->group(function () {
     Route::get('/',           [PackageController::class, 'index'])->name('index');
     Route::get('/{package}',  [PackageController::class, 'show'])->name('show');
 });
+Route::get('/packages',          [PackageController::class, 'index'])->name('packages.index');
+Route::get('/packages/{slug}',   [PackageController::class, 'show'])->name('packages.show');
 
 Route::get('/booking', function () {
     return view('frontend.booking');
 })->name('booking.index');
-Route::get('/book',  [BookingController::class, 'create'])->name('booking.create');
-Route::post('/book', [BookingController::class, 'store'])->name('booking.store');
+Route::get('/book',  [BookingController::class, 'create'])->name('bookings.create');
+Route::post('/book', [BookingController::class, 'store'])->name('bookings.store');
 
 // About
 Route::get('/about-us', [AboutController::class, 'index'])->name('about.index');
@@ -65,7 +69,11 @@ Route::post('/contact',      [ContactController::class, 'store'])->name('contact
 Route::get('/contact', [ContactController::class, 'index'])
     ->name('contact');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::get('/contact',       [ContactController::class, 'index'])->name('contact');
 
+
+Route::get('/treks',          [TrekController::class, 'index'])->name('treks.index');
+Route::get('/treks/{slug}',   [TrekController::class, 'show'])->name('treks.show');
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  ADMIN ROUTES  —  protected by 'auth' + 'verified' middleware
@@ -94,7 +102,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 });
 
+Route::prefix('admin')->name('admin.')->group(function () {
 
+    Route::resource('bookings', BookingController::class);
+});
 /*
 |--------------------------------------------------------------------------
 | ADMIN PROTECTED ROUTES

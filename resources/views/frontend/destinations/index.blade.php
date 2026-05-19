@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* =============================================
-           DESTINATIONS PAGE STYLES
-        ============================================= */
+               DESTINATIONS PAGE STYLES
+            ============================================= */
 
         .dest-page-wrapper {
             background: #e8e4dc;
@@ -205,12 +205,12 @@
     <div class="dest-page-wrapper">
 
         {{-- ===================== HERO ===================== --}}
-        <div class="dest-hero">
+        <div class="dest-hero"
+            @if ($hero && $hero->featured_image) style="background-image: url('{{ asset('storage/' . $hero->featured_image) }}');" @endif>
             <div class="dest-hero-content">
                 <h1>Discover Nepal's<br>Destinations</h1>
                 <p>
-                    Discover Nepal's destinations and Macical one timeline online<br>
-                    landscape obtinnoes oaee ooot omcure net Nepal.
+                    {{ $hero?->short_description ?? 'Explore the breathtaking landscapes, rich culture, and hidden wonders of Nepal.' }}
                 </p>
                 <a href="#" class="btn-explore-now">Explore now</a>
             </div>
@@ -218,71 +218,38 @@
 
         {{-- ===================== TOP 4 DESTINATION CARDS ===================== --}}
         <div class="dest-grid">
-
-            {{-- Kathmandu Valley --}}
-            <div class="dest-card">
-                <img src="https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=600&q=80" alt="Kathmandu Valley"
-                    class="dest-card-img" />
-                <div class="dest-card-body">
-                    <h3 class="dest-card-title">Kathmandu Valley</h3>
-                    <p class="dest-card-tag">(Culture)</p>
+            @forelse($featured as $destination)
+                <div class="dest-card" data-url="{{ route('destinations.show', $destination->slug) }}" style="cursor:pointer;">
+                    <img src="{{ Str::startsWith($destination->featured_image, 'http')
+                        ? $destination->featured_image
+                        : asset('storage/' . $destination->featured_image) }}"
+                        alt="{{ $destination->name }}" class="dest-card-img" />
+                    <div class="dest-card-body">
+                        <h3 class="dest-card-title">{{ $destination->name }}</h3>
+                        <p class="dest-card-tag">({{ $destination->region ?? $destination->location }})</p>
+                    </div>
                 </div>
-            </div>
-
-            {{-- Pokhara --}}
-            <div class="dest-card">
-                <img src="https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=600&q=80" alt="Pokhara"
-                    class="dest-card-img" />
-                <div class="dest-card-body">
-                    <h3 class="dest-card-title">Pokhara</h3>
-                    <p class="dest-card-tag">(Adventure)</p>
-                </div>
-            </div>
-
-            {{-- Chitwan --}}
-            <div class="dest-card">
-                <img src="https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=600&q=80" alt="Chitwan"
-                    class="dest-card-img" />
-                <div class="dest-card-body">
-                    <h3 class="dest-card-title">Chitwan</h3>
-                    <p class="dest-card-tag">(Wildlife)</p>
-                </div>
-            </div>
-
-            {{-- Mustang --}}
-            <div class="dest-card">
-                <img src="https://images.unsplash.com/photo-1549880338-65ddcdfd017b?w=600&q=80" alt="Mustang"
-                    class="dest-card-img" />
-                <div class="dest-card-body">
-                    <h3 class="dest-card-title">Mustang</h3>
-                    <p class="dest-card-tag">(Hidden Kingdom)</p>
-                </div>
-            </div>
-
+            @empty
+                <p class="text-muted">No featured destinations found.</p>
+            @endforelse
         </div>{{-- end .dest-grid --}}
 
         {{-- ===================== BOTTOM ROW: 2 cards + map ===================== --}}
         <div class="dest-bottom-row">
 
-            {{-- Annapurna --}}
-            <div class="dest-card">
-                <img src="https://images.unsplash.com/photo-1623323838603-e6df2ef58f32?w=600&q=80" alt="Annapurna"
-                    class="dest-card-img" />
-                <div class="dest-card-body">
-                    <h3 class="dest-card-title">Annapurna</h3>
-                    <p class="dest-card-tag">(Trekking)</p>
+            @foreach ($bottom as $destination)
+                <div class="dest-card" data-url="{{ route('destinations.show', $destination->slug) }}"
+                    style="cursor:pointer;">
+                    <img src="{{ Str::startsWith($destination->featured_image, 'http')
+                        ? $destination->featured_image
+                        : asset('storage/' . $destination->featured_image) }}"
+                        alt="{{ $destination->name }}" class="dest-card-img" />
+                    <div class="dest-card-body">
+                        <h3 class="dest-card-title">{{ $destination->name }}</h3>
+                        <p class="dest-card-tag">({{ $destination->region ?? $destination->location }})</p>
+                    </div>
                 </div>
-            </div>
-
-            {{-- Lumbini --}}
-            <div class="dest-card">
-                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Lumbini"
-                    class="dest-card-img" />
-                <div class="dest-card-body">
-                    <h3 class="dest-card-title">Lumbini</h3>
-                    <p class="dest-card-tag">(Spiritual)</p>
-                </div>
-            </div>
+            @endforeach
 
             {{-- Nepal Map --}}
             <div class="dest-map-container">

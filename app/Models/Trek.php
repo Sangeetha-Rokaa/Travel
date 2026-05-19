@@ -68,7 +68,16 @@ class Trek extends Model
     | Scopes
     |--------------------------------------------------------------------------
     */
-
+    public function difficultyColor(): string
+    {
+        return match (strtolower($this->difficulty)) {
+            'easy'      => '#22c55e',
+            'moderate'  => '#f59e0b',
+            'strenuous' => '#ef4444',
+            'extreme'   => '#7c3aed',
+            default     => '#6b7280',
+        };
+    }
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

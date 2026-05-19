@@ -10,6 +10,10 @@
         <i class="fas fa-dharmachakra"></i>
         <span>ड्यासबोर्ड / Dashboard</span>
     </a>
+    <a href="{{ route('admin.bookings.index') }}">
+        <i class="fas fa-dharmachakra"></i>
+        <span> Bookings</span>
+    </a>
     <a href="{{ route('admin.treks.index') }}">
         <i class="fas fa-person-hiking"></i>
         <span>ट्रेकहरू / Treks</span>

@@ -15,34 +15,32 @@ class PackageController extends Controller
     {
         $query = Package::active()->ordered();
 
+        // Filter by type when the dropdown is used
         if ($request->filled('type')) {
-            $query->byType($request->type);
+            $query->where('type', $request->type);
         }
 
-        if ($request->filled('max_price')) {
-            $query->where('price_usd', '<=', $request->max_price);
-        }
+        $packages = $query->get();
 
-        $packages = $query->paginate(12)->withQueryString();
-        $types    = Package::TYPES;
+        // All distinct types for the filter dropdown
+        $types = Package::active()
+            ->distinct()
+            ->orderBy('type')
+            ->pluck('type');
 
-        return view('frontend.packages.index', compact('packages', 'types'));
+        // Hero: first featured, else first active
+        $hero = Package::active()->where('is_featured', true)->ordered()->first()
+            ?? Package::active()->ordered()->first();
+
+        return view('frontend.packages.index', compact('packages', 'types', 'hero'));
     }
 
-    /**
-     * Show single package detail page.
-     */
-    public function show(Package $package)
+    public function show(string $slug)
     {
-        abort_if(! $package->is_active, 404);
+        $package = Package::active()
+            ->where('slug', $slug)
+            ->firstOrFail();
 
-        $relatedPackages = Package::active()
-            ->where('id', '!=', $package->id)
-            ->where('type', $package->type)
-            ->ordered()
-            ->take(3)
-            ->get();
-
-        return view('frontend.packages.show', compact('package', 'relatedPackages'));
+        return view('frontend.packages.show', compact('package'));
     }
 }

@@ -58,11 +58,11 @@
                 </a>
             </li>
 
-            {{-- <li>
+            <li>
                 <a href="{{ route('contact') }}">
                     Contact
                 </a>
-            </li> --}}
+            </li>
         </ul>
 
         <a href="{{ route('packages.index') }}" class="btn-cta-nav">

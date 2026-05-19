@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* =============================================
-           PACKAGES PAGE STYLES
-        ============================================= */
+                   PACKAGES PAGE STYLES
+                ============================================= */
 
         .pkg-page-wrapper {
             background: #eae6de;
@@ -339,13 +339,13 @@
     <div class="pkg-page-wrapper">
 
         {{-- ===================== HERO ===================== --}}
-        <div class="pkg-hero">
+        <div class="pkg-hero"
+            @if ($hero?->featured_image) style="background-image: url('{{ Str::startsWith($hero->featured_image, 'http')
+                ? $hero->featured_image
+                : asset('storage/' . $hero->featured_image) }}');" @endif>
             <div class="pkg-hero-content">
                 <h1>Explore Curated<br>Packages</h1>
-                <p>
-                    Capture curated landscapes urne mountorbids, explore bundallime I<br>
-                    croline casce ornempanfisques.
-                </p>
+                <p>{{ $hero?->short_description ?? 'Discover Nepal\'s finest curated travel experiences.' }}</p>
                 <a href="#" class="btn-discover-more">Discover more</a>
             </div>
         </div>
@@ -354,262 +354,81 @@
         <div class="pkg-section-header">
             <h2>Multi-Day Itineraries</h2>
             <button class="pkg-filter-btn" type="button">
-                All Tours
+                {{ request('type') ? ucfirst(str_replace('_', ' ', request('type'))) . ' Tours' : 'All Tours' }}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                     stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
+
+                {{-- Dropdown list --}}
+                <ul class="pkg-filter-dropdown" style="display:none;">
+                    <li>
+                        <a href="{{ route('packages.index') }}">All Tours</a>
+                    </li>
+                    @foreach ($types as $type)
+                        <li>
+                            <a href="{{ route('packages.index', ['type' => $type]) }}">
+                                {{ ucfirst(str_replace('_', ' ', $type)) }} Tours
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
             </button>
         </div>
 
         {{-- ===================== PACKAGES GRID ===================== --}}
         <div class="pkg-grid">
 
-            {{-- Card 1: Classic Nepal Adventure --}}
-            <div class="pkg-card">
-                <img src="https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=700&q=80"
-                    alt="Classic Nepal Adventure" class="pkg-card-img" />
-                <div class="pkg-card-body">
-                    <h3 class="pkg-card-title">Classic Nepal Adventure</h3>
-                    <p class="pkg-card-subtitle">City Tours</p>
+            @forelse($packages as $package)
+                <div class="pkg-card" style="cursor:pointer;" data-url="{{ route('packages.show', $package->slug) }}">
 
-                    <div class="pkg-card-days">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        19 Days
-                    </div>
+                    <img src="{{ Str::startsWith($package->featured_image, 'http')
+                        ? $package->featured_image
+                        : asset('storage/' . $package->featured_image) }}"
+                        alt="{{ $package->name }}" class="pkg-card-img" />
 
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Inclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Himalayan treks, World Heritage sites</li>
-                        </ul>
-                    </div>
+                    <div class="pkg-card-body">
+                        <h3 class="pkg-card-title">{{ $package->name }}</h3>
+                        <p class="pkg-card-subtitle">{{ $package->typeLabel() }}</p>
 
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Exclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Cultural museums</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-card-footer">
-                        <div class="pkg-card-footer-left">
-                            <span class="pkg-price-label">Starts from</span>
-                            <span class="pkg-price">$30.00</span>
+                        <div class="pkg-card-days">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ $package->duration_days }} Days
                         </div>
-                        <a href="#" class="btn-book-pkg">Booking</a>
-                    </div>
-                </div>
-            </div>
 
-            {{-- Card 2: Himalayan Trek & Safari --}}
-            <div class="pkg-card">
-                <img src="https://images.unsplash.com/photo-1626016632784-7b9f22a0a92c?w=700&q=80"
-                    alt="Himalayan Trek & Safari" class="pkg-card-img" />
-                <div class="pkg-card-body">
-                    <h3 class="pkg-card-title">Himalayan Trek & Safari</h3>
-                    <p class="pkg-card-subtitle">10-Days</p>
-
-                    <div class="pkg-card-days">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        14 Days
-                    </div>
-
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Inclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Gandakperi trek, Himalayan Trek, Chitwan</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Exclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Madhunil mitrol exclusions</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-card-footer">
-                        <div class="pkg-card-footer-left">
-                            <span class="pkg-price-label">Starts from</span>
-                            <span class="pkg-price">$115.00</span>
+                        <div class="pkg-ie-section">
+                            <p class="pkg-ie-label">Inclusions</p>
+                            <ul class="pkg-ie-list">
+                                <li>{{ $package->firstInclusion() }}</li>
+                            </ul>
                         </div>
-                        <a href="#" class="btn-book-pkg">Booking</a>
-                    </div>
-                </div>
-            </div>
 
-            {{-- Card 3: Spiritual Retreat --}}
-            <div class="pkg-card">
-                <img src="https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=700&q=80" alt="Spiritual Retreat"
-                    class="pkg-card-img" />
-                <div class="pkg-card-body">
-                    <h3 class="pkg-card-title">Spiritual Retreat</h3>
-                    <p class="pkg-card-subtitle">D-Tours</p>
-
-                    <div class="pkg-card-days">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        17 Days
-                    </div>
-
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Inclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Kirtipupoors lets, Uncfafamdogas Sitruas</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Exclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Cultural museums</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-card-footer">
-                        <div class="pkg-card-footer-left">
-                            <span class="pkg-price-label">Starts from</span>
-                            <span class="pkg-price">$78.00</span>
+                        <div class="pkg-ie-section">
+                            <p class="pkg-ie-label">Exclusions</p>
+                            <ul class="pkg-ie-list">
+                                <li>{{ $package->firstExclusion() }}</li>
+                            </ul>
                         </div>
-                        <a href="#" class="btn-book-pkg">Booking</a>
-                    </div>
-                </div>
-            </div>
 
-            {{-- Card 4: Kathmandu Heritage Tour --}}
-            <div class="pkg-card">
-                <img src="https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?w=700&q=80"
-                    alt="Kathmandu Heritage Tour" class="pkg-card-img" />
-                <div class="pkg-card-body">
-                    <h3 class="pkg-card-title">Kathmandu Heritage Tour</h3>
-                    <p class="pkg-card-subtitle">Cultural Tours</p>
-
-                    <div class="pkg-card-days">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        7 Days
-                    </div>
-
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Inclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Pashupatinath, Boudhanath, Swayambhunath</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Exclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>International flights, visa fees</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-card-footer">
-                        <div class="pkg-card-footer-left">
-                            <span class="pkg-price-label">Starts from</span>
-                            <span class="pkg-price">$55.00</span>
+                        <div class="pkg-card-footer">
+                            <div class="pkg-card-footer-left">
+                                <span class="pkg-price-label">Starts from</span>
+                                <span class="pkg-price">{{ $package->displayPrice() }}</span>
+                            </div>
+                            <a href="{{ route('bookings.create', ['package' => $package->slug]) }}" class="btn-book-pkg">
+                                Booking
+                            </a>
                         </div>
-                        <a href="#" class="btn-book-pkg">Booking</a>
                     </div>
+
                 </div>
-            </div>
-
-            {{-- Card 5: Green Valley Trek --}}
-            <div class="pkg-card">
-                <img src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=700&q=80" alt="Green Valley Trek"
-                    class="pkg-card-img" />
-                <div class="pkg-card-body">
-                    <h3 class="pkg-card-title">Green Valley Trek</h3>
-                    <p class="pkg-card-subtitle">Nature Tours</p>
-
-                    <div class="pkg-card-days">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        11 Days
-                    </div>
-
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Inclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Langtang Valley, Gosainkunda Lake</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Exclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Personal travel insurance</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-card-footer">
-                        <div class="pkg-card-footer-left">
-                            <span class="pkg-price-label">Starts from</span>
-                            <span class="pkg-price">$90.00</span>
-                        </div>
-                        <a href="#" class="btn-book-pkg">Booking</a>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Card 6: Mountain Scenic Tour --}}
-            <div class="pkg-card">
-                <img src="https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=700&q=80"
-                    alt="Mountain Scenic Tour" class="pkg-card-img" />
-                <div class="pkg-card-body">
-                    <h3 class="pkg-card-title">Mountain Scenic Tour</h3>
-                    <p class="pkg-card-subtitle">Adventure Tours</p>
-
-                    <div class="pkg-card-days">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        10 Days
-                    </div>
-
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Inclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Manaslu Circuit, mountain flights</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-ie-section">
-                        <p class="pkg-ie-label">Exclusions</p>
-                        <ul class="pkg-ie-list">
-                            <li>Tips and gratuities</li>
-                        </ul>
-                    </div>
-
-                    <div class="pkg-card-footer">
-                        <div class="pkg-card-footer-left">
-                            <span class="pkg-price-label">Starts from</span>
-                            <span class="pkg-price">$140.00</span>
-                        </div>
-                        <a href="#" class="btn-book-pkg">Booking</a>
-                    </div>
-                </div>
-            </div>
+            @empty
+                <p class="text-muted">No packages available at the moment.</p>
+            @endforelse
 
         </div>{{-- end .pkg-grid --}}
 
@@ -618,9 +437,27 @@
 
 @push('scripts')
     <script>
-        // Filter button toggle (placeholder for future dropdown)
-        document.querySelector('.pkg-filter-btn')?.addEventListener('click', function() {
-            // Wire up your filter logic here
+        // Filter dropdown toggle
+        const filterBtn = document.querySelector('.pkg-filter-btn');
+        const dropdown = document.querySelector('.pkg-filter-dropdown');
+
+        filterBtn?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isVisible = dropdown.style.display === 'block';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', function() {
+            if (dropdown) dropdown.style.display = 'none';
+        });
+
+        // Card click → detail page
+        document.querySelectorAll('.pkg-card').forEach(function(card) {
+            card.addEventListener('click', function(e) {
+                if (e.target.closest('.btn-book-pkg')) return; // let the link handle it
+                const url = card.dataset.url;
+                if (url) window.location.href = url;
+            });
         });
     </script>
 @endpush

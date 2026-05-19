@@ -3,11 +3,6 @@
 
 @push('styles')
     <style>
-        /* ═══════════════════════════════════════════════
-                 BOOKING PAGE — VISIT NEPAL
-                 Matches the 6-step design exactly
-              ═══════════════════════════════════════════════ */
-
         *,
         *::before,
         *::after {
@@ -41,7 +36,7 @@
         .booking-logo .logo-mountain {
             width: 44px;
             height: 44px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, .15);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -86,7 +81,7 @@
             left: calc(50% + 20px);
             width: calc(100% - 40px);
             height: 2px;
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, .25);
             z-index: 0;
         }
 
@@ -94,21 +89,17 @@
             background: #4ade80;
         }
 
-        .step-item.active:not(:last-child)::after {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
         .step-circle {
             width: 34px;
             height: 34px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.35);
+            border: 2px solid rgba(255, 255, 255, .35);
             background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 15px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, .5);
             position: relative;
             z-index: 1;
             transition: all .3s;
@@ -129,7 +120,7 @@
 
         .step-label {
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, .5);
             margin-top: 6px;
             white-space: nowrap;
             font-weight: 500;
@@ -151,45 +142,94 @@
             padding: 0 16px;
         }
 
-        /* ── STEP 1: Package Summary ─────────────────── */
+        /* ════════════════════════════════════════════════
+           STEP 1 — Package Summary  (FIXED IMAGE UI)
+        ════════════════════════════════════════════════ */
         .pkg-summary-card {
             background: #fff;
-            border-radius: 14px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+            box-shadow: 0 4px 32px rgba(0, 0, 0, .10);
             display: flex;
-            gap: 0;
         }
 
+        /* Image side — fixed aspect, no broken-image gap */
         .pkg-img-side {
-            flex: 0 0 260px;
+            flex: 0 0 300px;
             position: relative;
             overflow: hidden;
+            background: linear-gradient(135deg, #0d1f3c, #1a6fc4);
+            min-height: 400px;
         }
 
         .pkg-img-side img {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center;
             display: block;
+            transition: transform .4s ease;
         }
 
+        .pkg-img-side img:hover {
+            transform: scale(1.04);
+        }
+
+        /* Gradient overlay so text on image is always readable */
+        .pkg-img-side::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(13, 31, 60, .55) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fallback placeholder — shown only when img errors */
         .pkg-img-placeholder-bk {
-            width: 100%;
-            height: 100%;
-            min-height: 260px;
-            background: linear-gradient(135deg, #1a3a6b, #1a6fc4);
-            display: flex;
+            position: absolute;
+            inset: 0;
+            display: none;
+            /* hidden by default; JS shows on error */
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 48px;
+            color: rgba(255, 255, 255, .35);
+            font-size: 64px;
+            background: linear-gradient(135deg, #0d1f3c, #1a6fc4);
+        }
+
+        .pkg-img-placeholder-bk span {
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, .45);
+            letter-spacing: .5px;
+        }
+
+        /* Badge pinned bottom-left over image */
+        .pkg-img-badge {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            z-index: 2;
+            background: rgba(255, 255, 255, .15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, .25);
+            color: #fff;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .pkg-info-side {
             flex: 1;
-            padding: 28px 32px;
+            padding: 32px 36px;
             display: flex;
             flex-direction: column;
         }
@@ -231,7 +271,7 @@
         }
 
         .pkg-name-row {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
             color: #0d1f3c;
             margin-top: auto;
@@ -242,7 +282,8 @@
         .pkg-meta-row {
             display: flex;
             gap: 16px;
-            margin-top: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
         }
 
         .pkg-meta-row span {
@@ -251,10 +292,13 @@
             gap: 5px;
             font-size: 12px;
             color: #6b7280;
+            background: #f9fafb;
+            border-radius: 6px;
+            padding: 4px 10px;
         }
 
         .pkg-price-row {
-            margin-top: 10px;
+            margin-top: 14px;
         }
 
         .pkg-price-label {
@@ -263,7 +307,7 @@
         }
 
         .pkg-price-value {
-            font-size: 30px;
+            font-size: 34px;
             font-weight: 800;
             color: #0d1f3c;
             line-height: 1.1;
@@ -275,7 +319,7 @@
             text-decoration: none;
             font-weight: 500;
             display: inline-block;
-            margin-top: 6px;
+            margin-top: 8px;
         }
 
         .pkg-view-link:hover {
@@ -285,45 +329,79 @@
         .btn-book-now {
             align-self: flex-end;
             margin-top: 20px;
-            background: #1a6fc4;
+            background: linear-gradient(135deg, #1a6fc4, #1557a0);
             color: #fff;
             border: none;
-            padding: 13px 36px;
-            border-radius: 8px;
+            padding: 14px 40px;
+            border-radius: 10px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: background .2s;
+            transition: all .2s;
+            box-shadow: 0 4px 14px rgba(26, 111, 196, .3);
         }
 
         .btn-book-now:hover {
-            background: #155fa0;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26, 111, 196, .4);
         }
 
-        /* ── STEP 2: Traveler Info ────────────────────── */
+        /* ════════════════════════════════════════════════
+           STEP 2 — Traveler Information  (ALL FIELDS)
+        ════════════════════════════════════════════════ */
         .traveler-card {
             background: #fff;
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 36px 40px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+            box-shadow: 0 4px 32px rgba(0, 0, 0, .08);
         }
 
         .traveler-card h2 {
             font-size: 20px;
             font-weight: 700;
             color: #0d1f3c;
-            margin-bottom: 24px;
+            margin-bottom: 8px;
+        }
+
+        .traveler-card .section-subtitle {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 28px;
+        }
+
+        /* Section dividers inside the form */
+        .form-section {
+            margin-bottom: 28px;
+        }
+
+        .form-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1a6fc4;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eff6ff;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-section-title i {
+            font-size: 13px;
         }
 
         .form-grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 18px;
+            gap: 16px;
         }
 
-        .form-grid-1 {
+        .form-grid-3 {
             display: grid;
-            gap: 18px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
         }
 
         .form-field {
@@ -336,6 +414,10 @@
             grid-column: 1 / -1;
         }
 
+        .form-field.span-2 {
+            grid-column: span 2;
+        }
+
         .form-field label {
             font-size: 13px;
             font-weight: 600;
@@ -344,6 +426,13 @@
 
         .form-field label .req {
             color: #ef4444;
+        }
+
+        .form-field label .opt {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: 400;
+            margin-left: 4px;
         }
 
         .form-field input,
@@ -356,7 +445,7 @@
             font-family: 'Poppins', sans-serif;
             color: #111827;
             outline: none;
-            transition: border-color .2s;
+            transition: border-color .2s, box-shadow .2s;
             background: #fff;
         }
 
@@ -364,6 +453,7 @@
         .form-field select:focus,
         .form-field textarea:focus {
             border-color: #1a6fc4;
+            box-shadow: 0 0 0 3px rgba(26, 111, 196, .08);
         }
 
         .form-field textarea {
@@ -377,11 +467,17 @@
         }
 
         .phone-code {
-            width: 100px;
+            width: 110px;
             flex-shrink: 0;
         }
 
-        /* Traveler step button row */
+        /* Inline hint text */
+        .field-hint {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
         .step-btns {
             display: flex;
             justify-content: space-between;
@@ -434,7 +530,7 @@
         .payment-method-card {
             background: #fff;
             border-radius: 14px;
-            padding: 28px 28px;
+            padding: 28px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
         }
 
@@ -480,7 +576,6 @@
             font-size: 22px;
         }
 
-        /* Payment method options */
         .method-option {
             display: flex;
             align-items: center;
@@ -553,17 +648,6 @@
             border-radius: 4px;
         }
 
-        .method-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
         /* ── STEP 4: Stripe Card Form ─────────────────── */
         .stripe-grid {
             display: grid;
@@ -575,7 +659,7 @@
         .card-form-card {
             background: #fff;
             border-radius: 14px;
-            padding: 28px 28px;
+            padding: 28px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
         }
 
@@ -708,7 +792,7 @@
             margin-bottom: 8px;
         }
 
-        .confirmation-card .confirm-sub {
+        .confirm-sub {
             font-size: 14px;
             color: #6b7280;
             margin-bottom: 32px;
@@ -720,7 +804,7 @@
             padding: 20px 24px;
             text-align: left;
             margin-bottom: 28px;
-            max-width: 480px;
+            max-width: 520px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -774,7 +858,6 @@
             background: #fff;
             cursor: pointer;
             text-decoration: none;
-            transition: border-color .2s;
         }
 
         .btn-download:hover {
@@ -794,7 +877,6 @@
             color: #fff;
             cursor: pointer;
             text-decoration: none;
-            transition: background .2s;
         }
 
         .btn-home:hover {
@@ -811,18 +893,35 @@
         }
 
         /* ── Responsive ───────────────────────────────── */
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .pkg-summary-card {
                 flex-direction: column;
             }
 
             .pkg-img-side {
                 flex: none;
-                height: 200px;
+                height: 260px;
+                min-height: unset;
             }
 
-            .form-grid-2 {
+            .pkg-img-side img {
+                position: absolute;
+            }
+
+            .form-grid-3 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+
+            .form-grid-2,
+            .form-grid-3 {
                 grid-template-columns: 1fr;
+            }
+
+            .form-field.span-2 {
+                grid-column: span 1;
             }
 
             .payment-grid,
@@ -837,188 +936,331 @@
             .card-form-card {
                 padding: 20px;
             }
+
+            .pkg-info-side {
+                padding: 24px 20px;
+            }
         }
     </style>
 @endpush
 
+
 @section('content')
 
+    {{-- Pass PHP data to JS safely --}}
+    <script>
+        const BOOKING_DATA = {
+            type: "{{ $package ? 'package' : ($trek ? 'trek' : 'custom') }}",
+            packageId: {{ $package?->id ?? 'null' }},
+            trekId: {{ $trek?->id ?? 'null' }},
+            pkgName: "{{ addslashes($item?->name ?? 'Nepal Highlights Tour') }}",
+            days: {{ $item?->duration_days ?? 7 }},
+            nights: {{ ($item?->duration_days ?? 7) - 1 }},
+            priceEach: {{ $item ? $item->price_usd_discounted ?? ($item->price_usd ?? 750) : 750 }},
+            bookingUrl: "{{ route('bookings.store') }}",
+            csrfToken: "{{ csrf_token() }}",
+        };
+    </script>
 
     <div class="booking-wrap">
 
-        <!-- ════════════════════════════════════════
-                     STEP 1 — Package Summary
-                ════════════════════════════════════════ -->
+        {{-- ════════════════════════════════════════
+             STEP 1 — Package Summary
+        ════════════════════════════════════════ --}}
         <div class="booking-step active" id="step-1">
             <div class="pkg-summary-card">
 
-                <!-- Left: image -->
+                {{-- Left: image (fixed UI) --}}
                 <div class="pkg-img-side">
-                    <img src="{{ isset($package) ? $package->featured_image_url : asset('images/landingimg.png') }}"
-                        alt="{{ isset($package) ? $package->name : 'Nepal Highlights Tour' }}"
-                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                    @php
+                        $img = $item?->featured_image;
+                        $imgUrl = $img
+                            ? (Str::startsWith($img, 'http')
+                                ? $img
+                                : asset('storage/' . $img))
+                            : asset('images/landingimg.png');
+                    @endphp
+                    <img src="{{ $imgUrl }}" alt="{{ $item?->name ?? 'Nepal Highlights Tour' }}"
+                        onerror="this.style.display='none';
+                              this.nextElementSibling.style.display='flex';" />
+
+                    {{-- Fallback shown only on img error --}}
                     <div class="pkg-img-placeholder-bk">
                         <i class="fas fa-mountain"></i>
+                        <span>Visit Nepal</span>
+                    </div>
+
+                    {{-- Badge pinned bottom-left over image --}}
+                    <div class="pkg-img-badge">
+                        <i class="fas fa-star" style="color:#fbbf24;"></i>
+                        Top Rated
                     </div>
                 </div>
 
-                <!-- Right: info -->
+                {{-- Right: info --}}
                 <div class="pkg-info-side">
                     <div class="pkg-includes-title">Package Includes</div>
                     <ul class="pkg-includes-list">
-                        @if (isset($package) && $package->included)
-                            @foreach (array_slice($package->included, 0, 6) as $item)
-                                <li>
-                                    <i class="fas fa-check"></i>
-                                    {{ $item }}
-                                </li>
+                        @if ($item && !empty($item->included))
+                            @foreach (array_slice($item->included, 0, 6) as $inc)
+                                <li><i class="fas fa-check"></i> {{ $inc }}</li>
                             @endforeach
                         @else
-                            @foreach (['Hotel Accommodation', 'Breakfast', 'Sightseeing', 'Private Transport', 'Tour Guide', 'Airport Pickup/Drop'] as $item)
-                                <li><i class="fas fa-check"></i> {{ $item }}</li>
+                            @foreach (['Hotel Accommodation', 'Breakfast', 'Sightseeing', 'Private Transport', 'Tour Guide', 'Airport Pickup/Drop'] as $inc)
+                                <li><i class="fas fa-check"></i> {{ $inc }}</li>
                             @endforeach
                         @endif
                     </ul>
 
-                    <div class="pkg-name-row">
-                        {{ isset($package) ? $package->name : 'Nepal Highlights Tour' }}
-                    </div>
+                    <div class="pkg-name-row">{{ $item?->name ?? 'Nepal Highlights Tour' }}</div>
+
                     <div class="pkg-meta-row">
-                        <span><i class="far fa-clock"></i> {{ isset($package) ? $package->duration_days : 7 }}
-                            Days</span>
-                        <span><i class="fas fa-moon"></i> {{ isset($package) ? $package->duration_days - 1 : 6 }}
-                            Nights</span>
-                        <span><i class="fas fa-signal"></i> Easy</span>
+                        <span><i class="far fa-clock"></i> {{ $item?->duration_days ?? 7 }} Days</span>
+                        <span><i class="fas fa-moon"></i> {{ ($item?->duration_days ?? 7) - 1 }} Nights</span>
+                        <span><i class="fas fa-signal"></i> {{ $trek?->difficulty ?? 'Easy' }}</span>
+                        @if ($trek?->max_altitude)
+                            <span><i class="fas fa-mountain"></i> {{ $trek->max_altitude }}</span>
+                        @endif
                     </div>
+
                     <div class="pkg-price-row">
                         <div class="pkg-price-label">Package Price</div>
                         <div class="pkg-price-value">
-                            ${{ isset($package) ? number_format($package->effective_price, 0) : '750' }}</div>
+                            ${{ $item ? number_format($item->price_usd_discounted ?? ($item->price_usd ?? 750), 0) : '750' }}
+                            <small style="font-size:14px;font-weight:500;color:#6b7280;">/ person</small>
+                        </div>
                     </div>
-                    <a href="#" class="pkg-view-link">View Package Details</a>
 
-                    <button class="btn-book-now" onclick="goToStep(2)">Book Now</button>
+                    @if ($package)
+                        <a href="{{ route('packages.show', $package->slug) }}" class="pkg-view-link">
+                            <i class="fas fa-external-link-alt" style="font-size:11px;"></i> View Package Details
+                        </a>
+                    @elseif($trek)
+                        <a href="{{ route('treks.show', $trek->slug) }}" class="pkg-view-link">
+                            <i class="fas fa-external-link-alt" style="font-size:11px;"></i> View Trek Details
+                        </a>
+                    @endif
+
+                    <button class="btn-book-now" onclick="goToStep(2)">
+                        <i class="fas fa-arrow-right" style="margin-right:6px;"></i> Book Now
+                    </button>
                 </div>
 
             </div>
-        </div><!-- /step-1 -->
+        </div>{{-- /step-1 --}}
 
 
-        <!-- ════════════════════════════════════════
-                     STEP 2 — Traveler Details
-                ════════════════════════════════════════ -->
+        {{-- ════════════════════════════════════════
+             STEP 2 — Traveler Details (ALL FIELDS)
+        ════════════════════════════════════════ --}}
         <div class="booking-step" id="step-2">
             <div class="traveler-card">
                 <h2>Traveler Information</h2>
+                <p class="section-subtitle">Please fill in the details below. Fields marked <span
+                        style="color:#ef4444;">*</span> are required.</p>
 
-                <div class="form-grid-2">
-
-                    <!-- Full Name -->
-                    <div class="form-field full">
-                        <label>Full Name <span class="req">*</span></label>
-                        <input type="text" id="b_full_name" placeholder="Enter your full name" />
-                        <span class="field-error" id="err_b_full_name"
-                            style="color:#ef4444;font-size:12px;display:none;">Please enter your full name.</span>
+                {{-- ── Section 1: Personal Details ── --}}
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-user"></i> Personal Details
                     </div>
+                    <div class="form-grid-2">
 
-                    <!-- Email -->
-                    <div class="form-field full">
-                        <label>Email Address <span class="req">*</span></label>
-                        <input type="email" id="b_email" placeholder="Enter your email address" />
-                        <span class="field-error" id="err_b_email" style="color:#ef4444;font-size:12px;display:none;">Please
-                            enter a valid email.</span>
-                    </div>
-
-                    <!-- Phone -->
-                    <div class="form-field full">
-                        <label>Phone Number <span class="req">*</span></label>
-                        <div class="phone-row">
-                            <select class="phone-code" id="b_phone_code">
-                                <option value="+977">🇳🇵 +977</option>
-                                <option value="+1">🇺🇸 +1</option>
-                                <option value="+44">🇬🇧 +44</option>
-                                <option value="+91">🇮🇳 +91</option>
-                                <option value="+61">🇦🇺 +61</option>
-                                <option value="+49">🇩🇪 +49</option>
-                                <option value="+33">🇫🇷 +33</option>
-                            </select>
-                            <input type="tel" id="b_phone" placeholder="Enter your phone number" style="flex:1;" />
+                        <div class="form-field">
+                            <label>First Name <span class="req">*</span></label>
+                            <input type="text" id="b_first_name" placeholder="First name" />
+                            <span class="field-error" id="err_b_first_name"
+                                style="color:#ef4444;font-size:12px;display:none;">Required.</span>
                         </div>
-                        <span class="field-error" id="err_b_phone" style="color:#ef4444;font-size:12px;display:none;">Please
-                            enter your phone number.</span>
-                    </div>
 
-                    <!-- Number of Travelers -->
-                    <div class="form-field full">
-                        <label>Number of Travelers <span class="req">*</span></label>
-                        <select id="b_travelers">
-                            <option value="1">1 Traveler</option>
-                            <option value="2">2 Travelers</option>
-                            <option value="3">3 Travelers</option>
-                            <option value="4">4 Travelers</option>
-                            <option value="5">5 Travelers</option>
-                            <option value="6+">6+ Travelers</option>
-                        </select>
-                    </div>
+                        <div class="form-field">
+                            <label>Last Name <span class="req">*</span></label>
+                            <input type="text" id="b_last_name" placeholder="Last name" />
+                            <span class="field-error" id="err_b_last_name"
+                                style="color:#ef4444;font-size:12px;display:none;">Required.</span>
+                        </div>
 
-                    <!-- Special Request -->
-                    <div class="form-field full">
-                        <label>Special Request (Optional)</label>
-                        <textarea id="b_special" placeholder="Any special request..."></textarea>
-                    </div>
+                        <div class="form-field">
+                            <label>Email Address <span class="req">*</span></label>
+                            <input type="email" id="b_email" placeholder="you@example.com" />
+                            <span class="field-error" id="err_b_email"
+                                style="color:#ef4444;font-size:12px;display:none;">Enter a valid email.</span>
+                        </div>
 
+                        <div class="form-field">
+                            <label>Phone Number <span class="req">*</span></label>
+                            <div class="phone-row">
+                                <select class="phone-code" id="b_phone_code">
+                                    <option value="+977">🇳🇵 +977</option>
+                                    <option value="+1">🇺🇸 +1</option>
+                                    <option value="+44">🇬🇧 +44</option>
+                                    <option value="+91">🇮🇳 +91</option>
+                                    <option value="+61">🇦🇺 +61</option>
+                                    <option value="+49">🇩🇪 +49</option>
+                                    <option value="+33">🇫🇷 +33</option>
+                                    <option value="+81">🇯🇵 +81</option>
+                                    <option value="+86">🇨🇳 +86</option>
+                                    <option value="+82">🇰🇷 +82</option>
+                                </select>
+                                <input type="tel" id="b_phone" placeholder="Phone number" style="flex:1;" />
+                            </div>
+                            <span class="field-error" id="err_b_phone"
+                                style="color:#ef4444;font-size:12px;display:none;">Enter a valid phone number.</span>
+                        </div>
+
+                        <div class="form-field">
+                            <label>Date of Birth <span class="opt">(optional)</span></label>
+                            <input type="date" id="b_dob" />
+                        </div>
+
+                        <div class="form-field">
+                            <label>Nationality <span class="opt">(optional)</span></label>
+                            <input type="text" id="b_nationality" placeholder="e.g. Nepali, American" />
+                        </div>
+
+                        <div class="form-field full">
+                            <label>Passport Number <span class="opt">(optional)</span></label>
+                            <input type="text" id="b_passport" placeholder="e.g. A1234567" />
+                            <span class="field-hint">Required for international treks & permits.</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- ── Section 2: Trip Details ── --}}
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-calendar-alt"></i> Trip Details
+                    </div>
+                    <div class="form-grid-2">
+
+                        <div class="form-field">
+                            <label>Trip Start Date <span class="req">*</span></label>
+                            <input type="date" id="b_start_date" min="{{ date('Y-m-d', strtotime('+1 day')) }}" />
+                            <span class="field-error" id="err_b_start_date"
+                                style="color:#ef4444;font-size:12px;display:none;">Select a start date.</span>
+                        </div>
+
+                        <div class="form-field">
+                            <label>Trip End Date <span class="opt">(optional)</span></label>
+                            <input type="date" id="b_end_date" />
+                            <span class="field-hint">Auto-filled based on duration if left blank.</span>
+                        </div>
+
+                        <div class="form-field">
+                            <label>Number of Adults <span class="req">*</span></label>
+                            <select id="b_travelers">
+                                <option value="1">1 Adult</option>
+                                <option value="2">2 Adults</option>
+                                <option value="3">3 Adults</option>
+                                <option value="4">4 Adults</option>
+                                <option value="5">5 Adults</option>
+                                <option value="6">6+ Adults</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label>Number of Children <span class="opt">(optional)</span></label>
+                            <select id="b_children">
+                                <option value="0">0 Children</option>
+                                <option value="1">1 Child</option>
+                                <option value="2">2 Children</option>
+                                <option value="3">3 Children</option>
+                                <option value="4">4 Children</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- ── Section 3: Preferences ── --}}
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </div>
+                    <div class="form-grid-2">
+
+                        <div class="form-field">
+                            <label>Accommodation Preference <span class="opt">(optional)</span></label>
+                            <select id="b_accommodation">
+                                <option value="">-- Select --</option>
+                                <option value="budget">Budget (Tea Houses / Guesthouses)</option>
+                                <option value="standard">Standard (3-Star Hotels)</option>
+                                <option value="luxury">Luxury (4-5 Star Hotels)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label>Pickup Location <span class="opt">(optional)</span></label>
+                            <input type="text" id="b_pickup" placeholder="e.g. Kathmandu, Thamel" />
+                            <span class="field-hint">Where should we pick you up?</span>
+                        </div>
+
+                        <div class="form-field full">
+                            <label>Special Requirements <span class="opt">(optional)</span></label>
+                            <textarea id="b_special" placeholder="Dietary needs, medical conditions, special requests..."></textarea>
+                        </div>
+
+                    </div>
                 </div>
 
                 <div class="step-btns">
-                    <button class="btn-back" onclick="goToStep(1)">Back</button>
-                    <button class="btn-continue" onclick="validateStep2()">Continue to Payment</button>
+                    <button class="btn-back" onclick="goToStep(1)">
+                        <i class="fas fa-arrow-left" style="margin-right:6px;"></i> Back
+                    </button>
+                    <button class="btn-continue" onclick="validateStep2()">
+                        Continue to Payment <i class="fas fa-arrow-right" style="margin-left:6px;"></i>
+                    </button>
                 </div>
             </div>
-        </div><!-- /step-2 -->
+        </div>{{-- /step-2 --}}
 
 
-        <!-- ════════════════════════════════════════
-                     STEP 3 — Payment Options
-                ════════════════════════════════════════ -->
+        {{-- ════════════════════════════════════════
+             STEP 3 — Payment Options
+        ════════════════════════════════════════ --}}
         <div class="booking-step" id="step-3">
             <div class="payment-grid">
 
-                <!-- Left: summary -->
                 <div class="payment-summary-card">
                     <h3>Payment Summary</h3>
-
                     <div class="summary-row">
                         <span class="s-label">Package Name</span>
-                        <span class="s-value" id="sum_pkg_name">Nepal Highlights Tour</span>
+                        <span class="s-value" id="sum_pkg_name">—</span>
                     </div>
                     <div class="summary-row">
                         <span class="s-label">Duration</span>
-                        <span class="s-value" id="sum_duration">7 Days / 6 Nights</span>
+                        <span class="s-value" id="sum_duration">—</span>
                     </div>
                     <div class="summary-row">
-                        <span class="s-label">Travelers</span>
+                        <span class="s-label">Adults</span>
                         <span class="s-value" id="sum_travelers">1</span>
                     </div>
                     <div class="summary-row">
+                        <span class="s-label">Children</span>
+                        <span class="s-value" id="sum_children">0</span>
+                    </div>
+                    <div class="summary-row">
                         <span class="s-label">Price per Person</span>
-                        <span class="s-value" id="sum_price_pp">$750</span>
+                        <span class="s-value" id="sum_price_pp">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="s-label">Start Date</span>
+                        <span class="s-value" id="sum_start_date">—</span>
                     </div>
                     <div class="summary-row total">
                         <span class="s-label">Total Amount</span>
-                        <span class="s-value" id="sum_total">$750</span>
+                        <span class="s-value" id="sum_total">—</span>
                     </div>
-
                     <div class="step-btns" style="border-top:none;padding-top:16px;">
                         <button class="btn-back" onclick="goToStep(2)">Back</button>
                         <button class="btn-continue" onclick="goToStep(4)">Pay Now</button>
                     </div>
                 </div>
 
-                <!-- Right: payment method -->
                 <div class="payment-method-card">
                     <h3>Choose Payment Method</h3>
 
-                    <!-- Stripe -->
                     <label class="method-option selected" id="method-stripe">
                         <input type="radio" name="pay_method" value="stripe" checked onchange="selectMethod(this)" />
                         <div class="method-label">
@@ -1031,7 +1273,6 @@
                         </div>
                     </label>
 
-                    <!-- Khalti -->
                     <label class="method-option" id="method-khalti">
                         <input type="radio" name="pay_method" value="khalti" onchange="selectMethod(this)" />
                         <div class="method-label">
@@ -1041,7 +1282,6 @@
                         </div>
                     </label>
 
-                    <!-- eSewa -->
                     <label class="method-option" id="method-esewa">
                         <input type="radio" name="pay_method" value="esewa" onchange="selectMethod(this)" />
                         <div class="method-label">
@@ -1051,7 +1291,6 @@
                         </div>
                     </label>
 
-                    <!-- Bank Transfer -->
                     <label class="method-option" id="method-bank">
                         <input type="radio" name="pay_method" value="bank" onchange="selectMethod(this)" />
                         <div class="method-label">
@@ -1059,42 +1298,46 @@
                             Bank Transfer
                         </div>
                     </label>
-
                 </div>
 
             </div>
-        </div><!-- /step-3 -->
+        </div>{{-- /step-3 --}}
 
 
-        <!-- ════════════════════════════════════════
-                     STEP 4 — Stripe Card Payment
-                ════════════════════════════════════════ -->
+        {{-- ════════════════════════════════════════
+             STEP 4 — Stripe Card Payment
+        ════════════════════════════════════════ --}}
         <div class="booking-step" id="step-4">
             <div class="stripe-grid">
 
-                <!-- Left: Order Summary -->
                 <div class="order-summary-card">
                     <h3>Order Summary</h3>
-
                     <div class="summary-row">
-                        <span class="s-label">Package Name</span>
-                        <span class="s-value" id="stripe_pkg_name">Nepal Highlights Tour</span>
+                        <span class="s-label">Package</span>
+                        <span class="s-value" id="stripe_pkg_name">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="s-label">Traveler</span>
+                        <span class="s-value" id="stripe_traveler_name">—</span>
                     </div>
                     <div class="summary-row">
                         <span class="s-label">Duration</span>
-                        <span class="s-value" id="stripe_duration">7 Days / 6 Nights</span>
+                        <span class="s-value" id="stripe_duration">—</span>
                     </div>
                     <div class="summary-row">
-                        <span class="s-label">Travelers</span>
-                        <span class="s-value" id="stripe_travelers">1</span>
+                        <span class="s-label">Adults / Children</span>
+                        <span class="s-value" id="stripe_travelers">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="s-label">Start Date</span>
+                        <span class="s-value" id="stripe_start_date">—</span>
                     </div>
                     <div class="summary-row total" style="margin-top:12px;padding-top:12px;border-top:2px solid #e5e7eb;">
                         <span class="s-label">Total Amount</span>
-                        <span class="s-value" id="stripe_total">$750</span>
+                        <span class="s-value" id="stripe_total">—</span>
                     </div>
                 </div>
 
-                <!-- Right: Card Form -->
                 <div class="card-form-card">
                     <h3>Pay with Card</h3>
 
@@ -1135,7 +1378,7 @@
 
                     <div class="secure-note">
                         <i class="fas fa-lock"></i>
-                        <span><strong>Secure Payment</strong> — Your payment information is safe with us.</span>
+                        <span><strong>Secure Payment</strong> — Your information is safe with us.</span>
                     </div>
                     <div class="stripe-note">
                         <span>Powered by</span>
@@ -1145,21 +1388,19 @@
                     </div>
 
                     <button class="btn-pay" id="payBtn" onclick="processPayment()">
-                        Pay <span id="pay_amount">$750</span>
+                        Pay <span id="pay_amount">—</span>
                     </button>
 
-                    <a class="btn-back-link" onclick="goToStep(3)">
-                        ← Back to Payment Options
-                    </a>
+                    <a class="btn-back-link" onclick="goToStep(3)">← Back to Payment Options</a>
                 </div>
 
             </div>
-        </div><!-- /step-4 -->
+        </div>{{-- /step-4 --}}
 
 
-        <!-- ════════════════════════════════════════
-                     STEP 5 — Booking Confirmed
-                ════════════════════════════════════════ -->
+        {{-- ════════════════════════════════════════
+             STEP 5 — Booking Confirmed
+        ════════════════════════════════════════ --}}
         <div class="booking-step" id="step-5">
             <div class="confirmation-card">
 
@@ -1176,23 +1417,31 @@
                 <div class="confirm-details">
                     <div class="confirm-row">
                         <span class="cr-label">Booking ID</span>
-                        <span class="cr-value ref" id="conf_booking_id">#VN2505201234</span>
+                        <span class="cr-value ref" id="conf_booking_id">—</span>
+                    </div>
+                    <div class="confirm-row">
+                        <span class="cr-label">Traveler</span>
+                        <span class="cr-value" id="conf_traveler">—</span>
                     </div>
                     <div class="confirm-row">
                         <span class="cr-label">Package</span>
-                        <span class="cr-value" id="conf_package">Nepal Highlights Tour</span>
+                        <span class="cr-value" id="conf_package">—</span>
                     </div>
                     <div class="confirm-row">
                         <span class="cr-label">Duration</span>
-                        <span class="cr-value" id="conf_duration">7 Days / 6 Nights</span>
+                        <span class="cr-value" id="conf_duration">—</span>
                     </div>
                     <div class="confirm-row">
-                        <span class="cr-label">Travelers</span>
-                        <span class="cr-value" id="conf_travelers">1</span>
+                        <span class="cr-label">Start Date</span>
+                        <span class="cr-value" id="conf_start_date">—</span>
+                    </div>
+                    <div class="confirm-row">
+                        <span class="cr-label">Adults / Children</span>
+                        <span class="cr-value" id="conf_travelers">—</span>
                     </div>
                     <div class="confirm-row">
                         <span class="cr-label">Total Amount</span>
-                        <span class="cr-value" id="conf_total">$750</span>
+                        <span class="cr-value" id="conf_total">—</span>
                     </div>
                     <div class="confirm-row">
                         <span class="cr-label">Payment Status</span>
@@ -1204,16 +1453,13 @@
                     <a href="#" class="btn-download">
                         <i class="fas fa-download"></i> Download Invoice
                     </a>
-                    <a href="{{ route('home') }}" class="btn-home">
-                        Back to Home
-                    </a>
+                    <a href="{{ route('home') }}" class="btn-home">Back to Home</a>
                 </div>
 
             </div>
-        </div><!-- /step-5 -->
+        </div>{{-- /step-5 --}}
 
-    </div><!-- /booking-wrap -->
-    </div><!-- /booking-page -->
+    </div>{{-- /booking-wrap --}}
 
 @endsection
 
@@ -1221,18 +1467,24 @@
 @push('scripts')
     <script>
         /* ═══════════════════════════════════════════
-                 BOOKING WIZARD STATE
-              ═══════════════════════════════════════════ */
+             BOOKING WIZARD — DYNAMIC
+        ═══════════════════════════════════════════ */
         let currentStep = 1;
 
-        // Booking data collected across steps
         const booking = {
-            pkgName: '{{ isset($package) ? $package->name : 'Nepal Highlights Tour' }}',
-            days: {{ isset($package) ? $package->duration_days : 7 }},
-            nights: {{ isset($package) ? $package->duration_days - 1 : 6 }},
-            priceEach: {{ isset($package) ? $package->effective_price : 750 }},
+            type: BOOKING_DATA.type,
+            packageId: BOOKING_DATA.packageId,
+            trekId: BOOKING_DATA.trekId,
+            pkgName: BOOKING_DATA.pkgName,
+            days: BOOKING_DATA.days,
+            nights: BOOKING_DATA.nights,
+            priceEach: BOOKING_DATA.priceEach,
             travelers: 1,
-            total: {{ isset($package) ? $package->effective_price : 750 }},
+            children: 0,
+            total: BOOKING_DATA.priceEach,
+            startDate: '',
+            firstName: '',
+            lastName: '',
         };
 
         /* ── Navigate steps ── */
@@ -1249,27 +1501,22 @@
             if (n === 4) fillStripe();
         }
 
-        /* ── Update stepper UI ── */
+        /* ── Stepper UI ── */
         function updateStepper(active) {
-            // Map wizard steps (1-5) → stepper steps (1-4)
-            // step 5 (confirmation) = stepper step 4 completed
-            const stepperMap = {
+            const map = {
                 1: 1,
                 2: 2,
                 3: 3,
                 4: 3,
                 5: 4
             };
-            const stepperActive = stepperMap[active] || active;
-
+            const sa = map[active] || active;
             document.querySelectorAll('.step-item').forEach((el, i) => {
                 const s = i + 1;
                 el.classList.remove('active', 'completed');
-                if (s < stepperActive) el.classList.add('completed');
-                else if (s === stepperActive) el.classList.add('active');
+                if (s < sa) el.classList.add('completed');
+                else if (s === sa) el.classList.add('active');
             });
-
-            // On confirmation, mark all completed
             if (active === 5) {
                 document.querySelectorAll('.step-item').forEach(el => {
                     el.classList.remove('active');
@@ -1283,9 +1530,14 @@
             let valid = true;
 
             const checks = [{
-                    id: 'b_full_name',
-                    errId: 'err_b_full_name',
-                    fn: v => v.trim().length >= 2
+                    id: 'b_first_name',
+                    errId: 'err_b_first_name',
+                    fn: v => v.trim().length >= 1
+                },
+                {
+                    id: 'b_last_name',
+                    errId: 'err_b_last_name',
+                    fn: v => v.trim().length >= 1
                 },
                 {
                     id: 'b_email',
@@ -1296,6 +1548,11 @@
                     id: 'b_phone',
                     errId: 'err_b_phone',
                     fn: v => v.trim().length >= 6
+                },
+                {
+                    id: 'b_start_date',
+                    errId: 'err_b_start_date',
+                    fn: v => v.trim().length > 0
                 },
             ];
 
@@ -1322,11 +1579,24 @@
                 });
             });
 
-            // Update traveler count
-            booking.travelers = parseInt(document.getElementById('b_travelers').value) || 1;
-            booking.total = booking.priceEach * booking.travelers;
+            if (!valid) return;
 
-            if (valid) goToStep(3);
+            // Capture all fields into booking state
+            booking.firstName = document.getElementById('b_first_name').value.trim();
+            booking.lastName = document.getElementById('b_last_name').value.trim();
+            booking.travelers = parseInt(document.getElementById('b_travelers').value) || 1;
+            booking.children = parseInt(document.getElementById('b_children').value) || 0;
+            booking.total = booking.priceEach * booking.travelers;
+            booking.startDate = document.getElementById('b_start_date').value;
+
+            // Auto-fill end date if blank
+            if (!document.getElementById('b_end_date').value && booking.startDate) {
+                const end = new Date(booking.startDate);
+                end.setDate(end.getDate() + booking.days);
+                document.getElementById('b_end_date').value = end.toISOString().split('T')[0];
+            }
+
+            goToStep(3);
         }
 
         /* ── Fill step 3 summary ── */
@@ -1334,17 +1604,24 @@
             document.getElementById('sum_pkg_name').textContent = booking.pkgName;
             document.getElementById('sum_duration').textContent = `${booking.days} Days / ${booking.nights} Nights`;
             document.getElementById('sum_travelers').textContent = booking.travelers;
+            document.getElementById('sum_children').textContent = booking.children;
             document.getElementById('sum_price_pp').textContent = `$${booking.priceEach.toLocaleString()}`;
+            document.getElementById('sum_start_date').textContent = booking.startDate || '—';
             document.getElementById('sum_total').textContent = `$${booking.total.toLocaleString()}`;
         }
 
         /* ── Fill step 4 stripe summary ── */
         function fillStripe() {
             document.getElementById('stripe_pkg_name').textContent = booking.pkgName;
+            document.getElementById('stripe_traveler_name').textContent = `${booking.firstName} ${booking.lastName}`;
             document.getElementById('stripe_duration').textContent = `${booking.days} Days / ${booking.nights} Nights`;
-            document.getElementById('stripe_travelers').textContent = booking.travelers;
+            document.getElementById('stripe_travelers').textContent =
+                `${booking.travelers} Adult(s) / ${booking.children} Child(ren)`;
+            document.getElementById('stripe_start_date').textContent = booking.startDate || '—';
             document.getElementById('stripe_total').textContent = `$${booking.total.toLocaleString()}`;
             document.getElementById('pay_amount').textContent = `$${booking.total.toLocaleString()}`;
+            // Pre-fill cardholder name from traveler name
+            document.getElementById('card_name').value = `${booking.firstName} ${booking.lastName}`;
         }
 
         /* ── Payment method highlight ── */
@@ -1366,15 +1643,15 @@
             input.value = v;
         }
 
-        /* ── Process payment (demo) ── */
-        function processPayment() {
+        /* ── Process payment → POST to Laravel ── */
+        async function processPayment() {
             const btn = document.getElementById('payBtn');
             const cardNum = document.getElementById('card_number').value.replace(/\s/g, '');
             const expiry = document.getElementById('card_expiry').value;
             const cvc = document.getElementById('card_cvc').value;
-            const name = document.getElementById('card_name').value;
+            const cardName = document.getElementById('card_name').value;
 
-            if (cardNum.length < 16 || !expiry || cvc.length < 3 || name.trim().length < 2) {
+            if (cardNum.length < 16 || !expiry || cvc.length < 3 || cardName.trim().length < 2) {
                 alert('Please fill in all card details correctly.');
                 return;
             }
@@ -1382,17 +1659,74 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
 
-            // Simulate payment processing
-            setTimeout(() => {
-                const ref = '#VN' + Date.now().toString().slice(-10);
-                document.getElementById('conf_booking_id').textContent = ref;
+            const selectedMethod = document.querySelector('input[name="pay_method"]:checked')?.value ?? 'stripe';
+
+            const payload = {
+                booking_type: booking.type,
+                package_id: booking.packageId,
+                trek_id: booking.trekId,
+                first_name: booking.firstName,
+                last_name: booking.lastName,
+                email: document.getElementById('b_email').value.trim(),
+                phone: document.getElementById('b_phone_code').value +
+                    document.getElementById('b_phone').value.trim(),
+                date_of_birth: document.getElementById('b_dob').value || null,
+                nationality: document.getElementById('b_nationality').value || null,
+                passport_number: document.getElementById('b_passport').value || null,
+                trip_start_date: document.getElementById('b_start_date').value,
+                trip_end_date: document.getElementById('b_end_date').value || null,
+                num_adults: booking.travelers,
+                num_children: booking.children,
+                accommodation_preference: document.getElementById('b_accommodation').value || null,
+                pickup_location: document.getElementById('b_pickup').value || null,
+                special_requirements: document.getElementById('b_special').value || null,
+                payment_method: selectedMethod,
+                card_number: cardNum,
+                card_expiry: expiry,
+                card_cvc: cvc,
+                card_name: cardName,
+            };
+
+            try {
+                const res = await fetch(BOOKING_DATA.bookingUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': BOOKING_DATA.csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    const errors = data.errors ?
+                        Object.values(data.errors).flat().join('\n') :
+                        (data.message ?? 'Something went wrong.');
+                    alert(errors);
+                    btn.disabled = false;
+                    btn.innerHTML = `Pay $${booking.total.toLocaleString()}`;
+                    return;
+                }
+
+                // Success — populate confirmation screen
+                document.getElementById('conf_booking_id').textContent = data.booking_ref;
+                document.getElementById('conf_traveler').textContent = `${booking.firstName} ${booking.lastName}`;
                 document.getElementById('conf_package').textContent = booking.pkgName;
                 document.getElementById('conf_duration').textContent =
-                    `${booking.days} Days / ${booking.nights} Nights`;
-                document.getElementById('conf_travelers').textContent = booking.travelers;
-                document.getElementById('conf_total').textContent = `$${booking.total.toLocaleString()}`;
+                `${booking.days} Days / ${booking.nights} Nights`;
+                document.getElementById('conf_start_date').textContent = booking.startDate;
+                document.getElementById('conf_travelers').textContent =
+                    `${booking.travelers} Adult(s) / ${booking.children} Child(ren)`;
+                document.getElementById('conf_total').textContent = `$${data.total.toLocaleString()}`;
                 goToStep(5);
-            }, 1800);
+
+            } catch (err) {
+                alert('Network error. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = `Pay $${booking.total.toLocaleString()}`;
+            }
         }
     </script>
 @endpush

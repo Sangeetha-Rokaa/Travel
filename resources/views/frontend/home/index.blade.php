@@ -4,8 +4,8 @@
 @section('content')
 
     <!-- ══════════════════════════════════════════════
-                                 HERO
-                            ══════════════════════════════════════════════ -->
+                                                     HERO
+                                                ══════════════════════════════════════════════ -->
     <section class="hero" id="home">
         <img id="heroBg" class="hero-bg-img" src="{{ asset('images/landingimg.png') }}" alt="Nepal Himalayan Banner" />
         <div class="hero-overlay"></div>
@@ -42,8 +42,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                 TRUST BAR
-                            ══════════════════════════════════════════════ -->
+                                                     TRUST BAR
+                                                ══════════════════════════════════════════════ -->
     <div class="trust-bar">
         <div class="trust-item">
             <div class="trust-icon"><i class="fas fa-tag"></i></div>
@@ -80,8 +80,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                 WHY CHOOSE US
-                            ══════════════════════════════════════════════ -->
+                                                     WHY CHOOSE US
+                                                ══════════════════════════════════════════════ -->
     <section id="why-us">
         <div class="why-inner">
             <div>
@@ -133,8 +133,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                 POPULAR DESTINATIONS
-                            ══════════════════════════════════════════════ -->
+                                                     POPULAR DESTINATIONS
+                                                ══════════════════════════════════════════════ -->
     <section id="destinations">
         <div class="section-header reveal">
             <h2>Popular Destinations</h2>
@@ -204,8 +204,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                 TOP TREKKING PLANS
-                            ══════════════════════════════════════════════ -->
+                                                     TOP TREKKING PLANS
+                                                ══════════════════════════════════════════════ -->
     <section id="treks">
 
         <div class="section-header reveal">
@@ -310,121 +310,151 @@
     </section>
 
 
-    <!-- ══════════════════════════════════════════════
-                                 POPULAR TOUR PACKAGES
-                            ══════════════════════════════════════════════ -->
-    <div class="pkg-grid reveal">
 
-        @forelse($featuredPackages as $package)
+    <!-- =========================
+                         PACKAGES SECTION
+                    ========================= -->
 
-            @php
-                $price = $package->price_usd_discounted ?? $package->price_usd;
+    <section class="packages-section">
 
-                $services = is_array($package->included) ? array_slice($package->included, 0, 4) : [];
-            @endphp
+        <div class="section-header reveal">
 
-            <div class="pkg-card">
+            <span class="section-tag">
+                Travel Packages
+            </span>
 
-                {{-- IMAGE --}}
-                <div class="pkg-image-wrap">
+            <h2 class="section-title">
+                Explore Our Featured Packages
+            </h2>
 
-                    @if ($package->featured_image)
-                        <img src="{{ asset('storage/' . $package->featured_image) }}" alt="{{ $package->name }}"
-                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    @endif
+            <p class="section-subtitle">
+                Discover unforgettable journeys across Nepal with carefully curated travel experiences.
+            </p>
 
-                    {{-- FALLBACK --}}
-                    <div class="pk-img-placeholder"
-                        style="{{ $package->featured_image ? 'display:none;' : 'display:flex;' }}">
-                        <i class="fas fa-mountain"></i>
-                        <span>{{ $package->name }}</span>
-                    </div>
+        </div>
 
-                    @if ($package->is_featured)
-                        <div class="featured-badge">
-                            Featured
-                        </div>
-                    @endif
-                </div>
+        <div class="pkg-grid reveal">
 
-                {{-- BODY --}}
-                <div class="pkg-body">
+            @forelse($featuredPackages as $package)
 
-                    <div class="pkg-header">
+                @php
+                    $price = $package->price_usd_discounted ?? $package->price_usd;
 
-                        <h3>{{ $package->name }}</h3>
+                    $services = is_array($package->included) ? array_slice($package->included, 0, 4) : [];
+                @endphp
 
-                        <div class="price-wrap">
+                <div class="pkg-card">
 
-                            @if ($package->price_usd_discounted)
-                                <span class="old-price">
-                                    ${{ number_format($package->price_usd, 0) }}
-                                </span>
-                            @endif
+                    {{-- IMAGE --}}
+                    <div class="pkg-image-wrap">
 
-                            <span class="pkg-price">
-                                ${{ number_format($price, 0) }}
-                            </span>
+                        @if ($package->featured_image)
+                            <img src="{{ asset('storage/' . $package->featured_image) }}" alt="{{ $package->name }}"
+                                class="pkg-image"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        @endif
+
+                        {{-- FALLBACK --}}
+                        <div class="pk-img-placeholder"
+                            style="{{ $package->featured_image ? 'display:none;' : 'display:flex;' }}">
+
+                            <i class="fas fa-mountain"></i>
+                            <span>{{ $package->name }}</span>
 
                         </div>
 
-                    </div>
-
-                    <p class="pkg-desc">
-                        {{ \Illuminate\Support\Str::limit($package->short_description, 100) }}
-                    </p>
-
-                    <div class="pkg-meta">
-
-                        <span>
-                            <i class="far fa-clock"></i>
-                            {{ $package->duration_days }} Days
-                        </span>
-
-                        @if ($package->best_season)
-                            <span>
-                                <i class="fas fa-cloud-sun"></i>
-                                {{ $package->best_season }}
-                            </span>
+                        @if ($package->is_featured)
+                            <div class="featured-badge">
+                                Featured
+                            </div>
                         @endif
 
                     </div>
 
-                    @if (count($services))
-                        <div class="pkg-services">
+                    {{-- BODY --}}
+                    <div class="pkg-body">
 
-                            <p>Included:</p>
+                        <div class="pkg-top">
 
-                            <ul>
-                                @foreach ($services as $service)
-                                    <li>{{ $service }}</li>
-                                @endforeach
-                            </ul>
+                            <div>
+                                <h3 class="pkg-title">
+                                    {{ $package->name }}
+                                </h3>
+
+                                <div class="pkg-meta">
+
+                                    <span>
+                                        <i class="far fa-clock"></i>
+                                        {{ $package->duration_days }} Days
+                                    </span>
+
+                                    @if ($package->best_season)
+                                        <span>
+                                            <i class="fas fa-cloud-sun"></i>
+                                            {{ $package->best_season }}
+                                        </span>
+                                    @endif
+
+                                </div>
+                            </div>
+
+                            <div class="price-wrap">
+
+                                @if ($package->price_usd_discounted)
+                                    <span class="old-price">
+                                        ${{ number_format($package->price_usd, 0) }}
+                                    </span>
+                                @endif
+
+                                <span class="pkg-price">
+                                    ${{ number_format($price, 0) }}
+                                </span>
+
+                            </div>
 
                         </div>
-                    @endif
 
-                    <a href="{{ route('packages.show', $package->slug) }}" class="pkg-book-btn">
-                        View Package
-                    </a>
+                        <p class="pkg-desc">
+                            {{ \Illuminate\Support\Str::limit($package->short_description, 110) }}
+                        </p>
+
+                        @if (count($services))
+                            <div class="pkg-services">
+
+                                @foreach ($services as $service)
+                                    <span class="service-pill">
+                                        {{ $service }}
+                                    </span>
+                                @endforeach
+
+                            </div>
+                        @endif
+
+                        <a href="{{ route('packages.show', $package->slug) }}" class="pkg-book-btn">
+
+                            View Package
+
+                        </a>
+
+                    </div>
 
                 </div>
 
-            </div>
+            @empty
 
-        @empty
+                <div class="no-packages">
+                    <p>No packages available.</p>
+                </div>
 
-            <div class="no-packages">
-                <p>No packages available.</p>
-            </div>
+            @endforelse
 
-        @endforelse
+        </div>
 
-    </div>
+    </section>
 
     <!-- ══════════════════════════════════════════════
-                                 TESTIMONIALS
-                            ══════════════════════════════════════════════ -->
+                                                     TESTIMONIALS
+                                                ══════════════════════════════════════════════ -->
     <section id="testimonials">
         <div class="section-header reveal">
             <h2>Happy Customers</h2>
@@ -499,8 +529,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                 CONTACT CTA SECTION
-                            ══════════════════════════════════════════════ -->
+                                                     CONTACT CTA SECTION
+                                                ══════════════════════════════════════════════ -->
     <section id="contact-cta">
         <img class="cta-bg" src="{{ asset('images/landingimg.png') }}" alt="Nepal"
             onerror="this.style.display='none';" />
@@ -638,136 +668,134 @@
 @endsection
 
 
-@push('scripts')
-    <script>
-        /* ── Testimonial slider ── */
-        let currentSlide = 0;
-        const totalSlides = 3;
-        const track = document.getElementById('testiTrack');
-        const dots = document.querySelectorAll('.testi-dot');
+<script>
+    /* ── Testimonial slider ── */
+    let currentSlide = 0;
+    const totalSlides = 3;
+    const track = document.getElementById('testiTrack');
+    const dots = document.querySelectorAll('.testi-dot');
 
-        function goToSlide(n) {
-            currentSlide = n;
-            track.style.transform = `translateX(-${n * 100}%)`;
-            dots.forEach((d, i) => d.classList.toggle('active', i === n));
-        }
+    function goToSlide(n) {
+        currentSlide = n;
+        track.style.transform = `translateX(-${n * 100}%)`;
+        dots.forEach((d, i) => d.classList.toggle('active', i === n));
+    }
 
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            goToSlide((currentSlide + 1) % totalSlides);
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        goToSlide((currentSlide + 1) % totalSlides);
+    });
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
+    });
+
+    // Auto-slide every 5s
+    setInterval(() => goToSlide((currentSlide + 1) % totalSlides), 5000);
+
+    /* ── Contact form AJAX ── */
+    (function() {
+        const form = document.getElementById('contactForm');
+        const successBox = document.getElementById('formSuccess');
+        const submitBtn = document.getElementById('submitBtn');
+
+        const fields = [{
+                id: 'full_name',
+                errId: 'err_full_name',
+                validate: v => v.trim().length >= 2
+            },
+            {
+                id: 'email',
+                errId: 'err_email',
+                validate: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())
+            },
+            {
+                id: 'phone',
+                errId: 'err_phone',
+                validate: v => v.trim().length >= 7
+            },
+            {
+                id: 'subject',
+                errId: 'err_subject',
+                validate: v => v.trim().length >= 2
+            },
+            {
+                id: 'message',
+                errId: 'err_message',
+                validate: v => v.trim().length >= 10
+            },
+        ];
+
+        fields.forEach(({
+            id,
+            errId
+        }) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('input', () => {
+                el.classList.remove('error');
+                document.getElementById(errId).classList.remove('show');
+            });
         });
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
-        });
 
-        // Auto-slide every 5s
-        setInterval(() => goToSlide((currentSlide + 1) % totalSlides), 5000);
-
-        /* ── Contact form AJAX ── */
-        (function() {
-            const form = document.getElementById('contactForm');
-            const successBox = document.getElementById('formSuccess');
-            const submitBtn = document.getElementById('submitBtn');
-
-            const fields = [{
-                    id: 'full_name',
-                    errId: 'err_full_name',
-                    validate: v => v.trim().length >= 2
-                },
-                {
-                    id: 'email',
-                    errId: 'err_email',
-                    validate: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())
-                },
-                {
-                    id: 'phone',
-                    errId: 'err_phone',
-                    validate: v => v.trim().length >= 7
-                },
-                {
-                    id: 'subject',
-                    errId: 'err_subject',
-                    validate: v => v.trim().length >= 2
-                },
-                {
-                    id: 'message',
-                    errId: 'err_message',
-                    validate: v => v.trim().length >= 10
-                },
-            ];
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let valid = true;
 
             fields.forEach(({
                 id,
-                errId
+                errId,
+                validate
             }) => {
                 const el = document.getElementById(id);
+                const err = document.getElementById(errId);
                 if (!el) return;
-                el.addEventListener('input', () => {
+                if (!validate(el.value)) {
+                    el.classList.add('error');
+                    err.classList.add('show');
+                    valid = false;
+                } else {
                     el.classList.remove('error');
-                    document.getElementById(errId).classList.remove('show');
-                });
+                    err.classList.remove('show');
+                }
             });
 
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                let valid = true;
+            if (!valid) return;
 
-                fields.forEach(({
-                    id,
-                    errId,
-                    validate
-                }) => {
-                    const el = document.getElementById(id);
-                    const err = document.getElementById(errId);
-                    if (!el) return;
-                    if (!validate(el.value)) {
-                        el.classList.add('error');
-                        err.classList.add('show');
-                        valid = false;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending...';
+
+            const formData = new FormData(form);
+
+            fetch('{{ route('contact.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ||
+                            '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success || data.status === 'success') {
+                        showSuccess();
                     } else {
-                        el.classList.remove('error');
-                        err.classList.remove('show');
+                        resetBtn();
+                        alert(data.message || 'Something went wrong. Please try again.');
                     }
+                })
+                .catch(() => {
+                    showSuccess(); // demo fallback
                 });
+        });
 
-                if (!valid) return;
+        function showSuccess() {
+            form.style.display = 'none';
+            successBox.style.display = 'block';
+        }
 
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending...';
-
-                const formData = new FormData(form);
-
-                fetch('{{ route('contact.store') }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ||
-                                '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                        },
-                        body: formData
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success || data.status === 'success') {
-                            showSuccess();
-                        } else {
-                            resetBtn();
-                            alert(data.message || 'Something went wrong. Please try again.');
-                        }
-                    })
-                    .catch(() => {
-                        showSuccess(); // demo fallback
-                    });
-            });
-
-            function showSuccess() {
-                form.style.display = 'none';
-                successBox.style.display = 'block';
-            }
-
-            function resetBtn() {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
-            }
-        })();
-    </script>
-@endpush
+        function resetBtn() {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+        }
+    })();
+</script>

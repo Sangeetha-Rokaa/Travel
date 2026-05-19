@@ -36,7 +36,9 @@ class ContactController extends Controller
             $contact->update(['status' => 'read']);
         }
 
-        return view('admin.contacts.show', compact('contact'));
+        $statuses = Contact::STATUSES;
+
+        return view('admin.contacts.show', compact('contact', 'statuses'));
     }
 
     public function updateStatus(Request $request, Contact $contact): RedirectResponse

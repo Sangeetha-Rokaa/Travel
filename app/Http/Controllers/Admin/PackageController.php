@@ -62,7 +62,7 @@ class PackageController extends Controller
                 ->store('packages', 'public');
         }
 
-        foreach (['highlights', 'included', 'excluded'] as $field) {
+        foreach (['highlights', 'included', 'excluded', 'itinerary'] as $field) {
             if (isset($validated[$field])) {
                 $validated[$field] = $this->textToArray($validated[$field]);
             }
@@ -93,7 +93,7 @@ class PackageController extends Controller
                 ->store('packages', 'public');
         }
 
-        foreach (['highlights', 'included', 'excluded'] as $field) {
+        foreach (['highlights', 'included', 'excluded', 'itinerary'] as $field) {
             if (isset($validated[$field])) {
                 $validated[$field] = $this->textToArray($validated[$field]);
             }
@@ -122,6 +122,7 @@ class PackageController extends Controller
             'description'          => 'required|string',
             'duration_days'        => 'required|integer|min:1',
             'price_usd'            => 'required|numeric|min:0',
+            'itinerary'            => 'nullable|string',
             'price_usd_discounted' => 'nullable|numeric|min:0',
             'best_season'          => 'nullable|string|max:100',
             'group_size_max'       => 'integer|min:1',

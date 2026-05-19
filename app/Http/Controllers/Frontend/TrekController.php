@@ -14,51 +14,55 @@ class TrekController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Trek::active()->ordered()->with('destination');
+        $query = Trek::active()->ordered();
 
-        // Filter by difficulty
-        if ($request->filled('difficulty')) {
-            $query->byDifficulty($request->difficulty);
+        // Difficulty filter (radio)
+        if ($request->filled('difficulty') && $request->difficulty !== 'difficulty') {
+            $query->where('difficulty', ucfirst($request->difficulty));
         }
 
-        // Filter by destination
-        if ($request->filled('destination')) {
-            $query->whereHas('destination', fn($q) => $q->where('slug', $request->destination));
-        }
-
-        // Filter by duration
+        // Duration filter (slider — show treks up to N days)
         if ($request->filled('duration')) {
-            [$min, $max] = explode('-', $request->duration);
-            $query->whereBetween('duration_days', [(int) $min, (int) $max]);
+            $query->where('duration_days', '<=', (int) $request->duration);
         }
 
-        // Filter by max price
-        if ($request->filled('max_price')) {
-            $query->where('price_usd', '<=', $request->max_price);
+        // Region filter (checkboxes — matches destination name or trek region via destination)
+        if ($request->filled('region')) {
+            $regions = (array) $request->region;
+            $query->whereHas('destination', function ($q) use ($regions) {
+                $q->whereIn(
+                    \Illuminate\Support\Facades\DB::raw('LOWER(name)'),
+                    array_map('strtolower', $regions)
+                );
+            });
         }
 
-        $treks        = $query->paginate(12)->withQueryString();
-        $difficulties = Trek::DIFFICULTIES;
-        $destinations = Destination::active()->ordered()->get();
+        $treks = $query->get();
 
-        return view('frontend.treks.index', compact('treks', 'difficulties', 'destinations'));
+        // Distinct difficulty values for sidebar radios
+        $difficulties = Trek::active()
+            ->distinct()
+            ->orderBy('difficulty')
+            ->pluck('difficulty');
+
+        // Distinct destination names for region checkboxes
+        $regions = \App\Models\Destination::active()
+            ->ordered()
+            ->pluck('name', 'slug');
+
+        // Duration bounds for slider
+        $maxDuration = Trek::active()->max('duration_days') ?? 30;
+
+        return view('frontend.treks.index', compact('treks', 'difficulties', 'regions', 'maxDuration'));
     }
 
-    /**
-     * Show single trek detail page.
-     */
-    public function show(Trek $trek)
+    public function show(string $slug)
     {
-        abort_if(! $trek->is_active, 404);
+        $trek = Trek::active()
+            ->where('slug', $slug)
+            ->with('destination')
+            ->firstOrFail();
 
-        $trek->load('destination');
-        $related = Trek::active()
-            ->where('id', '!=', $trek->id)
-            ->when($trek->destination_id, fn($q) => $q->where('destination_id', $trek->destination_id))
-            ->ordered()
-            ->take(3)
-            ->get();
-
-        return view('frontend.treks.show', compact('trek', 'related'));
+        return view('frontend.treks.show', compact('trek'));
     }
 }

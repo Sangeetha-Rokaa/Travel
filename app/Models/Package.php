@@ -121,4 +121,27 @@ class Package extends Model
     {
         return $this->hasMany(Booking::class);
     }
+    public function firstInclusion(): string
+    {
+        return collect($this->included)->first() ?? '—';
+    }
+
+    // Convenience: first exclusion line for the card
+    public function firstExclusion(): string
+    {
+        return collect($this->excluded)->first() ?? '—';
+    }
+
+    // Human-readable type label
+    public function typeLabel(): string
+    {
+        return ucfirst(str_replace('_', ' ', $this->type)) . ' Tours';
+    }
+
+    // Active price (discounted if set)
+    public function displayPrice(): string
+    {
+        $price = $this->price_usd_discounted ?? $this->price_usd;
+        return '$' . number_format($price, 2);
+    }
 }

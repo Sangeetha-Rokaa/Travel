@@ -152,17 +152,17 @@
                 </div>
                 <div class="footer-contact-item">
                     <i class="fas fa-envelope"></i>
-                    <span>info@visitnepal.com</span>
+                    <span>info@ApeakNepal.com</span>
                 </div>
                 <div class="footer-contact-item">
                     <i class="fas fa-globe"></i>
-                    <span>www.visitnepal.com</span>
+                    <span>www.ApeakNepal.com</span>
                 </div>
             </div>
 
         </div>
         <div class="footer-bottom">
-            &copy; 2024 Visit Nepal. All Rights Reserved.
+            &copy; 2024 Apeak Nepal. All Rights Reserved.
         </div>
     </footer>
 

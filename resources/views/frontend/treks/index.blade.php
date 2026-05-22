@@ -431,7 +431,7 @@
                     Lorem located trekking experiences across the Himalayas<br>
                     for your adventure and unforgettable journey in Nepal.
                 </p>
-                <a href="{{ route('bookings.create', ['trek' => $trek->slug]) }}" class="btn-book-card">
+                <a href="{{ route('bookings.create') }}" class="btn-book-card">
                     Book Now
                 </a>
             </div>

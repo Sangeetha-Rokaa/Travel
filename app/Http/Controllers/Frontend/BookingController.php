@@ -48,12 +48,16 @@ class BookingController extends Controller
             'booking_type'   => 'required|in:trek,package,custom',
             'package_id'     => 'nullable|exists:packages,id',
             'trek_id'        => 'nullable|exists:treks,id',
+            'pickup_location' => 'nullable|string|max:255',
+            'accommodation_type' => 'nullable|string|max:255',
+
 
             // Traveler details
             'first_name'     => 'required|string|max:100',
             'last_name'      => 'required|string|max:100',
             'email'          => 'required|email|max:100',
             'phone'          => 'nullable|string|max:50',
+            'passport_number' => 'nullable|string|max:50',
             'date_of_birth'  => 'nullable|date|before:today',
             'nationality'    => 'nullable|string|max:100',
 
@@ -99,12 +103,15 @@ class BookingController extends Controller
             'booking_type'    => $validated['booking_type'],
             'package_id'      => $validated['package_id'] ?? null,
             'trek_id'         => $validated['trek_id'] ?? null,
+            'pickup_location' => $validated['pickup_location'] ?? null,
+            'accommodation_type' => $validated['accommodation_type'] ?? null,
             'first_name'      => $validated['first_name'],
             'last_name'       => 'N/A', // wizard collects full name in one field
             'email'           => $validated['email'],
             'phone'           => $validated['phone'] ?? null,
             'date_of_birth'   => $validated['date_of_birth'] ?? null,
             'nationality'     => $validated['nationality'] ?? null,
+            'passport_number' => $validated['passport_number'] ?? null,
             'num_adults'      => $numAdults,
             'num_children'    => $numChildren,
             'special_requirements' => $validated['special_requirements'] ?? null,
@@ -119,7 +126,7 @@ class BookingController extends Controller
             'payment_method'  => $validated['payment_method'],
             'transaction_id'  => $transactionId,
             'paid_at'         => now(),
-            'status'          => 'pending',
+            'status'          => 'pending', // admin will confirm after verifying payment
         ]);
 
         return response()->json([

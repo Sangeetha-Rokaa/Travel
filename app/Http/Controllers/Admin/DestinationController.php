@@ -11,13 +11,13 @@ use Illuminate\View\View;
 
 class DestinationController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request)
     {
         $query = Destination::ordered()->withCount('treks');
 
-        // Search filter
         if ($request->filled('search')) {
             $search = $request->search;
+
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('location', 'like', "%{$search}%")
@@ -25,27 +25,23 @@ class DestinationController extends Controller
             });
         }
 
-        // Region filter
         if ($request->filled('region')) {
             $query->where('region', $request->region);
         }
 
-        // Status filter
         if ($request->filled('status')) {
-            if ($request->status == 'active') {
-                $query->where('is_active', true);
-            } elseif ($request->status == 'inactive') {
-                $query->where('is_active', false);
-            } elseif ($request->status == 'featured') {
-                $query->where('is_featured', true);
-            }
+            match ($request->status) {
+                'active' => $query->where('is_active', true),
+                'inactive' => $query->where('is_active', false),
+                'featured' => $query->where('is_featured', true),
+                default => null,
+            };
         }
 
         $destinations = $query->paginate(15);
 
         return view('admin.destinations.index', compact('destinations'));
     }
-
     public function create(): View
     {
         return view('admin.destinations.create');
@@ -65,17 +61,13 @@ class DestinationController extends Controller
         return redirect()->route('admin.destinations.index')
             ->with('success', 'Destination created successfully.');
     }
-    public function edit($id): View
+    public function edit(Destination $destination): View
     {
-        $destination = Destination::findOrFail($id);
-
         return view('admin.destinations.edit', compact('destination'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(Request $request, Destination $destination): RedirectResponse
     {
-        $destination = Destination::findOrFail($id);
-
         $validated = $this->validateRequest($request, $destination->id);
 
         if ($request->hasFile('featured_image')) {
@@ -89,13 +81,12 @@ class DestinationController extends Controller
             ->with('success', 'Destination updated successfully.');
     }
 
-    public function destroy($id): RedirectResponse
+    public function destroy(Destination $destination): RedirectResponse
     {
-        $destination = Destination::findOrFail($id);
-
         $destination->delete();
 
-        return redirect()->route('admin.destinations.index')
+        return redirect()
+            ->route('admin.destinations.index')
             ->with('success', 'Destination deleted.');
     }
 
@@ -115,5 +106,9 @@ class DestinationController extends Controller
             'is_active'         => 'boolean',
             'sort_order'        => 'integer|min:0',
         ]);
+    }
+    public function show(Destination $destination): View
+    {
+        return view('admin.destinations.show', compact('destination'));
     }
 }

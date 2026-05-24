@@ -77,4 +77,8 @@ class TestimonialController extends Controller
             'is_active'      => 'boolean',
         ]);
     }
+    public function show(Testimonial $testimonial): View
+    {
+        return view('admin.testimonials.show', compact('testimonial'));
+    }
 }

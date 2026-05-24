@@ -1,163 +1,123 @@
 {{-- resources/views/admin/destinations/edit.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Edit Destination - Nepal Travel')
-@section('page_title', 'Edit Destination')
-@section('page_icon', 'fas fa-edit')
+@section('title', 'Edit Destination')
 
 @section('content')
-    <div class="container-fluid px-0">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="destination-page">
+
+        {{-- Header --}}
+        <div class="page-header">
             <div>
-                <h4 class="mb-1" style="color: #1e2a2e;">
-                    <i class="fas fa-pen-to-square me-2" style="color: #e9b35f;"></i>
-                    Edit Destination
-                </h4>
-                <p class="text-muted small mb-0">
-                    Update destination information and settings
-                </p>
+                <h2>Edit Destination</h2>
+                <p>Update destination details and information</p>
             </div>
 
-            <a href="{{ route('admin.destinations.index') }}" class="btn"
-                style="background: #6c757d; color: white; border-radius: 40px; padding: 8px 20px;">
-                <i class="fas fa-arrow-left me-2"></i> Back to Destinations
+            <a href="{{ route('admin.destinations.index') }}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back
             </a>
         </div>
 
+        {{-- Error Messages --}}
         @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert"
-                style="border-radius: 16px; border-left: 4px solid #ef4444;">
-                <i class="fas fa-exclamation-triangle me-2"></i>
+            <div class="alert-box">
                 <strong>Please fix the following errors:</strong>
 
-                <ul class="mb-0 mt-2">
+                <ul>
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
-
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
 
-        <div class="card border-0 rounded-4 shadow-sm" style="background: white; border-radius: 28px !important;">
+        {{-- Form Card --}}
+        <div class="form-card">
 
-            <div class="card-body p-4">
+            <form action="{{ route('admin.destinations.update', $destination) }}" method="POST" enctype="multipart/form-data">
 
-                <form action="{{ route('admin.destinations.update', $destination->id) }}" method="POST"
-                    enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
 
-                    @csrf
-                    @method('PUT')
+                {{-- Basic Information --}}
+                <div class="form-section">
 
-                    <div class="row">
+                    <h4>Basic Information</h4>
 
-                        {{-- BASIC INFORMATION --}}
-                        <div class="col-12">
-                            <h5 class="mb-3" style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-info-circle me-2"></i>
-                                Basic Information
-                            </h5>
-                        </div>
+                    <div class="form-grid">
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">
-                                Destination Name <span class="text-danger">*</span>
-                            </label>
+                        <div class="form-group">
+                            <label>Destination Name *</label>
 
                             <input type="text" name="name" id="name"
-                                class="form-control @error('name') is-invalid @enderror"
-                                value="{{ old('name', $destination->name) }}" required
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
+                                value="{{ old('name', $destination->name) }}" required>
 
                             @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <small class="error-text">{{ $message }}</small>
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">
-                                Slug (URL)
-                            </label>
+                        <div class="form-group">
+                            <label>Slug</label>
 
                             <input type="text" name="slug" id="slug"
-                                class="form-control @error('slug') is-invalid @enderror"
-                                value="{{ old('slug', $destination->slug) }}"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-
-                            <small class="text-muted">
-                                Leave empty to auto-generate from name
-                            </small>
+                                value="{{ old('slug', $destination->slug) }}" placeholder="auto-generated">
 
                             @error('slug')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <small class="error-text">{{ $message }}</small>
                             @enderror
                         </div>
 
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label fw-semibold">
-                                Short Description <span class="text-danger">*</span>
-                            </label>
+                    </div>
 
-                            <textarea name="short_description" id="short_description" rows="3" required
-                                class="form-control @error('short_description') is-invalid @enderror"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">{{ old('short_description', $destination->short_description) }}</textarea>
+                    <div class="form-group">
+                        <label>Short Description *</label>
 
-                            <small class="text-muted">
-                                Brief summary (max 500 characters)
-                            </small>
+                        <textarea name="short_description" id="short_description" rows="3" required>{{ old('short_description', $destination->short_description) }}</textarea>
 
-                            @error('short_description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <small id="charCounter">500 characters remaining</small>
 
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label fw-semibold">
-                                Full Description <span class="text-danger">*</span>
-                            </label>
+                        @error('short_description')
+                            <small class="error-text">{{ $message }}</small>
+                        @enderror
+                    </div>
 
-                            <textarea name="description" id="description" rows="8" required
-                                class="form-control @error('description') is-invalid @enderror"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">{{ old('description', $destination->description) }}</textarea>
+                    <div class="form-group">
+                        <label>Description *</label>
 
-                            @error('description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <textarea name="description" rows="7" required>{{ old('description', $destination->description) }}</textarea>
 
-                        {{-- LOCATION DETAILS --}}
-                        <div class="col-12 mt-3">
-                            <h5 class="mb-3" style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-location-dot me-2"></i>
-                                Location Details
-                            </h5>
-                        </div>
+                        @error('description')
+                            <small class="error-text">{{ $message }}</small>
+                        @enderror
+                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">
-                                Location <span class="text-danger">*</span>
-                            </label>
+                </div>
 
-                            <input type="text" name="location"
-                                class="form-control @error('location') is-invalid @enderror"
-                                value="{{ old('location', $destination->location) }}" required
-                                placeholder="e.g., Solukhumbu, Nepal"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
+                {{-- Location Details --}}
+                <div class="form-section">
+
+                    <h4>Location Details</h4>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label>Location *</label>
+
+                            <input type="text" name="location" value="{{ old('location', $destination->location) }}"
+                                required>
 
                             @error('location')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <small class="error-text">{{ $message }}</small>
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">
-                                Region
-                            </label>
+                        <div class="form-group">
+                            <label>Region</label>
 
-                            <select name="region" class="form-select @error('region') is-invalid @enderror"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
+                            <select name="region">
 
                                 <option value="">Select Region</option>
 
@@ -183,270 +143,339 @@
                             </select>
 
                             @error('region')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <small class="error-text">{{ $message }}</small>
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">
-                                Altitude
-                            </label>
+                        <div class="form-group">
+                            <label>Altitude</label>
 
-                            <input type="text" name="altitude"
-                                class="form-control @error('altitude') is-invalid @enderror"
-                                value="{{ old('altitude', $destination->altitude) }}" placeholder="e.g., 3,440m"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
+                            <input type="text" name="altitude" value="{{ old('altitude', $destination->altitude) }}"
+                                placeholder="e.g. 3,440m">
 
                             @error('altitude')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <small class="error-text">{{ $message }}</small>
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">
-                                Best Season
-                            </label>
+                        <div class="form-group">
+                            <label>Best Season</label>
 
                             <input type="text" name="best_season"
-                                class="form-control @error('best_season') is-invalid @enderror"
-                                value="{{ old('best_season', $destination->best_season) }}"
-                                placeholder="e.g., Spring (Mar-May), Autumn (Sep-Nov)"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
+                                value="{{ old('best_season', $destination->best_season) }}" placeholder="Spring, Autumn">
 
                             @error('best_season')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <small class="error-text">{{ $message }}</small>
                             @enderror
                         </div>
 
-                        {{-- IMAGES --}}
-                        <div class="col-12 mt-3">
-                            <h5 class="mb-3"
-                                style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-image me-2"></i>
-                                Images
-                            </h5>
-                        </div>
+                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">
-                                Featured Image
-                            </label>
+                </div>
 
-                            <input type="file" name="featured_image" accept="image/*"
-                                class="form-control @error('featured_image') is-invalid @enderror"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
+                {{-- Images --}}
+                <div class="form-section">
 
-                            <small class="text-muted">
-                                Leave empty to keep current image
-                            </small>
+                    <h4>Images</h4>
 
-                            @error('featured_image')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label>Featured Image</label>
 
                             @if ($destination->featured_image)
-                                <div class="mt-3">
+                                <div class="preview-image">
                                     <img src="{{ asset('storage/' . $destination->featured_image) }}"
-                                        alt="{{ $destination->name }}" class="img-fluid rounded-3 shadow-sm"
-                                        style="height: 150px; object-fit: cover;">
+                                        alt="{{ $destination->name }}">
                                 </div>
                             @endif
+
+                            <input type="file" name="featured_image" accept="image/*">
+
+                            @error('featured_image')
+                                <small class="error-text">{{ $message }}</small>
+                            @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">
-                                Gallery Images
-                            </label>
+                        <div class="form-group">
+                            <label>Gallery Images</label>
 
-                            <input type="file" name="gallery_images[]" multiple accept="image/*" class="form-control"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-
-                            <small class="text-muted">
-                                You can upload multiple new gallery images
-                            </small>
+                            <input type="file" name="gallery_images[]" multiple accept="image/*">
                         </div>
 
-                        {{-- STATUS SETTINGS --}}
-                        <div class="col-12 mt-3">
-                            <h5 class="mb-3"
-                                style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-toggle-on me-2"></i>
-                                Status Settings
-                            </h5>
+                    </div>
+
+                </div>
+
+                {{-- Status --}}
+                <div class="form-section">
+
+                    <h4>Status Settings</h4>
+
+                    <div class="form-grid">
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" name="is_featured" value="1"
+                                {{ old('is_featured', $destination->is_featured) ? 'checked' : '' }}>
+
+                            <span>Featured Destination</span>
                         </div>
 
-                        <div class="col-md-4 mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured"
-                                    value="1" {{ old('is_featured', $destination->is_featured) ? 'checked' : '' }}
-                                    style="width: 40px; height: 20px;">
+                        <div class="checkbox-group">
+                            <input type="checkbox" name="is_active" value="1"
+                                {{ old('is_active', $destination->is_active) ? 'checked' : '' }}>
 
-                                <label class="form-check-label fw-semibold ms-2">
-                                    Feature this destination
-                                </label>
-
-                                <br>
-
-                                <small class="text-muted">
-                                    Featured destinations appear on homepage
-                                </small>
-                            </div>
+                            <span>Active</span>
                         </div>
 
-                        <div class="col-md-4 mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
-                                    value="1" {{ old('is_active', $destination->is_active) ? 'checked' : '' }}
-                                    style="width: 40px; height: 20px;">
-
-                                <label class="form-check-label fw-semibold ms-2">
-                                    Active
-                                </label>
-
-                                <br>
-
-                                <small class="text-muted">
-                                    Inactive destinations won't show on website
-                                </small>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-semibold">
-                                Sort Order
-                            </label>
+                        <div class="form-group">
+                            <label>Sort Order</label>
 
                             <input type="number" name="sort_order" min="0"
-                                class="form-control @error('sort_order') is-invalid @enderror"
-                                value="{{ old('sort_order', $destination->sort_order) }}"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-
-                            <small class="text-muted">
-                                Lower numbers appear first
-                            </small>
+                                value="{{ old('sort_order', $destination->sort_order) }}">
 
                             @error('sort_order')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <small class="error-text">{{ $message }}</small>
                             @enderror
                         </div>
 
                     </div>
 
-                    {{-- FORM ACTIONS --}}
-                    <div class="row mt-4">
-                        <div class="col-12">
+                </div>
 
-                            <hr style="border-color: #f0e2ce;">
+                {{-- Buttons --}}
+                <div class="form-actions">
 
-                            <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ route('admin.destinations.index') }}" class="cancel-btn">
+                        Cancel
+                    </a>
 
-                                <a href="{{ route('admin.destinations.index') }}" class="btn"
-                                    style="background: #6c757d; color: white; border-radius: 30px; padding: 10px 30px;">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i>
+                        Update Destination
+                    </button>
 
-                                    <i class="fas fa-times me-2"></i>
-                                    Cancel
-                                </a>
+                </div>
 
-                                <button type="submit" class="btn"
-                                    style="background: linear-gradient(135deg, #1e2a2e, #2c4a3e); color: white; border-radius: 30px; padding: 10px 30px;">
+            </form>
 
-                                    <i class="fas fa-save me-2"></i>
-                                    Update Destination
-                                </button>
-
-                            </div>
-
-                        </div>
-                    </div>
-
-                </form>
-
-            </div>
         </div>
 
     </div>
+
 @endsection
 
 @push('styles')
     <style>
-        .form-label {
-            color: #1e2a2e;
+        .destination-page {
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 28px;
+            color: #1e293b;
+        }
+
+        .page-header p {
+            margin-top: 5px;
+            color: #64748b;
+        }
+
+        .back-btn {
+            background: #64748b;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            opacity: .9;
+            color: #fff;
+        }
+
+        .alert-box {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .form-section h4 {
+            margin-bottom: 20px;
+            color: #1e293b;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
             margin-bottom: 8px;
+            font-weight: 600;
+            color: #334155;
         }
 
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #e9b35f;
-            box-shadow: 0 0 0 0.2rem rgba(233, 179, 95, 0.25);
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
         }
 
-        textarea {
-            resize: vertical;
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #eab308;
+            box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.15);
         }
 
-        .form-check-input:checked {
-            background-color: #e9b35f;
-            border-color: #e9b35f;
+        .preview-image {
+            margin-bottom: 10px;
         }
 
-        .form-check-input:focus {
-            border-color: #e9b35f;
-            box-shadow: 0 0 0 0.2rem rgba(233, 179, 95, 0.25);
+        .preview-image img {
+            width: 180px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #ddd;
         }
 
-        .card {
-            transition: transform 0.2s ease;
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 35px;
         }
 
-        .alert ul {
-            padding-left: 20px;
+        .error-text {
+            color: #dc2626;
+            margin-top: 5px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .cancel-btn {
+            background: #64748b;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        .submit-btn {
+            background: #1e293b;
+            color: #fff;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #0f172a;
+        }
+
+        @media(max-width:768px) {
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .submit-btn,
+            .cancel-btn {
+                width: 100%;
+                text-align: center;
+            }
         }
     </style>
 @endpush
 
 @push('scripts')
     <script>
-        // Auto generate slug
+        // Auto Generate Slug
         const nameInput = document.getElementById('name');
         const slugInput = document.getElementById('slug');
 
         if (nameInput && slugInput) {
-            nameInput.addEventListener('blur', function() {
 
-                if (slugInput.value.trim() === '') {
+            nameInput.addEventListener('keyup', function() {
 
-                    let slug = this.value
-                        .trim()
+                if (slugInput.value === '') {
+
+                    slugInput.value = this.value
                         .toLowerCase()
+                        .trim()
                         .replace(/[^a-z0-9\s-]/g, '')
                         .replace(/\s+/g, '-')
                         .replace(/-+/g, '-');
-
-                    slugInput.value = slug;
                 }
             });
         }
 
-        // Character counter
+        // Character Counter
         const shortDesc = document.getElementById('short_description');
+        const charCounter = document.getElementById('charCounter');
 
-        if (shortDesc) {
-
-            const counter = document.createElement('small');
-
-            counter.className = 'text-muted mt-1 d-block';
-            counter.id = 'charCounter';
-
-            shortDesc.parentNode.appendChild(counter);
+        if (shortDesc && charCounter) {
 
             function updateCounter() {
 
-                const remaining = 500 - shortDesc.value.length;
+                let remaining = 500 - shortDesc.value.length;
 
-                counter.innerHTML =
-                    `${remaining} characters remaining (max 500)`;
+                charCounter.innerHTML = remaining + ' characters remaining';
 
-                counter.style.color = remaining < 0 ? 'red' : '#6c757d';
+                charCounter.style.color =
+                    remaining < 0 ? 'red' : '#64748b';
             }
 
             shortDesc.addEventListener('input', updateCounter);

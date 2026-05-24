@@ -7,6 +7,9 @@ use App\Models\Contact;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Mail\ContactUserReplyMail;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ContactAdminNotificationMail;
 
 class ContactController extends Controller
 {
@@ -31,7 +34,6 @@ class ContactController extends Controller
 
     public function show(Contact $contact): View
     {
-        // Auto-mark as read on first open
         if ($contact->status === 'new') {
             $contact->update(['status' => 'read']);
         }
@@ -48,13 +50,21 @@ class ContactController extends Controller
             'admin_notes' => 'nullable|string|max:1000',
         ]);
 
-        $data = ['status' => $request->status, 'admin_notes' => $request->admin_notes];
+        $data = [
+            'status' => $request->status,
+            'admin_notes' => $request->admin_notes
+        ];
 
         if ($request->status === 'replied') {
             $data['replied_at'] = now();
         }
 
         $contact->update($data);
+
+        if ($request->status === 'replied') {
+            Mail::to($contact->email)
+                ->send(new ContactUserReplyMail($contact));
+        }
 
         return redirect()->route('admin.contacts.show', $contact)
             ->with('success', 'Contact status updated.');
@@ -63,6 +73,7 @@ class ContactController extends Controller
     public function destroy(Contact $contact): RedirectResponse
     {
         $contact->delete();
+
         return redirect()->route('admin.contacts.index')
             ->with('success', 'Contact deleted.');
     }

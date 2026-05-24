@@ -1,415 +1,1225 @@
 {{-- resources/views/admin/destinations/index.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Manage Destinations - Nepal Travel')
-@section('page_title', 'Manage Destinations')
-@section('page_icon', 'fas fa-map-marked-alt')
+@section('title', 'Destinations')
+@section('page-title', 'Destinations')
+
+@push('styles')
+    <style>
+        /* ── Animations ── */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .anim {
+            animation: fadeSlideUp .4s ease both;
+        }
+
+        .anim:nth-child(1) {
+            animation-delay: .04s;
+        }
+
+        .anim:nth-child(2) {
+            animation-delay: .09s;
+        }
+
+        .anim:nth-child(3) {
+            animation-delay: .14s;
+        }
+
+        .anim:nth-child(4) {
+            animation-delay: .19s;
+        }
+
+        .anim:nth-child(5) {
+            animation-delay: .24s;
+        }
+
+        .anim:nth-child(6) {
+            animation-delay: .29s;
+        }
+
+        /* ── Page header ── */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .page-title-text {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .btn-add-dest {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 22px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: background .2s, transform .15s, box-shadow .2s;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, .3);
+        }
+
+        .btn-add-dest:hover {
+            background: #2563eb;
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(59, 130, 246, .38);
+        }
+
+        /* ── Photo Cards Grid ── */
+        .dest-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .dest-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #f0f4f8;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+            cursor: pointer;
+            transition: transform .22s ease, box-shadow .22s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dest-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+        }
+
+        .dest-card-img-wrap {
+            width: 100%;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            position: relative;
+            background: #e2e8f0;
+        }
+
+        .dest-card-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .3s ease;
+        }
+
+        .dest-card:hover .dest-card-img-wrap img {
+            transform: scale(1.05);
+        }
+
+        .dest-card-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #3b82f6;
+        }
+
+        .dest-card-body {
+            padding: 14px 16px 16px;
+        }
+
+        .dest-card-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0 0 4px;
+            line-height: 1.2;
+        }
+
+        .dest-card-location {
+            font-size: 12.5px;
+            color: #94a3b8;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .dest-card-badges {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .card-badge-featured {
+            background: #fef9c3;
+            color: #92400e;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .card-badge-inactive {
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        /* ── Filter bar ── */
+        .filter-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px 20px;
+            border: 1px solid #f0f4f8;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+            margin-bottom: 20px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .filter-lbl {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .search-wrap {
+            position: relative;
+        }
+
+        .search-wrap .si {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .search-wrap input {
+            padding-left: 36px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13.5px;
+            height: 40px;
+            color: #1e293b;
+            width: 100%;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+            font-family: inherit;
+        }
+
+        .search-wrap input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .1);
+        }
+
+        .filter-select {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13.5px;
+            height: 40px;
+            color: #1e293b;
+            padding: 0 32px 0 14px;
+            width: 100%;
+            outline: none;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 12px center;
+            appearance: none;
+            cursor: pointer;
+            transition: border-color .2s;
+            font-family: inherit;
+        }
+
+        .filter-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .1);
+        }
+
+        .btn-filter {
+            background: #0f1623;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            height: 40px;
+            padding: 0 20px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: background .2s, transform .15s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .btn-filter:hover {
+            background: #1e3a5f;
+            transform: translateY(-1px);
+        }
+
+        .btn-reset {
+            background: #f1f5f9;
+            color: #64748b;
+            border: none;
+            border-radius: 10px;
+            height: 40px;
+            padding: 0 16px;
+            font-size: 13.5px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background .2s;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn-reset:hover {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        /* ── Alert ── */
+        .alert-box {
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 13.5px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-left: 4px solid #16a34a;
+            color: #166534;
+        }
+
+        .alert-error {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            border-left: 4px solid #dc2626;
+            color: #991b1b;
+        }
+
+        .alert-close-btn {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 17px;
+            opacity: .55;
+            line-height: 1;
+        }
+
+        .alert-close-btn:hover {
+            opacity: 1;
+        }
+
+        /* ── Table Card ── */
+        .table-card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #f0f4f8;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+            overflow: hidden;
+        }
+
+        .table-card-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid #f3f6fa;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* ── Table ── */
+        .dest-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .dest-table thead tr {
+            background: #f8fafc;
+            border-bottom: 2px solid #e8edf3;
+        }
+
+        .dest-table thead th {
+            padding: 13px 16px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            white-space: nowrap;
+        }
+
+        .dest-table thead th:first-child {
+            padding-left: 22px;
+        }
+
+        .dest-table thead th:last-child {
+            padding-right: 22px;
+            text-align: center;
+        }
+
+        .dest-table tbody tr {
+            border-bottom: 1px solid #f3f6fa;
+            transition: background .18s;
+        }
+
+        .dest-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .dest-table tbody tr:hover {
+            background: #fafcff;
+        }
+
+        .dest-table tbody td {
+            padding: 14px 16px;
+            font-size: 13.5px;
+            color: #374151;
+            vertical-align: middle;
+        }
+
+        .dest-table tbody td:first-child {
+            padding-left: 22px;
+        }
+
+        .dest-table tbody td:last-child {
+            padding-right: 22px;
+        }
+
+        /* ── Table image thumb ── */
+        .dest-thumb {
+            width: 52px;
+            height: 40px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+            display: block;
+        }
+
+        .dest-thumb-placeholder {
+            width: 52px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 16px;
+            border: 2px solid #e2e8f0;
+        }
+
+        /* ── Dest name cell ── */
+        .dest-name {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 14px;
+            display: block;
+        }
+
+        .dest-slug {
+            color: #94a3b8;
+            font-size: 11.5px;
+            margin-top: 2px;
+            display: block;
+        }
+
+        /* ── Location / Region badge ── */
+        .loc-badge {
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .region-badge {
+            background: #f1f5f9;
+            color: #475569;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        /* ── Status badges ── */
+        .status-badge {
+            border-radius: 20px;
+            padding: 4px 13px;
+            font-size: 11.5px;
+            font-weight: 700;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .s-active {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .s-inactive {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .s-featured {
+            background: #fef9c3;
+            color: #92400e;
+        }
+
+        /* ── Trek count badge ── */
+        .trek-count {
+            background: #e0f2fe;
+            color: #0284c7;
+            border-radius: 8px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ── Action buttons ── */
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            transition: transform .15s, box-shadow .15s;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .12);
+        }
+
+        .ab-view {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .ab-edit {
+            background: #fef9c3;
+            color: #92400e;
+        }
+
+        .ab-delete {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+        }
+
+        /* ── Dots menu ── */
+        .dots-menu-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dots-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            color: #64748b;
+            transition: background .15s;
+        }
+
+        .dots-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .dots-dropdown {
+            position: absolute;
+            right: 0;
+            top: 38px;
+            z-index: 100;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+            min-width: 150px;
+            padding: 6px;
+            display: none;
+        }
+
+        .dots-dropdown.open {
+            display: block;
+        }
+
+        .dots-dropdown a,
+        .dots-dropdown button {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            cursor: pointer;
+            transition: background .15s;
+            font-family: inherit;
+        }
+
+        .dots-dropdown a:hover,
+        .dots-dropdown button:hover {
+            background: #f8fafc;
+        }
+
+        .dots-dropdown .dd-delete {
+            color: #dc2626;
+        }
+
+        .dots-dropdown .dd-delete:hover {
+            background: #fff1f2;
+        }
+
+        .dots-divider {
+            height: 1px;
+            background: #f3f6fa;
+            margin: 4px 0;
+        }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+            color: #94a3b8;
+        }
+
+        /* ── Pagination ── */
+        .pagination-wrap {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #f0f4f8;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+        }
+
+        /* ── Delete modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 22, 35, .55);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            width: 92%;
+            max-width: 440px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+            animation: fadeSlideUp .25s ease;
+        }
+
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #fee2e2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #dc2626;
+            margin: 0 auto 18px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .modal-text {
+            font-size: 13.5px;
+            color: #64748b;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: #f1f5f9;
+            color: #374151;
+            border: none;
+            border-radius: 10px;
+            height: 42px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .15s;
+            font-family: inherit;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-delete-confirm {
+            flex: 1;
+            background: #dc2626;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            height: 42px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .15s;
+            font-family: inherit;
+        }
+
+        .btn-delete-confirm:hover {
+            background: #b91c1c;
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 1200px) {
+            .dest-cards-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .dest-cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filter-grid>*:nth-child(3) {
+                grid-column: 1/3;
+            }
+
+            .filter-grid>*:nth-child(4),
+            .filter-grid>*:nth-child(5) {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .dest-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-grid>* {
+                grid-column: 1 !important;
+            }
+
+            .page-title-text {
+                font-size: 18px;
+            }
+
+            .dest-table thead th:nth-child(4),
+            .dest-table tbody td:nth-child(4),
+            .dest-table thead th:nth-child(5),
+            .dest-table tbody td:nth-child(5),
+            .dest-table thead th:nth-child(6),
+            .dest-table tbody td:nth-child(6) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .dest-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Pagination pills */
+        .pagination {
+            margin: 0;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .page-link {
+            border-radius: 8px !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #374151 !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            padding: 6px 12px !important;
+            transition: all .15s !important;
+            line-height: 1.5 !important;
+        }
+
+        .page-link:hover {
+            background: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        .page-item.active .page-link {
+            background: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+            color: #fff !important;
+        }
+
+        .page-item.disabled .page-link {
+            opacity: .45;
+        }
+    </style>
+@endpush
 
 @section('content')
-    <div class="container-fluid px-0">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h4 class="mb-1" style="color: #1e2a2e;">
-                    <i class="fas fa-map-marker-alt me-2" style="color: #e9b35f;"></i>
-                    Destinations
-                </h4>
-                <p class="text-muted small mb-0">
-                    <i class="fas fa-database me-1"></i>
-                    Total Destinations: <strong>{{ $destinations->total() }}</strong> |
-                    <i class="fas fa-layer-group me-1 ms-2"></i>
-                    Page: {{ $destinations->currentPage() }} / {{ $destinations->lastPage() }}
-                </p>
-            </div>
-
-            <a href="{{ route('admin.destinations.create') }}" class="btn"
-                style="background: linear-gradient(135deg, #1e2a2e, #2c4a3e); color: white; border-radius: 40px; padding: 10px 24px;">
-                <i class="fas fa-plus-circle me-2"></i> Add New Destination
-            </a>
-        </div>
-
-        {{-- Search and Filter Bar --}}
-        <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: white; border-radius: 28px !important;">
-            <div class="card-body p-3">
-                <form method="GET" action="{{ route('admin.destinations.index') }}" class="row g-3 align-items-center">
-                    <div class="col-md-5">
-                        <div class="input-group" style="border-radius: 40px; overflow: hidden;">
-                            <span class="input-group-text bg-white border-end-0" style="border-radius: 40px 0 0 40px;">
-                                <i class="fas fa-search text-muted"></i>
-                            </span>
-                            <input type="text" name="search" class="form-control border-start-0"
-                                style="border-radius: 0 40px 40px 0;" placeholder="Search by name or location..."
-                                value="{{ request('search') }}">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <select name="region" class="form-select" style="border-radius: 40px;">
-                            <option value="">All Regions</option>
-                            <option value="Himalayas" {{ request('region') == 'Himalayas' ? 'selected' : '' }}>Himalayas
-                            </option>
-                            <option value="Hills" {{ request('region') == 'Hills' ? 'selected' : '' }}>Hills</option>
-                            <option value="Terai" {{ request('region') == 'Terai' ? 'selected' : '' }}>Terai</option>
-                            <option value="Kathmandu Valley"
-                                {{ request('region') == 'Kathmandu Valley' ? 'selected' : '' }}>Kathmandu Valley</option>
-                            <option value="Annapurna Region"
-                                {{ request('region') == 'Annapurna Region' ? 'selected' : '' }}>Annapurna Region</option>
-                            <option value="Everest Region" {{ request('region') == 'Everest Region' ? 'selected' : '' }}>
-                                Everest Region</option>
-                            <option value="Langtang Region" {{ request('region') == 'Langtang Region' ? 'selected' : '' }}>
-                                Langtang Region</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <select name="status" class="form-select" style="border-radius: 40px;">
-                            <option value="">All Status</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive
-                            </option>
-                            <option value="featured" {{ request('status') == 'featured' ? 'selected' : '' }}>Featured
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn w-100"
-                            style="background: #1e2a2e; color: white; border-radius: 40px;">
-                            <i class="fas fa-filter me-1"></i> Filter
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert"
-                style="border-radius: 16px; border-left: 4px solid #10b981;">
-                <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert"
-                style="border-radius: 16px; border-left: 4px solid #ef4444;">
-                <i class="fas fa-exclamation-triangle me-2"></i> {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        <div class="card border-0 rounded-4 shadow-sm" style="background: white; border-radius: 28px !important;">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" style="border-radius: 28px; overflow: hidden;">
-                        <thead style="background: linear-gradient(135deg, #1e2a2e, #2d4a3a); color: #f5e6d3;">
-                            <tr>
-                                <th class="ps-4" style="width: 60px;">#</th>
-                                <th style="width: 100px;">Image</th>
-                                <th>Name</th>
-                                <th style="width: 120px;">Location</th>
-                                <th style="width: 100px;">Region</th>
-                                <th style="width: 80px;">Altitude</th>
-                                <th style="width: 90px;" class="text-center">Treks</th>
-                                <th style="width: 120px;" class="text-center pe-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($destinations as $index => $destination)
-                                <tr style="border-bottom: 1px solid #f0e2ce;">
-                                    <td class="ps-4 fw-bold">
-                                        {{ $destinations->firstItem() + $index }}
-                                    </td>
-                                    <td>
-                                        @if ($destination->featured_image)
-                                            <img src="{{ asset('storage/' . $destination->featured_image) }}"
-                                                alt="{{ $destination->name }}"
-                                                style="width: 65px; height: 50px; object-fit: cover; border-radius: 12px; border: 2px solid #e9b35f; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-                                        @else
-                                            <div
-                                                style="width: 65px; height: 50px; background: linear-gradient(135deg, #e9d5b5, #d4a373); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #8b5e3c;">
-                                                <i class="fas fa-mountain fa-2x"></i>
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <span class="fw-semibold"
-                                                style="color: #1e2a2e;">{{ $destination->name }}</span>
-                                            @if ($destination->slug)
-                                                <br>
-                                                <small class="text-muted" style="font-size: 0.7rem;">
-                                                    <i class="fas fa-link"></i> {{ $destination->slug }}
-                                                </small>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge"
-                                            style="background: #e9b35f20; color: #b85c1a; border-radius: 20px; padding: 6px 12px;">
-                                            <i class="fas fa-map-pin me-1"></i> {{ $destination->location }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if ($destination->region)
-                                            <span class="badge"
-                                                style="background: #1e2a2e20; color: #1e2a2e; border-radius: 20px; padding: 6px 12px;">
-                                                {{ $destination->region }}
-                                            </span>
-                                        @else
-                                            <span class="text-muted small">—</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($destination->altitude)
-                                            <i class="fas fa-arrow-up me-1 text-muted"></i> {{ $destination->altitude }}
-                                        @else
-                                            <span class="text-muted small">—</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge"
-                                            style="background: #0ea5e9; color: white; border-radius: 20px; padding: 6px 12px;">
-                                            <i class="fas fa-hiking me-1"></i> {{ $destination->treks_count }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="btn-group" role="group" style="gap: 6px;">
-                                            <a href="{{ route('admin.destinations.show', $destination->id) }}"
-                                                class="btn btn-sm"
-                                                style="background: #0ea5e9; color: white; border-radius: 30px; padding: 6px 14px;"
-                                                title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('admin.destinations.edit', $destination->id) }}"
-                                                class="btn btn-sm"
-                                                style="background: #e9b35f; color: #1e2a2e; border-radius: 30px; padding: 6px 14px;"
-                                                title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-sm delete-destination"
-                                                data-id="{{ $destination->id }}" data-name="{{ $destination->name }}"
-                                                style="background: #ef4444; color: white; border-radius: 30px; padding: 6px 14px;"
-                                                title="Delete">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </div>
-
-                                        <div class="mt-2">
-                                            @if ($destination->is_featured)
-                                                <span class="badge"
-                                                    style="background: #e9b35f; color: #1e2a2e; font-size: 0.7rem;">
-                                                    <i class="fas fa-star"></i> Featured
-                                                </span>
-                                            @endif
-                                            @if (!$destination->is_active)
-                                                <span class="badge"
-                                                    style="background: #95a5a6; color: white; font-size: 0.7rem;">
-                                                    <i class="fas fa-eye-slash"></i> Inactive
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="text-center py-5">
-                                        <i class="fas fa-map-marked-alt fa-4x text-muted mb-3 d-block"
-                                            style="opacity: 0.5;"></i>
-                                        <h5 class="text-muted">No Destinations Found</h5>
-                                        <p class="text-muted small">Start by adding your first destination</p>
-                                        <a href="{{ route('admin.destinations.create') }}" class="btn btn-sm"
-                                            style="background: #1e2a2e; color: white; border-radius: 30px; margin-top: 10px;">
-                                            <i class="fas fa-plus"></i> Add First Destination
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        {{-- Pagination --}}
-        @if ($destinations->hasPages())
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 p-3 bg-white rounded-4 shadow-sm"
-                        style="background: rgba(255,255,255,0.9);">
-                        <div>
-                            <i class="fas fa-info-circle" style="color: #e9b35f;"></i>
-                            <span class="small text-muted">
-                                Showing <strong>{{ $destinations->firstItem() }}</strong> to
-                                <strong>{{ $destinations->lastItem() }}</strong>
-                                of <strong>{{ $destinations->total() }}</strong> destinations
-                            </span>
-                        </div>
-                        <div>
-                            {{ $destinations->onEachSide(1)->links('pagination::bootstrap-5') }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-
+    {{-- ── PAGE HEADER ── --}}
+    <div class="page-header anim">
+        <h1 class="page-title-text">
+            Destinations
+        </h1>
+        <a href="{{ route('admin.destinations.create') }}" class="btn-add-dest">
+            <i class="fas fa-plus"></i> Add Destination
+        </a>
     </div>
 
-    {{-- Delete Confirmation Modal --}}
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 24px;">
-                <div class="modal-header" style="border-bottom: 2px solid #f0e2ce; background: #fef9e6;">
-                    <h5 class="modal-title" id="deleteModalLabel" style="color: #1e2a2e;">
-                        <i class="fas fa-trash-alt me-2" style="color: #ef4444;"></i>
-                        Delete Destination
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    {{-- ── ALERTS ── --}}
+    @if (session('success'))
+        <div class="alert-box alert-success anim">
+            <i class="fas fa-check-circle" style="font-size:15px;flex-shrink:0;"></i>
+            <span>{{ session('success') }}</span>
+            <button class="alert-close-btn" onclick="this.parentElement.remove()">×</button>
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="alert-box alert-error anim">
+            <i class="fas fa-exclamation-triangle" style="font-size:15px;flex-shrink:0;"></i>
+            <span>{{ session('error') }}</span>
+            <button class="alert-close-btn" onclick="this.parentElement.remove()">×</button>
+        </div>
+    @endif
+
+    {{-- ── FEATURED PHOTO CARDS ── --}}
+    <div class="dest-cards-grid">
+        @forelse($destinations->take(5) as $dest)
+            <a href="{{ route('admin.destinations.show', $dest) }}" class="dest-card anim"
+                style="animation-delay:{{ $loop->index * 0.07 + 0.05 }}s;">
+                <div class="dest-card-img-wrap">
+                    @if ($dest->featured_image)
+                        <img src="{{ asset('storage/' . $dest->featured_image) }}" alt="{{ $dest->name }}" loading="lazy">
+                    @else
+                        <div class="dest-card-placeholder">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                    @endif
                 </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete <strong id="deleteDestinationName"></strong>?</p>
-                    <p class="text-muted small mb-0">This action cannot be undone. All associated treks will keep their
-                        data but the destination reference will be removed.</p>
+                <div class="dest-card-body">
+                    <p class="dest-card-name">{{ $dest->name }}</p>
+                    <p class="dest-card-location">{{ $dest->location ?? ($dest->region ?? 'Nepal') }}</p>
+                    <div class="dest-card-badges">
+                        @if ($dest->is_featured)
+                            <span class="card-badge-featured"><i class="fas fa-star"></i> Featured</span>
+                        @endif
+                        @if (!$dest->is_active)
+                            <span class="card-badge-inactive"><i class="fas fa-eye-slash"></i> Inactive</span>
+                        @endif
+                    </div>
                 </div>
-                <div class="modal-footer" style="border-top: 1px solid #f0e2ce;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                        style="border-radius: 30px;">
-                        <i class="fas fa-times"></i> Cancel
+            </a>
+        @empty
+            <div style="grid-column:1/-1;text-align:center;padding:30px;color:#94a3b8;font-size:14px;">
+                No destinations yet.
+            </div>
+        @endforelse
+    </div>
+
+    {{-- ── FILTER BAR ── --}}
+    <div class="filter-card anim">
+        <form method="GET" action="{{ route('admin.destinations.index') }}">
+            <div class="filter-grid">
+                <div>
+                    <label class="filter-lbl">Search</label>
+                    <div class="search-wrap">
+                        <i class="fas fa-search si"></i>
+                        <input type="text" name="search" placeholder="Search by name or location..."
+                            value="{{ request('search') }}">
+                    </div>
+                </div>
+                <div>
+                    <label class="filter-lbl">Region</label>
+                    <select name="region" class="filter-select">
+                        <option value="">All Regions</option>
+                        @foreach (['Himalayas', 'Hills', 'Terai', 'Kathmandu Valley', 'Annapurna Region', 'Everest Region', 'Langtang Region'] as $r)
+                            <option value="{{ $r }}" {{ request('region') == $r ? 'selected' : '' }}>
+                                {{ $r }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="filter-lbl">Status</label>
+                    <select name="status" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        <option value="featured" {{ request('status') == 'featured' ? 'selected' : '' }}>Featured</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="btn-filter">
+                        <i class="fas fa-filter"></i> Filter
                     </button>
-                    <form id="deleteForm" method="POST" style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn"
-                            style="background: #ef4444; color: white; border-radius: 30px;">
-                            <i class="fas fa-trash-alt"></i> Delete
-                        </button>
-                    </form>
                 </div>
+                <div>
+                    <a href="{{ route('admin.destinations.index') }}" class="btn-reset">
+                        <i class="fas fa-times"></i> Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {{-- ── TABLE ── --}}
+    <div class="table-card anim">
+        <div class="table-card-header">
+            <div style="font-weight:700;font-size:14px;color:#1e293b;display:flex;align-items:center;gap:8px;">
+                <span style="width:8px;height:8px;border-radius:50%;background:#3b82f6;display:inline-block;"></span>
+                All Destinations
+            </div>
+            @if (request()->hasAny(['search', 'region', 'status']))
+                <span
+                    style="background:#fef3c7;color:#92400e;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;">
+                    <i class="fas fa-filter" style="margin-right:4px;"></i>Filters Active
+                </span>
+            @endif
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="dest-table">
+                <thead>
+                    <tr>
+                        <th>Destination</th>
+                        <th>Description</th>
+                        <th>Popular Activities</th>
+                        <th>Status</th>
+                        <th style="text-align:center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($destinations as $destination)
+                        <tr>
+
+                            {{-- Destination (thumb + name + location) --}}
+                            <td>
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    @if ($destination->featured_image)
+                                        <img src="{{ asset('storage/' . $destination->featured_image) }}"
+                                            alt="{{ $destination->name }}" class="dest-thumb">
+                                    @else
+                                        <div class="dest-thumb-placeholder">
+                                            <i class="fas fa-mountain"></i>
+                                        </div>
+                                    @endif
+                                    <div>
+                                        <span class="dest-name">{{ $destination->name }}</span>
+                                        @if ($destination->location)
+                                            <span class="dest-slug">
+                                                <i class="fas fa-map-pin"
+                                                    style="font-size:10px;margin-right:3px;color:#cbd5e1;"></i>
+                                                {{ $destination->location }}
+                                            </span>
+                                        @endif
+                                        @if ($destination->region)
+                                            <span
+                                                style="display:inline-block;background:#f1f5f9;color:#64748b;border-radius:6px;padding:2px 7px;font-size:10.5px;font-weight:600;margin-top:3px;">
+                                                {{ $destination->region }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+
+                            {{-- Description --}}
+                            <td style="max-width:240px;">
+                                <span style="color:#64748b;font-size:13px;line-height:1.5;">
+                                    {{ Str::limit(strip_tags($destination->description ?? ''), 60) ?: '—' }}
+                                </span>
+                            </td>
+
+                            {{-- Popular Activities --}}
+                            <td style="max-width:220px;">
+                                @if ($destination->activities || $destination->popular_activities)
+                                    @php
+                                        $acts = $destination->activities ?? ($destination->popular_activities ?? '');
+                                        $actList = is_array($acts) ? implode(', ', $acts) : $acts;
+                                    @endphp
+                                    <span style="color:#64748b;font-size:13px;">
+                                        {{ Str::limit($actList, 55) }}
+                                    </span>
+                                @elseif($destination->treks_count > 0)
+                                    <span style="color:#64748b;font-size:13px;">
+                                        <i class="fas fa-hiking" style="color:#3b82f6;margin-right:4px;"></i>
+                                        Trekking & Adventures
+                                    </span>
+                                @else
+                                    <span style="color:#cbd5e1;font-size:13px;">—</span>
+                                @endif
+                            </td>
+
+                            {{-- Status --}}
+                            <td>
+                                @if ($destination->is_featured)
+                                    <span class="status-badge s-featured"><i class="fas fa-star"
+                                            style="font-size:10px;"></i> Featured</span>
+                                @elseif($destination->is_active ?? true)
+                                    <span class="status-badge s-active">Active</span>
+                                @else
+                                    <span class="status-badge s-inactive">Inactive</span>
+                                @endif
+                            </td>
+
+                            {{-- Actions — dots menu ── --}}
+                            <td style="text-align:center;">
+                                <div class="dots-menu-wrap">
+                                    <button class="dots-btn dots-toggle" type="button" aria-label="Actions">
+                                        <span style="letter-spacing:1px;">•••</span>
+                                    </button>
+                                    <div class="dots-dropdown">
+                                        <a href="{{ route('admin.destinations.show', $destination) }}">
+                                            <i class="fas fa-eye" style="color:#0284c7;width:16px;"></i> View
+                                        </a>
+                                        <a href="{{ route('admin.destinations.edit', $destination) }}">
+                                            <i class="fas fa-pen" style="color:#92400e;width:16px;"></i> Edit
+                                        </a>
+                                        <div class="dots-divider"></div>
+                                        <button type="button" class="dd-delete delete-trigger"
+                                            data-url="{{ route('admin.destinations.destroy', $destination) }}"
+                                            data-name="{{ $destination->name }}">
+                                            <i class="fas fa-trash-alt" style="color:#dc2626;width:16px;"></i> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-icon"><i class="fas fa-map-marked-alt"></i></div>
+                                    <h5 style="color:#374151;font-weight:700;margin-bottom:6px;">No Destinations Found</h5>
+                                    <p style="color:#94a3b8;font-size:13.5px;margin:0 0 16px;">
+                                        {{ request()->hasAny(['search', 'region', 'status']) ? 'Try adjusting your filters.' : 'Start by adding your first destination.' }}
+                                    </p>
+                                    <a href="{{ route('admin.destinations.create') }}" class="btn-add-dest"
+                                        style="display:inline-flex;">
+                                        <i class="fas fa-plus"></i> Add First Destination
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {{-- ── PAGINATION ── --}}
+    {{-- @if ($destinations->hasPages())
+        <div class="pagination-wrap anim">
+            <div style="font-size:13px;color:#64748b;">
+                <i class="fas fa-info-circle" style="color:#3b82f6;margin-right:5px;"></i>
+                Showing <strong style="color:#1e293b;">{{ $destinations->firstItem() }}</strong>–<strong
+                    style="color:#1e293b;">{{ $destinations->lastItem() }}</strong>
+                of <strong style="color:#1e293b;">{{ $destinations->total() }}</strong> destinations
+            </div>
+            <div>
+                {{ $destinations->onEachSide(1)->links('pagination::bootstrap-5') }}
+            </div>
+        </div>
+    @endif --}}
+
+    {{-- ── DELETE MODAL ── --}}
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box">
+            <div class="modal-icon"><i class="fas fa-trash-alt"></i></div>
+            <h3 class="modal-title">Delete Destination</h3>
+            <p class="modal-text">
+                Are you sure you want to delete <strong id="deleteDestName" style="color:#1e293b;"></strong>?<br>
+                <span style="font-size:12.5px;color:#94a3b8;margin-top:6px;display:block;">This action cannot be undone.
+                    Associated treks will keep their data.</span>
+            </p>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="cancelDelete">Cancel</button>
+                <form id="deleteForm" method="POST" style="flex:1;display:flex;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-delete-confirm" style="width:100%;">
+                        <i class="fas fa-trash-alt" style="margin-right:6px;"></i>Delete
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
 @endsection
 
-@push('styles')
-    <style>
-        .table-hover tbody tr:hover {
-            background-color: #fff9ef !important;
-            transition: all 0.2s ease;
-        }
-
-        .btn-group .btn {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-group .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .table thead th {
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            padding: 16px 12px;
-            border-bottom: none;
-        }
-
-        .table tbody td {
-            padding: 18px 12px;
-            vertical-align: middle;
-        }
-
-        .pagination {
-            margin-bottom: 0;
-        }
-
-        .pagination .page-link {
-            border-radius: 30px !important;
-            margin: 0 2px;
-            color: #1e2a2e;
-            border-color: #f0e2ce;
-        }
-
-        .pagination .page-item.active .page-link {
-            background: #e9b35f;
-            border-color: #e9b35f;
-            color: #1e2a2e;
-            font-weight: 600;
-        }
-
-        .pagination .page-link:hover {
-            background: #e9b35f20;
-            border-color: #e9b35f;
-            color: #b85c1a;
-        }
-
-        /* Search input group styling */
-        .input-group-text {
-            border-color: #e0d5c0;
-        }
-
-        .input-group .form-control:focus,
-        .form-select:focus {
-            border-color: #e9b35f;
-            box-shadow: none;
-        }
-
-        .input-group .form-control:focus+.input-group-text,
-        .input-group .form-control:focus {
-            border-color: #e9b35f;
-        }
-
-        @media (max-width: 992px) {
-
-            .table thead th,
-            .table tbody td {
-                padding: 12px 8px;
-                font-size: 13px;
-            }
-
-            .btn-group .btn {
-                padding: 4px 10px;
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .btn-group {
-                display: flex;
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .btn-group .btn {
-                margin: 0 !important;
-                width: 100%;
-            }
-        }
-
-        .alert {
-            border: none;
-            background: linear-gradient(135deg, #fef9e6, #ffffff);
-        }
-    </style>
-@endpush
-
 @push('scripts')
     <script>
-        // Delete confirmation modal handler
         document.addEventListener('DOMContentLoaded', function() {
-            const deleteButtons = document.querySelectorAll('.delete-destination');
-            const deleteForm = document.getElementById('deleteForm');
-            const deleteDestinationNameSpan = document.getElementById('deleteDestinationName');
 
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const destinationId = this.getAttribute('data-id');
-                    const destinationName = this.getAttribute('data-name');
-
-                    deleteDestinationNameSpan.textContent = destinationName;
-                    deleteForm.action = `/admin/destinations/${destinationId}`;
-
-                    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                    modal.show();
+            // ── Dots menu toggle ──────────────────────────────────────────────
+            document.querySelectorAll('.dots-toggle').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const dd = this.nextElementSibling;
+                    const isOpen = dd.classList.contains('open');
+                    // close all
+                    document.querySelectorAll('.dots-dropdown.open').forEach(d => d.classList
+                        .remove('open'));
+                    if (!isOpen) dd.classList.add('open');
                 });
             });
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.dots-dropdown.open').forEach(d => d.classList.remove('open'));
+            });
+
+            // ── Delete modal ─────────────────────────────────────────────────
+            const modal = document.getElementById('deleteModal');
+            const deleteForm = document.getElementById('deleteForm');
+            const deleteName = document.getElementById('deleteDestName');
+            const cancelBtn = document.getElementById('cancelDelete');
+
+            document.querySelectorAll('.delete-trigger').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const url = this.getAttribute('data-url');
+                    const name = this.getAttribute('data-name');
+                    deleteName.textContent = name;
+                    deleteForm.action = url;
+                    modal.classList.add('open');
+                    // close dots menu
+                    document.querySelectorAll('.dots-dropdown.open').forEach(d => d.classList
+                        .remove('open'));
+                });
+            });
+
+            cancelBtn.addEventListener('click', () => modal.classList.remove('open'));
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('open');
+            });
+
         });
     </script>
 @endpush

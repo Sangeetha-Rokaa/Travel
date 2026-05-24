@@ -13,6 +13,8 @@ use App\Http\Controllers\Frontend\PackageController;
 use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\BookingController;
+use App\Http\Controllers\Frontend\TestimonialController;
+
 
 
 // Home
@@ -48,7 +50,7 @@ Route::prefix('packages')->name('packages.')->group(function () {
     Route::get('/{package}',  [PackageController::class, 'show'])->name('show');
 });
 Route::get('/packages',          [PackageController::class, 'index'])->name('packages.index');
-Route::get('/packages/{slug}',   [PackageController::class, 'show'])->name('packages.show');
+Route::get('/packages/{package}',   [PackageController::class, 'show'])->name('packages.show');
 
 Route::get('/booking', function () {
     return view('frontend.booking');
@@ -59,6 +61,7 @@ Route::post('/book', [BookingController::class, 'store'])->name('bookings.store'
 // About
 Route::get('/about-us', [AboutController::class, 'index'])->name('about.index');
 Route::get('/about', [AboutController::class, 'index'])->name('about.index');
+
 Route::get('/about', function () {
     return view('about');
 })->name('about');
@@ -75,6 +78,8 @@ Route::get('/contact',       [ContactController::class, 'index'])->name('contact
 Route::get('/treks',          [TrekController::class, 'index'])->name('treks.index');
 Route::get('/treks/{slug}',   [TrekController::class, 'show'])->name('treks.show');
 
+Route::get('/testimonials', [TestimonialController::class, 'index'])
+    ->name('testimonials.index');
 // ═══════════════════════════════════════════════════════════════════════════════
 //  ADMIN ROUTES  —  protected by 'auth' + 'verified' middleware
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -82,6 +87,8 @@ Route::get('/treks/{slug}',   [TrekController::class, 'show'])->name('treks.show
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\EmailSettingController;
 use App\Http\Controllers\Admin\DestinationController as AdminDestinationController;
 use App\Http\Controllers\Admin\TrekController as AdminTrekController;
 use App\Http\Controllers\Admin\PackageController as AdminPackageController;
@@ -100,6 +107,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Login
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -134,19 +142,21 @@ Route::prefix('admin')
             ->name('destinations.store');
 
         // Edit Form
-        Route::get('/destinations/{id}/edit', [AdminDestinationController::class, 'edit'])
+        Route::get('/destinations/{destination}/edit', [AdminDestinationController::class, 'edit'])
             ->name('destinations.edit');
 
         // Update
-        Route::put('/destinations/{id}', [AdminDestinationController::class, 'update'])
+        Route::put('/destinations/{destination}', [AdminDestinationController::class, 'update'])
             ->name('destinations.update');
 
         // Delete
-        Route::delete('/destinations/{id}', [AdminDestinationController::class, 'destroy'])
+        Route::delete('/destinations/{destination}', [AdminDestinationController::class, 'destroy'])
             ->name('destinations.destroy');
-        Route::get('/destinations/{id}', [AdminDestinationController::class, 'show'])
+        Route::get('/destinations/{destination}', [AdminDestinationController::class, 'show'])
             ->name('destinations.show');
     });
+Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
+
 Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth'])
@@ -166,6 +176,8 @@ Route::prefix('admin')
 
         // Treks CRUD
         Route::resource('treks', AdminTrekController::class);
+        Route::post('/treks/{trek}/remove-image', [TrekController::class, 'removeImage'])->name('admin.treks.remove-image');
+        Route::post('/treks/{trek}/remove-gallery-image', [TrekController::class, 'removeGalleryImage'])->name('admin.treks.remove-gallery-image');
         // ->except(['show']);
 
         // Packages CRUD
@@ -183,8 +195,9 @@ Route::prefix('admin')
         Route::delete('contacts/{contact}', [AdminContactController::class, 'destroy'])->name('contacts.destroy');
 
         // Testimonials
-        Route::resource('testimonials', AdminTestimonialController::class)
-            ->except(['show']);
+        Route::post('/treks/{trek}/remove-image', [TrekController::class, 'removeImage'])->name('treks.remove-image');
+        Route::post('/treks/{trek}/remove-gallery-image', [TrekController::class, 'removeGalleryImage'])->name('treks.remove-gallery-image');
+        Route::resource('testimonials', AdminTestimonialController::class);
 
         Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
         Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
@@ -201,4 +214,33 @@ Route::prefix('admin')
         // Export and stats
         Route::get('/bookings/export/csv', [AdminBookingController::class, 'export'])->name('bookings.export');
         Route::get('/bookings/stats', [AdminBookingController::class, 'stats'])->name('bookings.stats');
+        // Route::get('/destinations/{destination}', [DestinationController::class, 'show'])
+        //     ->name('admin.destinations.show');
+        // Settings
+        Route::prefix('admin')->name('admin.')->group(function () {
+            Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+            Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+        });
     });
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/email-settings', [EmailSettingController::class, 'index'])->name('email.index');
+    Route::get('/email-settings/create', [EmailSettingController::class, 'create'])->name('email.create');
+    Route::post('/email-settings', [EmailSettingController::class, 'store'])->name('email.store');
+
+    Route::get('/email-settings/{emailSetting}/edit', [EmailSettingController::class, 'edit'])->name('email.edit');
+    Route::put('/email-settings/{emailSetting}', [EmailSettingController::class, 'update'])->name('email.update');
+
+    Route::delete('/email-settings/{emailSetting}', [EmailSettingController::class, 'destroy'])->name('email.delete');
+});
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+});
+
+
+Route::get('/about', function () {
+    return view('frontend.about');
+})->name('about');

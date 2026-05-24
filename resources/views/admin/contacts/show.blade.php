@@ -1,203 +1,226 @@
 @extends('layouts.admin')
 
 @section('title', 'Contact Details')
-
 @section('content')
 
-    <div class="container-fluid py-4 contact-show-wrapper">
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .title-box h3 {
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .title-box p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 22px;
+        }
+
+        @media (max-width: 992px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cardx {
+            background: #fff;
+            border: 1px solid #eef2f7;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+        }
+
+        .cardx-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cardx-body {
+            padding: 20px;
+        }
+
+        .badge-pill {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            transition: 0.2s;
+        }
+
+        .info-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .info-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+
+        .info-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-top: 3px;
+        }
+
+        .message-box {
+            background: #ffffff;
+            border-left: 4px solid #3b82f6;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #334155;
+        }
+
+        .side-card {
+            position: sticky;
+            top: 80px;
+        }
+
+        .btn-primaryx {
+            background: #0f172a;
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+        }
+
+        .btn-primaryx:hover {
+            background: #1e293b;
+        }
+    </style>
+
+    <div class="container-fluid py-3">
 
         {{-- HEADER --}}
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div class="page-header">
 
-            <div>
-                <h3 class="fw-bold mb-1">Contact Details</h3>
-                <p class="text-muted mb-0">
-                    View and manage customer inquiry information.
-                </p>
+            <div class="title-box">
+                <h3>Contact Details</h3>
+                <p>Manage and review customer inquiries in detail</p>
             </div>
 
-            <a href="{{ route('admin.contacts.index') }}" class="btn btn-outline-dark">
-                Back
+            <a href="{{ route('admin.contacts.index') }}" class="btn btn-outline-dark btn-sm">
+                ← Back
             </a>
 
         </div>
 
-        {{-- SUCCESS --}}
         @if (session('success'))
-            <div class="alert alert-success shadow-sm rounded-3">
+            <div class="alert alert-success">
                 {{ session('success') }}
             </div>
         @endif
 
-        <div class="row g-4">
+        <div class="contact-grid">
 
             {{-- LEFT --}}
-            <div class="col-lg-8">
+            <div>
 
-                <div class="card border-0 shadow-sm rounded-4">
+                <div class="cardx">
 
-                    <div class="card-body p-4">
+                    <div class="cardx-header">
 
-                        {{-- TOP --}}
-                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
-
-                            <div>
-
-                                <h4 class="fw-bold mb-1">
-                                    {{ $contact->subject }}
-                                </h4>
-
-                                <div class="text-muted">
-                                    Submitted on
-                                    {{ $contact->created_at->format('d M Y h:i A') }}
-                                </div>
-
-                            </div>
-
-                            @php
-                                $statusClass = match ($contact->status) {
-                                    'new' => 'bg-primary',
-                                    'read' => 'bg-warning text-dark',
-                                    'replied' => 'bg-success',
-                                    'closed' => 'bg-secondary',
-                                    default => 'bg-dark',
-                                };
-                            @endphp
-
-                            <span class="badge {{ $statusClass }} px-3 py-2">
-                                {{ ucfirst($contact->status) }}
-                            </span>
-
+                        <div>
+                            <h4 style="margin:0;font-weight:800;">
+                                {{ $contact->subject }}
+                            </h4>
+                            <small class="text-muted">
+                                {{ $contact->created_at->format('d M Y h:i A') }}
+                            </small>
                         </div>
 
-                        {{-- CUSTOMER INFO --}}
-                        <div class="row g-3 mb-4">
+                        @php
+                            $statusClass = match ($contact->status) {
+                                'new' => 'background:#3b82f6;color:#fff',
+                                'read' => 'background:#facc15;color:#000',
+                                'replied' => 'background:#22c55e;color:#fff',
+                                'closed' => 'background:#64748b;color:#fff',
+                                default => 'background:#0f172a;color:#fff',
+                            };
+                        @endphp
 
-                            <div class="col-md-6">
-                                <div class="border rounded-3 p-3 h-100">
+                        <span class="badge-pill" style="{{ $statusClass }}">
+                            {{ ucfirst($contact->status) }}
+                        </span>
 
-                                    <small class="text-muted d-block mb-1">
-                                        Full Name
-                                    </small>
+                    </div>
 
-                                    <div class="fw-semibold">
-                                        {{ $contact->name }}
-                                    </div>
+                    <div class="cardx-body">
 
-                                </div>
+                        {{-- INFO --}}
+                        <div class="info-grid mb-4">
+
+                            <div class="info-box">
+                                <div class="info-label">Name</div>
+                                <div class="info-value">{{ $contact->name }}</div>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="border rounded-3 p-3 h-100">
-
-                                    <small class="text-muted d-block mb-1">
-                                        Email Address
-                                    </small>
-
-                                    <div class="fw-semibold">
-                                        {{ $contact->email }}
-                                    </div>
-
-                                </div>
+                            <div class="info-box">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">{{ $contact->email }}</div>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="border rounded-3 p-3 h-100">
-
-                                    <small class="text-muted d-block mb-1">
-                                        Phone Number
-                                    </small>
-
-                                    <div class="fw-semibold">
-                                        {{ $contact->phone ?? 'N/A' }}
-                                    </div>
-
-                                </div>
+                            <div class="info-box">
+                                <div class="info-label">Phone</div>
+                                <div class="info-value">{{ $contact->phone ?? 'N/A' }}</div>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="border rounded-3 p-3 h-100">
-
-                                    <small class="text-muted d-block mb-1">
-                                        Country
-                                    </small>
-
-                                    <div class="fw-semibold">
-                                        {{ $contact->country ?? 'N/A' }}
-                                    </div>
-
-                                </div>
+                            <div class="info-box">
+                                <div class="info-label">Country</div>
+                                <div class="info-value">{{ $contact->country ?? 'N/A' }}</div>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="border rounded-3 p-3 h-100">
-
-                                    <small class="text-muted d-block mb-1">
-                                        Inquiry Type
-                                    </small>
-
-                                    <div class="fw-semibold">
-                                        {{ ucfirst($contact->inquiry_type) }}
-                                    </div>
-
-                                </div>
+                            <div class="info-box">
+                                <div class="info-label">Inquiry Type</div>
+                                <div class="info-value">{{ ucfirst($contact->inquiry_type) }}</div>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="border rounded-3 p-3 h-100">
-
-                                    <small class="text-muted d-block mb-1">
-                                        Trek / Package
-                                    </small>
-
-                                    <div class="fw-semibold">
-                                        {{ $contact->trek_or_package ?? 'N/A' }}
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="border rounded-3 p-3 h-100">
-
-                                    <small class="text-muted d-block mb-1">
-                                        Travel Date
-                                    </small>
-
-                                    <div class="fw-semibold">
-                                        {{ $contact->travel_date ?? 'N/A' }}
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="border rounded-3 p-3 h-100">
-
-                                    <small class="text-muted d-block mb-1">
-                                        Group Size
-                                    </small>
-
-                                    <div class="fw-semibold">
-                                        {{ $contact->group_size ?? 'N/A' }}
-                                    </div>
-
-                                </div>
+                            <div class="info-box">
+                                <div class="info-label">Group Size</div>
+                                <div class="info-value">{{ $contact->group_size ?? 'N/A' }}</div>
                             </div>
 
                         </div>
 
                         {{-- MESSAGE --}}
-                        <div class="border rounded-4 p-4 bg-light">
+                        <h5 style="font-weight:800;margin-bottom:10px;">Message</h5>
 
-                            <h5 class="fw-bold mb-3">
-                                Customer Message
-                            </h5>
-
-                            <div style="white-space: pre-line;">
-                                {{ $contact->message }}
-                            </div>
-
+                        <div class="message-box">
+                            {{ $contact->message }}
                         </div>
 
                     </div>
@@ -207,68 +230,35 @@
             </div>
 
             {{-- RIGHT --}}
-            <div class="col-lg-4">
+            <div class="side-card">
 
-                {{-- UPDATE STATUS --}}
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                {{-- STATUS UPDATE --}}
+                <div class="cardx mb-3">
 
-                    <div class="card-body p-4">
+                    <div class="cardx-header">
+                        <strong>Update Status</strong>
+                    </div>
 
-                        <h5 class="fw-bold mb-4">
-                            Update Status
-                        </h5>
+                    <div class="cardx-body">
 
-                        <form action="{{ route('admin.contacts.updateStatus', $contact) }}" method="POST">
-
+                        <form method="POST" action="{{ route('admin.contacts.updateStatus', $contact) }}">
                             @csrf
                             @method('PATCH')
 
-                            {{-- STATUS --}}
-                            <div class="mb-3">
+                            <label>Status</label>
+                            <select name="status" class="form-control mb-3">
+                                @foreach ($statuses as $status)
+                                    <option value="{{ $status }}"
+                                        {{ $contact->status == $status ? 'selected' : '' }}>
+                                        {{ ucfirst($status) }}
+                                    </option>
+                                @endforeach
+                            </select>
 
-                                <label class="form-label fw-semibold">
-                                    Status
-                                </label>
+                            <label>Admin Notes</label>
+                            <textarea name="admin_notes" class="form-control mb-3" rows="4">{{ $contact->admin_notes }}</textarea>
 
-                                <select name="status" class="form-select @error('status') is-invalid @enderror">
-
-                                    @foreach ($statuses as $status)
-                                        <option value="{{ $status }}"
-                                            {{ $contact->status == $status ? 'selected' : '' }}>
-                                            {{ ucfirst($status) }}
-                                        </option>
-                                    @endforeach
-
-                                </select>
-
-                                @error('status')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-
-                            </div>
-
-                            {{-- NOTES --}}
-                            <div class="mb-3">
-
-                                <label class="form-label fw-semibold">
-                                    Admin Notes
-                                </label>
-
-                                <textarea name="admin_notes" rows="5" class="form-control @error('admin_notes') is-invalid @enderror"
-                                    placeholder="Add internal notes here...">{{ old('admin_notes', $contact->admin_notes) }}</textarea>
-
-                                @error('admin_notes')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-
-                            </div>
-
-                            {{-- BUTTON --}}
-                            <button type="submit" class="btn btn-dark w-100">
+                            <button class="btn-primaryx">
                                 Update Contact
                             </button>
 
@@ -278,42 +268,29 @@
 
                 </div>
 
-                {{-- EXTRA INFO --}}
-                <div class="card border-0 shadow-sm rounded-4">
+                {{-- META --}}
+                <div class="cardx">
 
-                    <div class="card-body p-4">
+                    <div class="cardx-header">
+                        <strong>Meta Info</strong>
+                    </div>
 
-                        <h5 class="fw-bold mb-4">
-                            Additional Info
-                        </h5>
+                    <div class="cardx-body">
 
                         <div class="mb-3">
-                            <small class="text-muted d-block">
-                                Created At
-                            </small>
-
-                            <div class="fw-semibold">
-                                {{ $contact->created_at->format('d M Y h:i A') }}
-                            </div>
+                            <div class="info-label">Created</div>
+                            <div class="info-value">{{ $contact->created_at->format('d M Y h:i A') }}</div>
                         </div>
 
                         <div class="mb-3">
-                            <small class="text-muted d-block">
-                                Last Updated
-                            </small>
-
-                            <div class="fw-semibold">
-                                {{ $contact->updated_at->format('d M Y h:i A') }}
-                            </div>
+                            <div class="info-label">Updated</div>
+                            <div class="info-value">{{ $contact->updated_at->format('d M Y h:i A') }}</div>
                         </div>
 
                         <div>
-                            <small class="text-muted d-block">
-                                Replied At
-                            </small>
-
-                            <div class="fw-semibold">
-                                {{ $contact->replied_at ? $contact->replied_at->format('d M Y h:i A') : 'Not Replied Yet' }}
+                            <div class="info-label">Replied</div>
+                            <div class="info-value">
+                                {{ $contact->replied_at ? $contact->replied_at->format('d M Y h:i A') : 'Not yet' }}
                             </div>
                         </div>
 

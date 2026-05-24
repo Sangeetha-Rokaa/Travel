@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Http\Controllers\Frontend;
+
+use App\Http\Controllers\Controller;
+use App\Models\Testimonial;
+
+class TestimonialController extends Controller
+{
+    public function index()
+    {
+        $testimonials = Testimonial::active()
+            ->latest()
+            ->get();
+
+        return view('frontend.testimonials.index', compact('testimonials'));
+    }
+}

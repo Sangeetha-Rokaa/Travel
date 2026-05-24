@@ -34,12 +34,21 @@
         <ul class="nav-links">
             <li><a href="{{ route('home') }}">Home</a></li>
 
-            <li>
+            <li class="nav-dropdown">
                 <a href="{{ route('destinations.index') }}">
                     Destinations <i class="fa fa-chevron-down chevron"></i>
                 </a>
-            </li>
 
+                <ul class="dropdown-menu hidden">
+                    @foreach ($destinations as $destination)
+                        <li>
+                            <a href="{{ route('destinations.show', $destination->slug) }}">
+                                {{ $destination->name }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </li>
             <li>
                 <a href="{{ route('treks.index') }}">
                     Treks
@@ -53,13 +62,13 @@
             </li>
 
             <li>
-                <a href="{{ route('about') }}">
+                <a href="{{ route('about.index') }}">
                     About Us
                 </a>
             </li>
 
             <li>
-                <a href="{{ route('contact') }}">
+                <a href="{{ route('contact.index') }}">
                     Contact
                 </a>
             </li>
@@ -191,6 +200,15 @@
          GLOBAL SCRIPTS (navbar scroll, reveal, video modal)
     ══════════════════════════════════════════════ -->
     <script>
+        document.addEventListener('click', function(event) {
+
+            const dropdown = document.getElementById('destinationDropdown');
+            const trigger = event.target.closest('.nav-dropdown');
+
+            if (!trigger) {
+                dropdown.classList.add('hidden');
+            }
+        });
         /* ── Navbar scroll ── */
         const navbar = document.getElementById('navbar');
         const heroBg = document.getElementById('heroBg');

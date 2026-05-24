@@ -4,8 +4,8 @@
 @section('content')
 
     <!-- ══════════════════════════════════════════════
-                                                     HERO
-                                                ══════════════════════════════════════════════ -->
+                                                                                         HERO
+                                                                                    ══════════════════════════════════════════════ -->
     <section class="hero" id="home">
         <img id="heroBg" class="hero-bg-img" src="{{ asset('images/landingimg.png') }}" alt="Nepal Himalayan Banner" />
         <div class="hero-overlay"></div>
@@ -42,8 +42,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                                     TRUST BAR
-                                                ══════════════════════════════════════════════ -->
+                                                                                         TRUST BAR
+                                                                                    ══════════════════════════════════════════════ -->
     <div class="trust-bar">
         <div class="trust-item">
             <div class="trust-icon"><i class="fas fa-tag"></i></div>
@@ -80,8 +80,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                                     WHY CHOOSE US
-                                                ══════════════════════════════════════════════ -->
+                                                                                         WHY CHOOSE US
+                                                                                    ══════════════════════════════════════════════ -->
     <section id="why-us">
         <div class="why-inner">
             <div>
@@ -133,8 +133,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                                     POPULAR DESTINATIONS
-                                                ══════════════════════════════════════════════ -->
+                                                                                         POPULAR DESTINATIONS
+                                                                                    ══════════════════════════════════════════════ -->
     <section id="destinations">
         <div class="section-header reveal">
             <h2>Popular Destinations</h2>
@@ -204,8 +204,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                                     TOP TREKKING PLANS
-                                                ══════════════════════════════════════════════ -->
+                                                                                         TOP TREKKING PLANS
+                                                                                    ══════════════════════════════════════════════ -->
     <section id="treks">
 
         <div class="section-header reveal">
@@ -312,8 +312,8 @@
 
 
     <!-- =========================
-                         PACKAGES SECTION
-                    ========================= -->
+                                                             PACKAGES SECTION
+                                                        ========================= -->
 
     <section class="packages-section">
 
@@ -453,84 +453,79 @@
     </section>
 
     <!-- ══════════════════════════════════════════════
-                                                     TESTIMONIALS
-                                                ══════════════════════════════════════════════ -->
+                                                                                         TESTIMONIALS
+                                                                                    ══════════════════════════════════════════════ -->
     <section id="testimonials">
         <div class="section-header reveal">
             <h2>Happy Customers</h2>
-            <div class="divider-line"><span></span><i class="fas fa-mountain"></i><span></span></div>
+            <div class="divider-line">
+                <span></span><i class="fas fa-mountain"></i><span></span>
+            </div>
             <p>What our travelers say about their Nepal experience</p>
         </div>
+
         <div class="testimonials-inner reveal">
+
             <div class="testi-slider">
+
                 <div class="testi-track" id="testiTrack">
 
-                    <div class="testi-slide">
-                        <div class="testi-card">
-                            <div class="quote-icon">"</div>
-                            <div class="testi-avatar-placeholder">E</div>
-                            <div class="testi-name">Emily Johnson</div>
-                            <div class="testi-loc">United States</div>
-                            <div class="testi-stars">
-                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                    class="fas fa-star"></i><i class="fas fa-star"></i>
-                            </div>
-                            <p class="testi-text">"Our trip to Nepal was beyond amazing! The mountains, culture, and
-                                people are incredible. Highly recommended!"</p>
-                        </div>
-                    </div>
+                    @foreach ($testimonials as $testimonial)
+                        <div class="testi-slide">
 
-                    <div class="testi-slide">
-                        <div class="testi-card">
-                            <div class="quote-icon">"</div>
-                            <div class="testi-avatar-placeholder" style="background:#27ae60;">R</div>
-                            <div class="testi-name">Raj Sharma</div>
-                            <div class="testi-loc">India</div>
-                            <div class="testi-stars">
-                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                    class="fas fa-star"></i><i class="fas fa-star"></i>
-                            </div>
-                            <p class="testi-text">"The Everest Base Camp trek was the adventure of a lifetime. The team
-                                was extremely professional and supportive throughout."</p>
-                        </div>
-                    </div>
+                            <div class="testi-card">
 
-                    <div class="testi-slide">
-                        <div class="testi-card">
-                            <div class="quote-icon">"</div>
-                            <div class="testi-avatar-placeholder" style="background:#8e44ad;">S</div>
-                            <div class="testi-name">Sophie Laurent</div>
-                            <div class="testi-loc">France</div>
-                            <div class="testi-stars">
-                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                    class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                <div class="quote-icon">"</div>
+
+                                <div class="testi-avatar">
+                                    <img src="{{ $testimonial->client_photo_url }}"
+                                        alt="{{ $testimonial->client_name }}" class="testi-avatar-img">
+                                </div>
+
+                                <div class="testi-name">
+                                    {{ $testimonial->client_name }}
+                                </div>
+
+                                <div class="testi-loc">
+                                    {{ $testimonial->client_country }}
+                                </div>
+
+                                <div class="testi-stars">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="fas fa-star {{ $i <= $testimonial->rating ? '' : 'empty' }}"></i>
+                                    @endfor
+                                </div>
+
+                                <p class="testi-text">
+                                    "{{ $testimonial->review }}"
+                                </p>
+
                             </div>
-                            <p class="testi-text">"Pokhara took my breath away. The cultural heritage tours were
-                                beautifully organized. Will definitely come back!"</p>
+
                         </div>
-                    </div>
+                    @endforeach
 
                 </div>
             </div>
-            <div class="testi-dots">
-                <button class="testi-dot active" onclick="goToSlide(0)"></button>
-                <button class="testi-dot" onclick="goToSlide(1)"></button>
-                <button class="testi-dot" onclick="goToSlide(2)"></button>
-            </div>
+
+            <!-- Buttons -->
             <div class="testi-arrows">
-                <button class="testi-arrow" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
-                <button class="testi-arrow" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                <button id="prevBtn" class="testi-arrow">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <button id="nextBtn" class="testi-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
-            <div class="view-reviews-wrap">
-                <a href="#" class="btn-outline">View All Reviews</a>
-            </div>
+
         </div>
     </section>
 
 
     <!-- ══════════════════════════════════════════════
-                                                     CONTACT CTA SECTION
-                                                ══════════════════════════════════════════════ -->
+                                                                                         CONTACT CTA SECTION
+                                                                                    ══════════════════════════════════════════════ -->
     <section id="contact-cta">
         <img class="cta-bg" src="{{ asset('images/landingimg.png') }}" alt="Nepal"
             onerror="this.style.display='none';" />
@@ -670,26 +665,49 @@
 
 <script>
     /* ── Testimonial slider ── */
-    let currentSlide = 0;
-    const totalSlides = 3;
-    const track = document.getElementById('testiTrack');
-    const dots = document.querySelectorAll('.testi-dot');
 
-    function goToSlide(n) {
-        currentSlide = n;
-        track.style.transform = `translateX(-${n * 100}%)`;
-        dots.forEach((d, i) => d.classList.toggle('active', i === n));
-    }
+    document.addEventListener('DOMContentLoaded', function() {
 
-    document.getElementById('nextBtn').addEventListener('click', () => {
-        goToSlide((currentSlide + 1) % totalSlides);
+        let currentSlide = 0;
+
+        const track = document.getElementById('testiTrack');
+        const slides = document.querySelectorAll('.testi-slide');
+        const dots = document.querySelectorAll('.testi-dot');
+
+        const totalSlides = slides.length;
+
+        function goToSlide(n) {
+            if (!track) return;
+
+            currentSlide = n;
+
+            track.style.transform = `translateX(-${n * 100}%)`;
+
+            dots.forEach((d, i) => {
+                d.classList.toggle('active', i === n);
+            });
+        }
+
+        // NEXT
+        document.getElementById('nextBtn')?.addEventListener('click', () => {
+            goToSlide((currentSlide + 1) % totalSlides);
+        });
+
+        // PREV
+        document.getElementById('prevBtn')?.addEventListener('click', () => {
+            goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
+        });
+
+        // AUTO SLIDE
+        setInterval(() => {
+            goToSlide((currentSlide + 1) % totalSlides);
+        }, 5000);
+
+        // init
+        goToSlide(0);
+
     });
-    document.getElementById('prevBtn').addEventListener('click', () => {
-        goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
-    });
 
-    // Auto-slide every 5s
-    setInterval(() => goToSlide((currentSlide + 1) % totalSlides), 5000);
 
     /* ── Contact form AJAX ── */
     (function() {

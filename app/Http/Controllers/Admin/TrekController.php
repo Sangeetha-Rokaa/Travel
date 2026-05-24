@@ -8,6 +8,7 @@ use App\Models\Destination;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class TrekController extends Controller
 {
@@ -114,5 +115,121 @@ class TrekController extends Controller
     private function textToArray(string $text): array
     {
         return array_values(array_filter(array_map('trim', explode("\n", $text))));
+    }
+    public function show(Trek $trek): View
+    {
+        return view('admin.treks.show', compact('trek'));
+    }
+    public function removeImage(Request $request, Trek $trek)
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'image_type' => 'required|in:featured'
+            ]);
+
+            // Get the current featured image path
+            $imagePath = $trek->featured_image;
+
+            if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+                // Delete the file from storage
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            // Update database
+            $trek->update(['featured_image' => null]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Featured image removed successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to remove image: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove a specific gallery image from trek
+     */
+    public function removeGalleryImage(Request $request, Trek $trek)
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'image_index' => 'required|integer|min:0'
+            ]);
+
+            $galleryImages = $trek->gallery_images ?? [];
+            $imageIndex = $request->image_index;
+
+            // Check if index exists
+            if (!isset($galleryImages[$imageIndex])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Image not found at specified index'
+                ], 404);
+            }
+
+            // Get the image path
+            $imagePath = $galleryImages[$imageIndex];
+
+            // Delete the file from storage
+            if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            // Remove from array
+            unset($galleryImages[$imageIndex]);
+
+            // Reindex array to maintain sequential keys
+            $galleryImages = array_values($galleryImages);
+
+            // Update database
+            $trek->update(['gallery_images' => $galleryImages]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Gallery image removed successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to remove image: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Alternative: Remove featured image with trek ID parameter
+     */
+    public function removeFeaturedImage($id)
+    {
+        try {
+            $trek = Trek::findOrFail($id);
+
+            // Get the current featured image path
+            $imagePath = $trek->featured_image;
+
+            if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+                // Delete the file from storage
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            // Update database
+            $trek->update(['featured_image' => null]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Featured image removed successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to remove image: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

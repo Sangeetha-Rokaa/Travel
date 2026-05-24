@@ -18,6 +18,12 @@ class Booking extends Model
         'refunded'    => 'Refunded',
     ];
 
+    const BOOKING_TYPES = [
+        'trek'    => 'Trek',
+        'package' => 'Package',
+        'custom'  => 'Custom Request',
+    ];
+
     protected $fillable = [
         'booking_ref',
         'booking_type',
@@ -76,6 +82,11 @@ class Booking extends Model
     public function package(): BelongsTo
     {
         return $this->belongsTo(Package::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     // ── Helpers ──────────────────────────────────────────

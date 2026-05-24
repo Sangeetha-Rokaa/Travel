@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* =============================================
-           ABOUT PAGE STYLES
-        ============================================= */
+               ABOUT PAGE STYLES
+            ============================================= */
 
         .about-page-wrapper {
             background: #eae6de;

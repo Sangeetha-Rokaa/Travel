@@ -1,431 +1,483 @@
-{{-- resources/views/admin/dashboard.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Nepal Travel Dashboard')
-@section('page_title', 'Admin Dashboard')
-@section('page_icon', 'fas fa-chart-line')
+@section('title', 'Dashboard')
+@section('page-title', 'Dashboard')
 
-@section('content')
-    {{-- Stats Cards with Icons and Progress --}}
-    <div class="row g-4 mb-4">
-        <div class="col-md-3 col-sm-6">
-            <div class="card-box bg-trek position-relative overflow-hidden">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h5 class="mb-1 opacity-75"><i class="fas fa-person-hiking me-1"></i> Treks</h5>
-                        <h2 class="mb-0 fw-bold display-6">{{ $treksCount ?? 0 }}</h2>
-                        <small class="opacity-75">Active Expeditions</small>
-                    </div>
-                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                        <i class="fas fa-mountain fa-2x"></i>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <div class="progress bg-white bg-opacity-25" style="height: 4px;">
-                        <div class="progress-bar bg-white" style="width: {{ $treksActivePercentage ?? 75 }}%"></div>
-                    </div>
-                    <small class="opacity-75">{{ $treksActiveCount ?? 9 }} Active / {{ $treksInactiveCount ?? 3 }}
-                        Inactive</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6">
-            <div class="card-box bg-destination position-relative overflow-hidden">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h5 class="mb-1 opacity-75"><i class="fas fa-map-marked-alt me-1"></i> Destinations</h5>
-                        <h2 class="mb-0 fw-bold display-6">{{ $destinationsCount ?? 0 }}</h2>
-                        <small class="opacity-75">Beautiful Places</small>
-                    </div>
-                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                        <i class="fas fa-globe-asia fa-2x"></i>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <div class="progress bg-white bg-opacity-25" style="height: 4px;">
-                        <div class="progress-bar bg-white" style="width: {{ $destinationsActivePercentage ?? 85 }}%"></div>
-                    </div>
-                    <small class="opacity-75">{{ $destinationsActiveCount ?? 7 }} Active /
-                        {{ $destinationsInactiveCount ?? 1 }} Inactive</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6">
-            <div class="card-box bg-package position-relative overflow-hidden">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h5 class="mb-1 opacity-75"><i class="fas fa-suitcase-rolling me-1"></i> Packages</h5>
-                        <h2 class="mb-0 fw-bold display-6">{{ $packagesCount ?? 0 }}</h2>
-                        <small class="opacity-75">Travel Itineraries</small>
-                    </div>
-                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                        <i class="fas fa-ticket-alt fa-2x"></i>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <div class="progress bg-white bg-opacity-25" style="height: 4px;">
-                        <div class="progress-bar bg-white" style="width: {{ $packagesActivePercentage ?? 100 }}%"></div>
-                    </div>
-                    <small class="opacity-75">{{ $packagesActiveCount ?? 5 }} Active / {{ $packagesInactiveCount ?? 0 }}
-                        Inactive</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6">
-            <div class="card-box bg-contact position-relative overflow-hidden">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h5 class="mb-1 opacity-75"><i class="fas fa-id-card me-1"></i> Inquiries</h5>
-                        <h2 class="mb-0 fw-bold display-6">{{ $inquiriesCount ?? 0 }}</h2>
-                        <small class="opacity-75">Customer Messages</small>
-                    </div>
-                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                        <i class="fas fa-envelope fa-2x"></i>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <div class="progress bg-white bg-opacity-25" style="height: 4px;">
-                        <div class="progress-bar bg-white" style="width: {{ $inquiriesUnreadPercentage ?? 30 }}%"></div>
-                    </div>
-                    <small class="opacity-75">{{ $unreadInquiries ?? 7 }} Unread / {{ $readInquiries ?? 16 }} Read</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Charts and Analytics Row --}}
-    <div class="row g-4 mb-4">
-        <div class="col-lg-8">
-            <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="fas fa-chart-line me-2" style="color: #e9b35f;"></i>
-                        Monthly Overview
-                    </h5>
-                    <select class="form-select form-select-sm w-auto" id="chartYear" style="border-radius: 30px;">
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
-                    </select>
-                </div>
-                <canvas id="monthlyChart" height="250"></canvas>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                <h5 class="mb-4 fw-semibold">
-                    <i class="fas fa-chart-pie me-2" style="color: #e9b35f;"></i>
-                    Trek Distribution by Region
-                </h5>
-                <canvas id="regionChart" height="200"></canvas>
-                <div class="mt-3" id="regionLegend"></div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Recent Activity and Quick Actions Row --}}
-    <div class="row g-4 mb-4">
-        <div class="col-lg-6">
-            <div class="bg-white rounded-4 shadow-sm p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="fas fa-history me-2" style="color: #e9b35f;"></i>
-                        Recent Activities
-                    </h5>
-                    <a href="#" class="text-decoration-none small" style="color: #e9b35f;">View All</a>
-                </div>
-                <div class="timeline">
-                    @forelse($recentActivities ?? [] as $activity)
-                        <div class="d-flex gap-3 mb-3 pb-3 border-bottom">
-                            <div class="flex-shrink-0">
-                                <div class="rounded-circle p-2"
-                                    style="background: {{ $activity['color'] ?? '#e9b35f' }}20;">
-                                    <i class="{{ $activity['icon'] ?? 'fas fa-bell' }}"
-                                        style="color: {{ $activity['color'] ?? '#e9b35f' }};"></i>
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="mb-0 fw-semibold">{{ $activity['title'] ?? '' }}</p>
-                                <small class="text-muted">{{ $activity['description'] ?? '' }}</small>
-                                <div>
-                                    <small class="text-muted">{{ $activity['time'] ?? '' }}</small>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-center py-4">
-                            <i class="fas fa-inbox fa-3x text-muted mb-2"></i>
-                            <p class="text-muted">No recent activities</p>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6">
-            <div class="row g-4">
-                {{-- Quick Actions --}}
-                <div class="col-12">
-                    <div class="bg-white rounded-4 shadow-sm p-4">
-                        <h5 class="mb-3 fw-semibold">
-                            <i class="fas fa-bolt me-2" style="color: #e9b35f;"></i>
-                            Quick Actions
-                        </h5>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <a href="{{ route('admin.treks.create') }}" class="text-decoration-none">
-                                    <div class="text-center p-3 rounded-3"
-                                        style="background: #fef9e6; transition: all 0.3s;">
-                                        <i class="fas fa-plus-circle fa-2x mb-2" style="color: #0ea5e9;"></i>
-                                        <p class="mb-0 small fw-semibold">Add Trek</p>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-4">
-                                <a href="{{ route('admin.destinations.create') }}" class="text-decoration-none">
-                                    <div class="text-center p-3 rounded-3"
-                                        style="background: #fef9e6; transition: all 0.3s;">
-                                        <i class="fas fa-map-marker-alt fa-2x mb-2" style="color: #10b981;"></i>
-                                        <p class="mb-0 small fw-semibold">Add Destination</p>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-4">
-                                <a href="{{ route('admin.packages.create') }}" class="text-decoration-none">
-                                    <div class="text-center p-3 rounded-3"
-                                        style="background: #fef9e6; transition: all 0.3s;">
-                                        <i class="fas fa-box fa-2x mb-2" style="color: #f59e0b;"></i>
-                                        <p class="mb-0 small fw-semibold">Add Package</p>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Recent Inquiries Preview --}}
-                <div class="col-12">
-                    <div class="bg-white rounded-4 shadow-sm p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0 fw-semibold">
-                                <i class="fas fa-envelope me-2" style="color: #e9b35f;"></i>
-                                Recent Inquiries
-                            </h5>
-                            <a href="{{ route('admin.contacts.index') }}" class="text-decoration-none small"
-                                style="color: #e9b35f;">View All</a>
-                        </div>
-                        @forelse($recentInquiries ?? [] as $inquiry)
-                            <div class="d-flex gap-3 mb-3 pb-3 border-bottom align-items-start">
-                                <div class="flex-shrink-0">
-                                    <div class="rounded-circle bg-warning bg-opacity-10 p-2">
-                                        <i class="fas fa-user" style="color: #e9b35f;"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between">
-                                        <p class="mb-0 fw-semibold">{{ $inquiry['name'] ?? '' }}</p>
-                                        <small class="text-muted">{{ $inquiry['time'] ?? '' }}</small>
-                                    </div>
-                                    <small class="text-muted d-block">{{ $inquiry['subject'] ?? '' }}</small>
-                                    <small class="text-muted">{{ Str::limit($inquiry['message'] ?? '', 80) }}</small>
-                                </div>
-                                @if (($inquiry['is_read'] ?? false) == false)
-                                    <span class="badge" style="background: #ef4444; border-radius: 30px;">New</span>
-                                @endif
-                            </div>
-                        @empty
-                            <div class="text-center py-4">
-                                <i class="fas fa-inbox fa-3x text-muted mb-2"></i>
-                                <p class="text-muted">No inquiries yet</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Welcome Section with System Info --}}
-    <div class="row">
-        <div class="col-12">
-            <div class="bg-gradient rounded-4 shadow-sm p-4 text-white"
-                style="background: linear-gradient(135deg, #1e2a2e, #2c4a3e);">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                    <div>
-                        <h4 class="mb-2">
-                            <i class="fas fa-hand-peace me-2"></i>
-                            Welcome back, {{ Auth::user()->name ?? 'Admin' }}!
-                        </h4>
-                        <p class="mb-0 opacity-75">
-                            <i class="fas fa-chart-simple me-1"></i>
-                            System is running smoothly.
-                            <strong>{{ $todayBookings ?? 0 }}</strong> bookings today,
-                            <strong>{{ $activeUsers ?? 0 }}</strong> active users.
-                        </p>
-                    </div>
-                    <div>
-                        <a href="#" class="btn btn-light" style="border-radius: 40px; color: #1e2a2e;">
-                            <i class="fas fa-file-alt me-2"></i> Generate Report
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+@section('topbar-extras')
+    <div
+        class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 cursor-pointer hover:border-blue-400 transition">
+        <i class="far fa-calendar-alt text-slate-400"></i>
+        <span
+            id="dateRangeLabel">{{ $dateRangeLabel ?? now()->subDays(30)->format('M d') . ' – ' . now()->format('M d, Y') }}</span>
+        <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
     </div>
 @endsection
 
-@push('styles')
-    <style>
-        .card-box {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
+@section('content')
 
-        .card-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        }
+    {{-- ===================== STAT CARDS ===================== --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-6">
 
-        .progress {
-            border-radius: 10px;
-        }
+        {{-- Total Bookings --}}
+        <div class="stat-card">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="text-slate-500 text-sm font-medium mb-1">Total Bookings</p>
+                    <h2 class="text-3xl font-bold text-slate-800">{{ number_format($totalBookings ?? 0) }}</h2>
+                </div>
+                <div class="stat-icon" style="background:#eff6ff;">
+                    <i class="far fa-clock text-blue-500"></i>
+                </div>
+            </div>
+            <p class="text-xs font-semibold" style="color:{{ ($bookingsGrowth ?? 0) >= 0 ? '#16a34a' : '#dc2626' }};">
+                <i class="fas fa-arrow-{{ ($bookingsGrowth ?? 0) >= 0 ? 'up' : 'down' }} mr-1"></i>
+                {{ abs($bookingsGrowth ?? 0) }}%
+                <span class="text-slate-400 font-normal">from last month</span>
+            </p>
+        </div>
 
-        .quick-action-btn {
-            transition: all 0.3s ease;
-        }
+        {{-- Total Revenue --}}
+        <div class="stat-card">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="text-slate-500 text-sm font-medium mb-1">Total Revenue</p>
+                    <h2 class="text-3xl font-bold text-slate-800">${{ number_format($totalRevenue ?? 0) }}</h2>
+                </div>
+                <div class="stat-icon" style="background:#fffbeb;">
+                    <i class="fas fa-briefcase text-amber-500"></i>
+                </div>
+            </div>
+            <p class="text-xs font-semibold" style="color:{{ ($revenueGrowth ?? 0) >= 0 ? '#16a34a' : '#dc2626' }};">
+                <i class="fas fa-arrow-{{ ($revenueGrowth ?? 0) >= 0 ? 'up' : 'down' }} mr-1"></i>
+                {{ abs($revenueGrowth ?? 0) }}%
+                <span class="text-slate-400 font-normal">from last month</span>
+            </p>
+        </div>
 
-        .quick-action-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
+        {{-- Total Users --}}
+        <div class="stat-card">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="text-slate-500 text-sm font-medium mb-1">Total Users</p>
+                    <h2 class="text-3xl font-bold text-slate-800">{{ number_format($totalUsers ?? 0) }}</h2>
+                </div>
+                <div class="stat-icon" style="background:#f0f9ff;">
+                    <i class="far fa-user text-sky-500"></i>
+                </div>
+            </div>
+            <p class="text-xs font-semibold" style="color:{{ ($usersGrowth ?? 0) >= 0 ? '#16a34a' : '#dc2626' }};">
+                <i class="fas fa-arrow-{{ ($usersGrowth ?? 0) >= 0 ? 'up' : 'down' }} mr-1"></i>
+                {{ abs($usersGrowth ?? 0) }}%
+                <span class="text-slate-400 font-normal">from last month</span>
+            </p>
+        </div>
 
-        .timeline {
-            max-height: 350px;
-            overflow-y: auto;
-        }
+        {{-- Total Enquiries --}}
+        <div class="stat-card">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="text-slate-500 text-sm font-medium mb-1">Total Enquiries</p>
+                    <h2 class="text-3xl font-bold text-slate-800">{{ number_format($totalEnquiries ?? 0) }}</h2>
+                </div>
+                <div class="stat-icon" style="background:#f0fdf4;">
+                    <i class="far fa-comment-dots text-green-500"></i>
+                </div>
+            </div>
+            <p class="text-xs font-semibold" style="color:{{ ($enquiriesGrowth ?? 0) >= 0 ? '#16a34a' : '#dc2626' }};">
+                <i class="fas fa-arrow-{{ ($enquiriesGrowth ?? 0) >= 0 ? 'up' : 'down' }} mr-1"></i>
+                {{ abs($enquiriesGrowth ?? 0) }}%
+                <span class="text-slate-400 font-normal">from last month</span>
+            </p>
+        </div>
 
-        .timeline::-webkit-scrollbar {
-            width: 4px;
-        }
+    </div>
 
-        .timeline::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
+    {{-- ===================== CHARTS ROW 1 ===================== --}}
+    <div class="grid grid-cols-1 xl:grid-cols-5 gap-5 mb-6">
 
-        .timeline::-webkit-scrollbar-thumb {
-            background: #e9b35f;
-            border-radius: 10px;
-        }
+        {{-- Bookings Overview (line chart) --}}
+        <div class="chart-card xl:col-span-3">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-slate-800 font-bold text-base">Bookings Overview</h3>
+                <div class="flex items-center gap-4 text-xs font-medium text-slate-500">
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> Bookings
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-violet-400 inline-block"></span> Revenue
+                    </span>
+                </div>
+            </div>
+            <div style="height:220px; position:relative;">
+                <canvas id="bookingsOverviewChart"></canvas>
+            </div>
+        </div>
 
-        .bg-gradient {
-            background: linear-gradient(135deg, #1e2a2e, #2c4a3e);
-        }
+        {{-- Bookings by Status (donut chart) --}}
+        <div class="chart-card xl:col-span-2">
+            <h3 class="text-slate-800 font-bold text-base mb-5">Bookings by Status</h3>
+            <div class="flex items-center justify-between gap-4">
+                <div style="position:relative; width:160px; height:160px; flex-shrink:0;">
+                    <canvas id="bookingStatusChart"></canvas>
+                    <div
+                        style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+                        <div class="text-2xl font-bold text-slate-800 leading-tight">
+                            {{ number_format($totalBookings ?? 0) }}</div>
+                        <div class="text-xs text-slate-400 font-medium">Total</div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3 flex-1">
+                    @php
+                        $total = $totalBookings > 0 ? $totalBookings : 1;
+                        $statusBreakdown = $bookingsByStatus ?? [];
+                        $confirmed = $statusBreakdown['confirmed'] ?? 0;
+                        $pending = $statusBreakdown['pending'] ?? 0;
+                        $cancelled = $statusBreakdown['cancelled'] ?? 0;
+                        $completed = $statusBreakdown['completed'] ?? 0;
+                    @endphp
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="flex items-center gap-1.5 text-xs text-slate-600">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block flex-shrink-0"></span> Confirmed
+                        </span>
+                        <span class="text-xs font-semibold text-slate-700">
+                            {{ number_format($confirmed) }} ({{ round(($confirmed / $total) * 100) }}%)
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="flex items-center gap-1.5 text-xs text-slate-600">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block flex-shrink-0"></span> Pending
+                        </span>
+                        <span class="text-xs font-semibold text-slate-700">
+                            {{ number_format($pending) }} ({{ round(($pending / $total) * 100) }}%)
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="flex items-center gap-1.5 text-xs text-slate-600">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-400 inline-block flex-shrink-0"></span> Cancelled
+                        </span>
+                        <span class="text-xs font-semibold text-slate-700">
+                            {{ number_format($cancelled) }} ({{ round(($cancelled / $total) * 100) }}%)
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="flex items-center gap-1.5 text-xs text-slate-600">
+                            <span class="w-2.5 h-2.5 rounded-full bg-teal-400 inline-block flex-shrink-0"></span> Completed
+                        </span>
+                        <span class="text-xs font-semibold text-slate-700">
+                            {{ number_format($completed) }} ({{ round(($completed / $total) * 100) }}%)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+    </div>
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    {{-- ===================== CHARTS ROW 2 ===================== --}}
+    <div class="grid grid-cols-1 xl:grid-cols-5 gap-5">
 
-        .card-box,
-        .bg-white {
-            animation: fadeInUp 0.5s ease-out;
-        }
-    </style>
-@endpush
+        {{-- Top Destinations --}}
+        <div class="chart-card xl:col-span-2">
+            <h3 class="text-slate-800 font-bold text-base mb-5">Top Destinations</h3>
+            <div class="flex flex-col gap-4">
+                @php
+                    $topDestinations = $topDestinations ?? [];
+                    $maxBookings = $topDestinations->max('bookings_count') ?: 1;
+                @endphp
+                @forelse($topDestinations as $dest)
+                    @php
+                        $pct = round(($dest->bookings_count / $maxBookings) * 100);
+                    @endphp
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-sm text-slate-700 font-medium">{{ $dest->name }}</span>
+                            <span
+                                class="text-sm font-semibold text-slate-600">{{ number_format($dest->bookings_count) }}</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width:{{ $pct }}%;"></div>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-sm text-slate-400">No destination data available.</p>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- Revenue Overview (area chart) --}}
+        <div class="chart-card xl:col-span-2">
+            <h3 class="text-slate-800 font-bold text-base mb-5">Revenue Overview</h3>
+            <div style="height:200px; position:relative;">
+                <canvas id="revenueOverviewChart"></canvas>
+            </div>
+        </div>
+
+        {{-- Recent Bookings --}}
+        <div class="chart-card xl:col-span-1" style="min-width:0;">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-slate-800 font-bold text-base">Recent Bookings</h3>
+            </div>
+
+            <div>
+                @forelse($recentBookings ?? [] as $booking)
+                    @php
+                        $initials = collect(explode(' ', $booking->user?->name ?? ($booking->customer_name ?? 'NA')))
+                            ->map(fn($w) => strtoupper(substr($w, 0, 1)))
+                            ->take(2)
+                            ->implode('');
+                    @endphp
+                    <div class="booking-row">
+                        <div class="avatar">{{ $initials }}</div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-slate-700 leading-tight truncate">
+                                {{ $booking->user?->name ?? ($booking->customer_name ?? 'Unknown') }}
+                            </p>
+                            <p class="text-xs text-slate-400 truncate mt-0.5">
+                                {{ $booking->package?->name ?? ($booking->trek?->name ?? ($booking->tour_name ?? '—')) }}
+                            </p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <p class="text-xs text-slate-400 mb-1">
+                                {{ \Carbon\Carbon::parse($booking->created_at)->format('M j, Y') }}
+                            </p>
+                            <div class="flex items-center gap-1.5 justify-end">
+                                <span class="text-xs font-semibold text-slate-700">
+                                    ${{ number_format($booking->total_price ?? ($booking->amount ?? 0)) }}
+                                </span>
+                                <span class="badge badge-{{ strtolower($booking->status) }}">
+                                    {{ ucfirst($booking->status) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-sm text-slate-400 py-4 text-center">No recent bookings.</p>
+                @endforelse
+            </div>
+
+            <div class="mt-4 pt-2 border-t border-slate-100 text-right">
+                <a href="{{ route('admin.bookings.index') }}"
+                    class="text-sm font-semibold text-blue-500 hover:text-blue-700 transition">
+                    View All Bookings <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+@endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Monthly Chart
-        const ctx = document.getElementById('monthlyChart').getContext('2d');
-        const monthlyChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [{
-                    label: 'Treks Added',
-                    data: {{ json_encode($monthlyTreksData ?? [5, 7, 8, 6, 10, 12, 9, 11, 15, 18, 20, 22]) }},
-                    borderColor: '#0ea5e9',
-                    backgroundColor: 'rgba(14, 165, 233, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }, {
-                    label: 'Inquiries',
-                    data: {{ json_encode($monthlyInquiriesData ?? [12, 15, 18, 22, 25, 30, 28, 32, 35, 40, 45, 50]) }},
-                    borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // ─── Data from controller (passed as JSON) ────────────────────────
+            const chartLabels = @json($chartLabels ?? []);
+            const bookingsData = @json($bookingsChartData ?? []);
+            const revenueData = @json($revenueChartData ?? []);
+
+            const statusConfirmed = {{ $bookingsByStatus['confirmed'] ?? 0 }};
+            const statusPending = {{ $bookingsByStatus['pending'] ?? 0 }};
+            const statusCancelled = {{ $bookingsByStatus['cancelled'] ?? 0 }};
+            const statusCompleted = {{ $bookingsByStatus['completed'] ?? 0 }};
+
+            // ─── Bookings Overview (dual line) ───────────────────────────────
+            const ctxBookings = document.getElementById('bookingsOverviewChart').getContext('2d');
+            const bookingGrad = ctxBookings.createLinearGradient(0, 0, 0, 220);
+            bookingGrad.addColorStop(0, 'rgba(59,130,246,0.18)');
+            bookingGrad.addColorStop(1, 'rgba(59,130,246,0.01)');
+
+            const revenueGrad = ctxBookings.createLinearGradient(0, 0, 0, 220);
+            revenueGrad.addColorStop(0, 'rgba(139,92,246,0.13)');
+            revenueGrad.addColorStop(1, 'rgba(139,92,246,0.01)');
+
+            new Chart(ctxBookings, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                            label: 'Bookings',
+                            data: bookingsData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: bookingGrad,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            borderWidth: 2.5,
+                        },
+                        {
+                            label: 'Revenue',
+                            data: revenueData,
+                            borderColor: '#a78bfa',
+                            backgroundColor: revenueGrad,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            borderWidth: 2.5,
+                        }
+                    ]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#f0e2ce'
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
                         }
                     },
-                    x: {
-                        grid: {
-                            display: false
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 11
+                                },
+                                maxRotation: 0,
+                                callback(val, i) {
+                                    return i % 2 === 0 ? this.getLabelForValue(val) : '';
+                                }
+                            },
+                            border: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            min: 0,
+                            grid: {
+                                color: '#f1f5f9',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 11
+                                },
+                                stepSize: 20
+                            },
+                            border: {
+                                display: false
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
 
-        // Region Distribution Chart
-        const regionCtx = document.getElementById('regionChart').getContext('2d');
-        const regionChart = new Chart(regionCtx, {
-            type: 'doughnut',
-            data: {
-                labels: {{ json_encode($regionLabels ?? ['Himalayas', 'Hills', 'Terai', 'Kathmandu Valley']) }},
-                datasets: [{
-                    data: {{ json_encode($regionData ?? [45, 30, 10, 15]) }},
-                    backgroundColor: ['#0ea5e9', '#10b981', '#f59e0b', '#ef4444'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
+            // ─── Bookings by Status (doughnut) ───────────────────────────────
+            const ctxStatus = document.getElementById('bookingStatusChart').getContext('2d');
+            new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Confirmed', 'Pending', 'Cancelled', 'Completed'],
+                    datasets: [{
+                        data: [statusConfirmed, statusPending, statusCancelled, statusCompleted],
+                        backgroundColor: ['#3b82f6', '#fbbf24', '#f87171', '#34d399'],
+                        borderWidth: 0,
+                        hoverOffset: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '72%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label(ctx) {
+                                    return ` ${ctx.label}: ${ctx.parsed}`;
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        // Chart Year Change Handler
-        document.getElementById('chartYear')?.addEventListener('change', function() {
-            // Fetch new data based on year
-            fetch(`/admin/dashboard/chart-data?year=${this.value}`)
-                .then(response => response.json())
-                .then(data => {
-                    monthlyChart.data.datasets[0].data = data.treks;
-                    monthlyChart.data.datasets[1].data = data.inquiries;
-                    monthlyChart.update();
-                });
+            // ─── Revenue Overview (area chart) ───────────────────────────────
+            const ctxRevenue = document.getElementById('revenueOverviewChart').getContext('2d');
+            const revGrad = ctxRevenue.createLinearGradient(0, 0, 0, 200);
+            revGrad.addColorStop(0, 'rgba(59,130,246,0.20)');
+            revGrad.addColorStop(1, 'rgba(59,130,246,0.02)');
+
+            new Chart(ctxRevenue, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: revenueData,
+                        borderColor: '#3b82f6',
+                        backgroundColor: revGrad,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        borderWidth: 2.5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 10
+                                },
+                                maxRotation: 0,
+                                callback(val, i) {
+                                    return i % 3 === 0 ? this.getLabelForValue(val) : '';
+                                }
+                            },
+                            border: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            min: 0,
+                            grid: {
+                                color: '#f1f5f9'
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 10
+                                },
+                                callback(v) {
+                                    return '$' + (v / 1000).toFixed(0) + 'K';
+                                }
+                            },
+                            border: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
         });
     </script>
 @endpush

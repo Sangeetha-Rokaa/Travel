@@ -135,15 +135,120 @@ body {
     font-family: "Bebas Neue";
     font-size: 19px;
     font-weight: 700;
-    color: #fff;
+    color: black;
     letter-spacing: 0.3px;
+}
+.logo-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111; /* default visible */
+    line-height: 1;
+}
+
+.testi-avatar {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #eee;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.testi-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.testi-slider {
+    overflow: hidden;
+    width: 100%;
+}
+
+.testi-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.testi-slide {
+    min-width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.testi-card {
+    width: 70%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.testi-avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.testi-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.testi-arrows {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.testi-arrow {
+    border: none;
+    background: #111;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.logo-tagline {
+    font-size: 12px;
+    color: black; /* softer secondary text */
+    letter-spacing: 0.5px;
+}
+
+/* When navbar is transparent (optional hero mode) */
+.navbar.transparent .logo-name {
+    color: #fff;
+}
+
+.navbar.transparent .logo-tagline {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* After scroll */
+.navbar.scrolled .logo-name {
+    color: white;
+}
+
+.navbar.scrolled .logo-tagline {
+    color: white;
 }
 
 .logo-tagline {
     display: block;
     font-size: 10.5px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.72);
+    color: black;
     letter-spacing: 1.8px;
 }
 
@@ -1688,7 +1793,104 @@ footer {
     color: #0d1b2a;
     margin-bottom: 6px;
 }
+.nav-dropdown {
+    position: relative;
+}
+.navbar.scrolled {
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+.nav-links a {
+    color: #111;
+    font-weight: 500;
+}
 
+.navbar.scrolled .nav-links a {
+    color: white;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    z-index: 999;
+    list-style: none;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 12px 18px;
+    color: #222;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.dropdown-menu li a:hover {
+    background: #f5f5f5;
+    color: #0d6efd;
+}
+
+.hidden {
+    display: none;
+}
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+
+    min-width: 220px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    z-index: 999;
+    list-style: none;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 12px 18px;
+    text-decoration: none;
+    color: #222;
+    transition: 0.2s;
+}
+
+.dropdown-menu li a:hover {
+    background: #f3f4f6;
+    color: #0d6efd;
+}
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 60px;
+
+    background: rgba(255, 255, 255, 0.9); /* default visible background */
+    backdrop-filter: blur(10px);
+
+    transition: all 0.3s ease;
+}
 .form-success p {
     font-size: 13px;
     color: #6b7c93;

@@ -1,428 +1,1051 @@
 {{-- resources/views/admin/packages/index.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Manage Packages - Nepal Travel')
-@section('page_title', 'Manage Travel Packages')
-@section('page_icon', 'fas fa-box')
-
-@section('content')
-    <div class="container-fluid px-0">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h4 class="mb-1" style="color: #1e2a2e;">
-                    <i class="fas fa-suitcase-rolling me-2" style="color: #e9b35f;"></i>
-                    Travel Packages
-                </h4>
-                <p class="text-muted small mb-0">
-                    <i class="fas fa-database me-1"></i>
-                    Total Packages: <strong>{{ $packages->total() }}</strong> |
-                    <i class="fas fa-layer-group me-1 ms-2"></i>
-                    Page: {{ $packages->currentPage() }} / {{ $packages->lastPage() }}
-                </p>
-            </div>
-
-            <a href="{{ route('admin.packages.create') }}" class="btn"
-                style="background: linear-gradient(135deg, #1e2a2e, #2c4a3e); color: white; border-radius: 40px; padding: 10px 24px;">
-                <i class="fas fa-plus-circle me-2"></i> Add New Package
-            </a>
-        </div>
-
-        {{-- Search and Filter Bar --}}
-        <div class="card border-0 rounded-4 shadow-sm mb-4" style="background: white; border-radius: 28px !important;">
-            <div class="card-body p-3">
-                <form method="GET" action="{{ route('admin.packages.index') }}" class="row g-3 align-items-center">
-                    <div class="col-md-4">
-                        <div class="input-group" style="border-radius: 40px; overflow: hidden;">
-                            <span class="input-group-text bg-white border-end-0" style="border-radius: 40px 0 0 40px;">
-                                <i class="fas fa-search text-muted"></i>
-                            </span>
-                            <input type="text" name="search" class="form-control border-start-0"
-                                style="border-radius: 0 40px 40px 0;" placeholder="Search by name or location..."
-                                value="{{ request('search') }}">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <select name="package_type" class="form-select" style="border-radius: 40px;">
-                            <option value="">All Types</option>
-                            <option value="adventure" {{ request('package_type') == 'adventure' ? 'selected' : '' }}>
-                                Adventure</option>
-                            <option value="cultural" {{ request('package_type') == 'cultural' ? 'selected' : '' }}>Cultural
-                            </option>
-                            <option value="wildlife" {{ request('package_type') == 'wildlife' ? 'selected' : '' }}>Wildlife
-                            </option>
-                            <option value="pilgrimage" {{ request('package_type') == 'pilgrimage' ? 'selected' : '' }}>
-                                Pilgrimage</option>
-                            <option value="honeymoon" {{ request('package_type') == 'honeymoon' ? 'selected' : '' }}>
-                                Honeymoon</option>
-                            <option value="family" {{ request('package_type') == 'family' ? 'selected' : '' }}>Family
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <select name="status" class="form-select" style="border-radius: 40px;">
-                            <option value="">All Status</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive
-                            </option>
-                            <option value="featured" {{ request('status') == 'featured' ? 'selected' : '' }}>Featured
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <button type="submit" class="btn w-100"
-                            style="background: #1e2a2e; color: white; border-radius: 40px;">
-                            <i class="fas fa-filter me-1"></i> Filter
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert"
-                style="border-radius: 16px; border-left: 4px solid #10b981;">
-                <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert"
-                style="border-radius: 16px; border-left: 4px solid #ef4444;">
-                <i class="fas fa-exclamation-triangle me-2"></i> {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        <div class="card border-0 rounded-4 shadow-sm" style="background: white; border-radius: 28px !important;">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" style="border-radius: 28px; overflow: hidden;">
-                        <thead style="background: linear-gradient(135deg, #1e2a2e, #2d4a3a); color: #f5e6d3;">
-                            <tr>
-                                <th class="ps-4" style="width: 60px;">#</th>
-                                <th style="width: 100px;">Image</th>
-                                <th>Name</th>
-                                <th style="width: 100px;">Type</th>
-                                <th style="width: 80px;">Duration</th>
-                                <th style="width: 60px;">Max People</th>
-                                <th style="width: 110px;">Price</th>
-                                <th style="width: 90px;" class="text-center">Bookings</th>
-                                <th style="width: 120px;" class="text-center pe-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($packages as $index => $package)
-                                <tr style="border-bottom: 1px solid #f0e2ce;">
-                                    <td class="ps-4 fw-bold">
-                                        {{ $packages->firstItem() + $index }}
-                                    </td>
-                                    <td>
-                                        @if ($package->featured_image)
-                                            <img src="{{ asset('storage/' . $package->featured_image) }}"
-                                                alt="{{ $package->name }}"
-                                                style="width: 65px; height: 50px; object-fit: cover; border-radius: 12px; border: 2px solid #e9b35f; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-                                        @else
-                                            <div
-                                                style="width: 65px; height: 50px; background: linear-gradient(135deg, #e9d5b5, #d4a373); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #8b5e3c;">
-                                                <i class="fas fa-box fa-2x"></i>
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <span class="fw-semibold" style="color: #1e2a2e;">{{ $package->name }}</span>
-                                            @if ($package->slug)
-                                                <br>
-                                                <small class="text-muted" style="font-size: 0.7rem;">
-                                                    <i class="fas fa-link"></i> {{ $package->slug }}
-                                                </small>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @php
-                                            $typeColors = [
-                                                'cultural' => ['bg' => '#8b5cf620', 'text' => '#6d28d9'],
-                                                'adventure' => ['bg' => '#0ea5e920', 'text' => '#0ea5e9'],
-                                                'wildlife' => ['bg' => '#10b98120', 'text' => '#10b981'],
-                                                'pilgrimage' => ['bg' => '#f59e0b20', 'text' => '#f59e0b'],
-                                                'honeymoon' => ['bg' => '#ec489920', 'text' => '#ec4899'],
-                                                'family' => ['bg' => '#14b8a620', 'text' => '#14b8a6'],
-                                            ];
-                                            $typeColor = $typeColors[$package->type] ?? [
-                                                'bg' => '#6c757d20',
-                                                'text' => '#6c757d',
-                                            ];
-                                        @endphp
-                                        <span class="badge"
-                                            style="background: {{ $typeColor['bg'] }}; color: {{ $typeColor['text'] }}; border-radius: 20px; padding: 6px 12px;">
-                                            <i class="fas fa-tag me-1"></i>
-                                            {{ ucfirst($package->type ?? 'Standard') }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <i class="far fa-calendar-alt me-1 text-muted"></i>
-                                        <strong>{{ $package->duration_days }}</strong> days
-                                    </td>
-                                    <td>
-                                        <i class="fas fa-users me-1 text-muted"></i>
-                                        {{ $package->group_size_max ?? 'N/A' }}
-                                    </td>
-                                    <td>
-                                        @if ($package->price_usd)
-                                            <div class="fw-bold" style="color: #b85c1a;">
-                                                ${{ number_format($package->price_usd, 2) }}
-                                            </div>
-                                            @if ($package->price_usd_discounted)
-                                                <small class="text-muted"
-                                                    style="font-size: 0.7rem; text-decoration: line-through;">
-                                                    ${{ number_format($package->price_usd_discounted, 2) }}
-                                                </small>
-                                            @endif
-                                        @else
-                                            <span class="text-muted">—</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge"
-                                            style="background: #0ea5e9; color: white; border-radius: 20px; padding: 6px 12px;">
-                                            <i class="fas fa-calendar-check me-1"></i> {{ $package->bookings_count ?? 0 }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="btn-group" role="group" style="gap: 6px;">
-                                            <a href="{{ route('admin.packages.edit', $package->id) }}" class="btn btn-sm"
-                                                style="background: #e9b35f; color: #1e2a2e; border-radius: 30px; padding: 6px 14px;"
-                                                title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-sm delete-package"
-                                                data-id="{{ $package->id }}" data-name="{{ $package->name }}"
-                                                style="background: #ef4444; color: white; border-radius: 30px; padding: 6px 14px;"
-                                                title="Delete">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </div>
-
-                                        <div class="mt-2">
-                                            @if ($package->is_featured)
-                                                <span class="badge"
-                                                    style="background: #e9b35f; color: #1e2a2e; font-size: 0.7rem;">
-                                                    <i class="fas fa-star"></i> Featured
-                                                </span>
-                                            @endif
-                                            @if (!$package->is_active)
-                                                <span class="badge"
-                                                    style="background: #95a5a6; color: white; font-size: 0.7rem;">
-                                                    <i class="fas fa-eye-slash"></i> Inactive
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="9" class="text-center py-5">
-                                        <i class="fas fa-box-open fa-4x text-muted mb-3 d-block"
-                                            style="opacity: 0.5;"></i>
-                                        <h5 class="text-muted">No Packages Found</h5>
-                                        <p class="text-muted small">Start by adding your first travel package</p>
-                                        <a href="{{ route('admin.packages.create') }}" class="btn btn-sm"
-                                            style="background: #1e2a2e; color: white; border-radius: 30px; margin-top: 10px;">
-                                            <i class="fas fa-plus"></i> Add First Package
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        {{-- Pagination --}}
-        @if ($packages->hasPages())
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 p-3 bg-white rounded-4 shadow-sm"
-                        style="background: rgba(255,255,255,0.9);">
-                        <div>
-                            <i class="fas fa-info-circle" style="color: #e9b35f;"></i>
-                            <span class="small text-muted">
-                                Showing <strong>{{ $packages->firstItem() }}</strong> to
-                                <strong>{{ $packages->lastItem() }}</strong>
-                                of <strong>{{ $packages->total() }}</strong> packages
-                            </span>
-                        </div>
-                        <div>
-                            {{ $packages->onEachSide(1)->links('pagination::bootstrap-5') }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-    </div>
-
-    {{-- Delete Confirmation Modal --}}
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 24px;">
-                <div class="modal-header" style="border-bottom: 2px solid #f0e2ce; background: #fef9e6;">
-                    <h5 class="modal-title" id="deleteModalLabel" style="color: #1e2a2e;">
-                        <i class="fas fa-trash-alt me-2" style="color: #ef4444;"></i>
-                        Delete Package
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete <strong id="deletePackageName"></strong>?</p>
-                    <p class="text-muted small mb-0">This action cannot be undone. All associated bookings will keep their
-                        data but the package reference will be removed.</p>
-                </div>
-                <div class="modal-footer" style="border-top: 1px solid #f0e2ce;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                        style="border-radius: 30px;">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                    <form id="deleteForm" method="POST" style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn"
-                            style="background: #ef4444; color: white; border-radius: 30px;">
-                            <i class="fas fa-trash-alt"></i> Delete
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-@endsection
+@section('title', 'Packages')
+@section('page-title', 'Packages')
 
 @push('styles')
     <style>
-        .table-hover tbody tr:hover {
-            background-color: #fff9ef !important;
-            transition: all 0.2s ease;
+        /* ─────────────────────────────────────────
+                   ANIMATION
+                ───────────────────────────────────────── */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .btn-group .btn {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        .anim {
+            animation: fadeSlideUp .45s ease both;
         }
 
-        .btn-group .btn:hover {
+        /* ─────────────────────────────────────────
+                   HEADER
+                ───────────────────────────────────────── */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 26px;
+        }
+
+        .page-title-text {
+            font-size: 26px;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+            letter-spacing: -.4px;
+        }
+
+        .btn-add-package {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 11px 22px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: .2s ease;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, .22);
+        }
+
+        .btn-add-package:hover {
+            background: #1d4ed8;
+            color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
-        .table thead th {
+        /* ─────────────────────────────────────────
+                   TOP PACKAGE CARDS
+                ───────────────────────────────────────── */
+        .package-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .package-card {
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid #edf2f7;
+            text-decoration: none;
+            display: block;
+            transition: .22s ease;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, .05);
+        }
+
+        .package-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 30px rgba(15, 23, 42, .12);
+        }
+
+        .package-card-image {
+            width: 100%;
+            height: 190px;
+            overflow: hidden;
+            position: relative;
+            background: #e2e8f0;
+        }
+
+        .package-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .35s ease;
+        }
+
+        .package-card:hover .package-card-image img {
+            transform: scale(1.06);
+        }
+
+        .package-card-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 34px;
+        }
+
+        .package-card-body {
+            padding: 16px;
+        }
+
+        .package-card-name {
+            font-size: 17px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .package-card-price {
+            font-size: 21px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        .package-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 12.5px;
+            color: #64748b;
+        }
+
+        .package-status {
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .status-inactive {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        /* ─────────────────────────────────────────
+                   FILTER BAR
+                ───────────────────────────────────────── */
+        .filter-card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #edf2f7;
+            padding: 18px;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr auto auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .filter-lbl {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            display: block;
+        }
+
+        .search-wrap {
+            position: relative;
+        }
+
+        .search-wrap i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .search-wrap input,
+        .filter-select {
+            width: 100%;
+            height: 42px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            font-size: 13.5px;
+            color: #1e293b;
+            background: #fff;
+            transition: .2s ease;
+            font-family: inherit;
+        }
+
+        .search-wrap input {
+            padding: 0 14px 0 38px;
+        }
+
+        .filter-select {
+            padding: 0 14px;
+        }
+
+        .search-wrap input:focus,
+        .filter-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, .1);
+        }
+
+        .btn-filter {
+            height: 42px;
+            padding: 0 18px;
+            border-radius: 12px;
+            border: none;
+            background: #0f172a;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: .2s ease;
+        }
+
+        .btn-filter:hover {
+            background: #1e293b;
+        }
+
+        .btn-reset {
+            height: 42px;
+            padding: 0 16px;
+            border-radius: 12px;
+            background: #f1f5f9;
+            color: #475569;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
             font-weight: 600;
-            letter-spacing: 0.3px;
-            padding: 16px 12px;
-            border-bottom: none;
         }
 
-        .table tbody td {
-            padding: 18px 12px;
+        /* ─────────────────────────────────────────
+                   ALERTS
+                ───────────────────────────────────────── */
+        .alert-box {
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-size: 13.5px;
+            font-weight: 500;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        /* ─────────────────────────────────────────
+                   TABLE CARD
+                ───────────────────────────────────────── */
+        .table-card {
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid #edf2f7;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+        }
+
+        .table-card-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid #eef2f7;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .package-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .package-table thead tr {
+            background: #f8fafc;
+        }
+
+        .package-table thead th {
+            padding: 14px 18px;
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .package-table tbody td {
+            padding: 16px 18px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 13.5px;
+            color: #374151;
             vertical-align: middle;
         }
 
-        .pagination {
-            margin-bottom: 0;
+        .package-table tbody tr:hover {
+            background: #fafcff;
         }
 
-        .pagination .page-link {
-            border-radius: 30px !important;
-            margin: 0 2px;
-            color: #1e2a2e;
-            border-color: #f0e2ce;
+        .package-thumb {
+            width: 60px;
+            height: 46px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
         }
 
-        .pagination .page-item.active .page-link {
-            background: #e9b35f;
-            border-color: #e9b35f;
-            color: #1e2a2e;
-            font-weight: 600;
+        .package-thumb-placeholder {
+            width: 60px;
+            height: 46px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            border: 2px solid #e2e8f0;
         }
 
-        .pagination .page-link:hover {
-            background: #e9b35f20;
-            border-color: #e9b35f;
-            color: #b85c1a;
+        .package-name {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 14px;
         }
 
-        .input-group-text {
-            border-color: #e0d5c0;
+        .package-slug {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+            display: block;
         }
 
-        .input-group .form-control:focus,
-        .form-select:focus {
-            border-color: #e9b35f;
-            box-shadow: none;
+        .type-badge {
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        .input-group .form-control:focus+.input-group-text,
-        .input-group .form-control:focus {
-            border-color: #e9b35f;
+        .booking-badge {
+            background: #e0f2fe;
+            color: #0284c7;
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-size: 11px;
+            font-weight: 700;
         }
 
-        @media (max-width: 992px) {
-
-            .table thead th,
-            .table tbody td {
-                padding: 12px 8px;
-                font-size: 13px;
-            }
-
-            .btn-group .btn {
-                padding: 4px 10px;
-                font-size: 12px;
-            }
+        /* ─────────────────────────────────────────
+                   DOTS MENU
+                ───────────────────────────────────────── */
+        .dots-menu-wrap {
+            position: relative;
+            display: inline-block;
         }
 
-        @media (max-width: 768px) {
-            .btn-group {
-                display: flex;
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .btn-group .btn {
-                margin: 0 !important;
-                width: 100%;
-            }
+        .dots-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #64748b;
+            cursor: pointer;
         }
 
-        .alert {
+        .dots-dropdown {
+            position: absolute;
+            top: 42px;
+            right: 0;
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            min-width: 170px;
+            padding: 6px;
+            box-shadow: 0 14px 30px rgba(15, 23, 42, .12);
+            display: none;
+            z-index: 200;
+        }
+
+        .dots-dropdown.open {
+            display: block;
+        }
+
+        .dots-dropdown a,
+        .dots-dropdown button {
+            width: 100%;
             border: none;
-            background: linear-gradient(135deg, #fef9e6, #ffffff);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .dots-dropdown a:hover,
+        .dots-dropdown button:hover {
+            background: #f8fafc;
+        }
+
+        .dots-divider {
+            height: 1px;
+            background: #f1f5f9;
+            margin: 4px 0;
+        }
+
+        .dd-delete {
+            color: #dc2626 !important;
+        }
+
+        /* ─────────────────────────────────────────
+                   EMPTY
+                ───────────────────────────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 70px 20px;
+        }
+
+        .empty-icon {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: #94a3b8;
+            font-size: 30px;
+        }
+
+        /* ─────────────────────────────────────────
+                   MODAL
+                ───────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, .55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #fff;
+            width: 92%;
+            max-width: 450px;
+            border-radius: 24px;
+            padding: 30px;
+            animation: fadeSlideUp .25s ease;
+        }
+
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #fee2e2;
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 16px;
+        }
+
+        .modal-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+
+        .modal-text {
+            text-align: center;
+            font-size: 13.5px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .btn-cancel,
+        .btn-delete-confirm {
+            flex: 1;
+            height: 44px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .btn-delete-confirm {
+            background: #dc2626;
+            color: #fff;
+        }
+
+        /* ─────────────────────────────────────────
+                   RESPONSIVE
+                ───────────────────────────────────────── */
+        @media(max-width:1200px) {
+            .package-cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media(max-width:900px) {
+            .package-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media(max-width:640px) {
+            .package-cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .package-table thead th:nth-child(4),
+            .package-table tbody td:nth-child(4),
+            .package-table thead th:nth-child(6),
+            .package-table tbody td:nth-child(6) {
+                display: none;
+            }
         }
     </style>
 @endpush
 
+@section('content')
+
+    {{-- HEADER --}}
+    <div class="page-header anim">
+        <h1 class="page-title-text">Packages</h1>
+
+        <a href="{{ route('admin.packages.create') }}" class="btn-add-package">
+            <i class="fas fa-plus"></i>
+            Add Package
+        </a>
+    </div>
+
+    {{-- ALERTS --}}
+    @if (session('success'))
+        <div class="alert-box alert-success anim">
+            <i class="fas fa-check-circle"></i>
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert-box alert-error anim">
+            <i class="fas fa-exclamation-triangle"></i>
+            {{ session('error') }}
+        </div>
+    @endif
+
+    {{-- TOP CARDS --}}
+    <div class="package-cards-grid">
+        @forelse($packages->take(4) as $package)
+            <a href="{{ route('admin.packages.edit', $package->id) }}" class="package-card anim">
+
+                <div class="package-card-image">
+
+                    @if ($package->featured_image)
+                        <img src="{{ asset('storage/' . $package->featured_image) }}" alt="{{ $package->name }}">
+                    @else
+                        <div class="package-card-placeholder">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    @endif
+
+                </div>
+
+                <div class="package-card-body">
+
+                    <div class="package-card-name">
+                        {{ $package->name }}
+                    </div>
+
+                    <div class="package-card-price">
+                        ${{ number_format($package->price_usd ?? 0) }}
+                    </div>
+
+                    <div class="package-meta">
+                        <span>{{ $package->duration_days }} Days</span>
+
+                        <span>{{ ucfirst($package->difficulty ?? 'Easy') }}</span>
+
+                        @if ($package->is_active)
+                            <span class="package-status status-active">Active</span>
+                        @else
+                            <span class="package-status status-inactive">Inactive</span>
+                        @endif
+                    </div>
+
+                </div>
+
+            </a>
+        @empty
+        @endforelse
+    </div>
+
+    {{-- FILTER --}}
+    <div class="filter-card anim">
+
+        <form method="GET" action="{{ route('admin.packages.index') }}">
+
+            <div class="filter-grid">
+
+                <div>
+                    <label class="filter-lbl">Search</label>
+
+                    <div class="search-wrap">
+                        <i class="fas fa-search"></i>
+
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Search packages...">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="filter-lbl">Package Type</label>
+
+                    <select name="package_type" class="filter-select">
+                        <option value="">All Types</option>
+
+                        @foreach (['adventure', 'cultural', 'wildlife', 'pilgrimage', 'honeymoon', 'family'] as $type)
+                            <option value="{{ $type }}" {{ request('package_type') == $type ? 'selected' : '' }}>
+                                {{ ucfirst($type) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="filter-lbl">Status</label>
+
+                    <select name="status" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>
+                            Active
+                        </option>
+                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>
+                            Inactive
+                        </option>
+                        <option value="featured" {{ request('status') == 'featured' ? 'selected' : '' }}>
+                            Featured
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn-filter">
+                        <i class="fas fa-filter"></i>
+                        Filter
+                    </button>
+                </div>
+
+                <div>
+                    <a href="{{ route('admin.packages.index') }}" class="btn-reset">
+                        <i class="fas fa-times"></i>
+                        Reset
+                    </a>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    {{-- TABLE --}}
+    <div class="table-card anim">
+
+        <div class="table-card-header">
+
+            <div style="font-weight:700;font-size:14px;color:#0f172a;">
+                All Packages
+            </div>
+
+        </div>
+
+        <div style="overflow-x:auto;">
+
+            <table class="package-table">
+
+                <thead>
+                    <tr>
+                        <th>Package</th>
+                        <th>Type</th>
+                        <th>Duration</th>
+                        <th>Price</th>
+                        <th>Bookings</th>
+                        <th>Status</th>
+                        <th style="text-align:center;">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @forelse($packages as $package)
+                        <tr>
+
+                            {{-- PACKAGE --}}
+                            <td>
+
+                                <div style="display:flex;align-items:center;gap:12px;">
+
+                                    @if ($package->featured_image)
+                                        <img src="{{ asset('storage/' . $package->featured_image) }}"
+                                            class="package-thumb">
+                                    @else
+                                        <div class="package-thumb-placeholder">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                    @endif
+
+                                    <div>
+
+                                        <span class="package-name">
+                                            {{ $package->name }}
+                                        </span>
+
+                                        @if ($package->slug)
+                                            <span class="package-slug">
+                                                {{ $package->slug }}
+                                            </span>
+                                        @endif
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            {{-- TYPE --}}
+                            <td>
+                                <span class="type-badge">
+                                    <i class="fas fa-tag"></i>
+                                    {{ ucfirst($package->type ?? 'Standard') }}
+                                </span>
+                            </td>
+
+                            {{-- DURATION --}}
+                            <td>
+                                {{ $package->duration_days }} Days
+                            </td>
+
+                            {{-- PRICE --}}
+                            <td>
+                                <strong>
+                                    ${{ number_format($package->price_usd ?? 0) }}
+                                </strong>
+                            </td>
+
+                            {{-- BOOKINGS --}}
+                            <td>
+                                <span class="booking-badge">
+                                    <i class="fas fa-calendar-check"></i>
+                                    {{ $package->bookings_count ?? 0 }}
+                                </span>
+                            </td>
+
+                            {{-- STATUS --}}
+                            <td>
+
+                                @if ($package->is_featured)
+                                    <span class="package-status" style="background:#fef3c7;color:#92400e;">
+                                        Featured
+                                    </span>
+                                @elseif($package->is_active)
+                                    <span class="package-status status-active">
+                                        Active
+                                    </span>
+                                @else
+                                    <span class="package-status status-inactive">
+                                        Inactive
+                                    </span>
+                                @endif
+
+                            </td>
+
+                            {{-- ACTION --}}
+                            <td style="text-align:center;">
+
+                                <div class="dots-menu-wrap">
+
+                                    <button type="button" class="dots-btn dots-toggle">
+                                        •••
+                                    </button>
+
+                                    <div class="dots-dropdown">
+
+                                        <a href="{{ route('admin.packages.edit', $package) }}">
+                                            <i class="fas fa-pen"></i>
+                                            Edit
+                                        </a>
+
+                                        <div class="dots-divider"></div>
+
+                                        <button type="button" class="dd-delete delete-trigger"
+                                            data-url="{{ route('admin.packages.destroy', $package->id) }}"
+                                            data-name="{{ $package->name }}">
+
+                                            <i class="fas fa-trash-alt"></i>
+                                            Delete
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+                            <td colspan="7">
+
+                                <div class="empty-state">
+
+                                    <div class="empty-icon">
+                                        <i class="fas fa-box-open"></i>
+                                    </div>
+
+                                    <h5 style="font-weight:700;color:#334155;">
+                                        No Packages Found
+                                    </h5>
+
+                                    <p style="font-size:13px;color:#94a3b8;">
+                                        Start by creating your first package.
+                                    </p>
+
+                                    <a href="{{ route('admin.packages.create') }}" class="btn-add-package"
+                                        style="display:inline-flex;margin-top:14px;">
+
+                                        <i class="fas fa-plus"></i>
+                                        Add Package
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+                        </tr>
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    {{-- PAGINATION --}}
+    @if ($packages->hasPages())
+        <div style="margin-top:20px;">
+            {{ $packages->onEachSide(1)->links('pagination::bootstrap-5') }}
+        </div>
+    @endif
+
+    {{-- DELETE MODAL --}}
+    <div class="modal-overlay" id="deleteModal">
+
+        <div class="modal-box">
+
+            <div class="modal-icon">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+
+            <h3 class="modal-title">
+                Delete Package
+            </h3>
+
+            <p class="modal-text">
+                Are you sure you want to delete
+                <strong id="deletePackageName"></strong>?
+            </p>
+
+            <div class="modal-actions">
+
+                <button type="button" class="btn-cancel" id="cancelDelete">
+                    Cancel
+                </button>
+
+                <form id="deleteForm" method="POST" style="flex:1;">
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit" class="btn-delete-confirm" style="width:100%;">
+                        Delete
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+@endsection
+
 @push('scripts')
     <script>
-        // Delete confirmation modal handler
         document.addEventListener('DOMContentLoaded', function() {
-            const deleteButtons = document.querySelectorAll('.delete-package');
-            const deleteForm = document.getElementById('deleteForm');
-            const deletePackageNameSpan = document.getElementById('deletePackageName');
 
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const packageId = this.getAttribute('data-id');
-                    const packageName = this.getAttribute('data-name');
+            // dots menu
+            document.querySelectorAll('.dots-toggle').forEach(btn => {
 
-                    deletePackageNameSpan.textContent = packageName;
-                    deleteForm.action = `/admin/packages/${packageId}`;
+                btn.addEventListener('click', function(e) {
 
-                    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                    modal.show();
+                    e.stopPropagation();
+
+                    const menu = this.nextElementSibling;
+
+                    document.querySelectorAll('.dots-dropdown.open')
+                        .forEach(dd => dd.classList.remove('open'));
+
+                    menu.classList.toggle('open');
+
                 });
+
             });
+
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.dots-dropdown.open')
+                    .forEach(dd => dd.classList.remove('open'));
+            });
+
+            // delete modal
+            const modal = document.getElementById('deleteModal');
+            const deleteForm = document.getElementById('deleteForm');
+            const deleteName = document.getElementById('deletePackageName');
+
+            document.querySelectorAll('.delete-trigger').forEach(btn => {
+
+                btn.addEventListener('click', function() {
+
+                    deleteName.textContent = this.dataset.name;
+                    deleteForm.action = this.dataset.url;
+
+                    modal.classList.add('open');
+
+                });
+
+            });
+
+            document.getElementById('cancelDelete')
+                .addEventListener('click', function() {
+                    modal.classList.remove('open');
+                });
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('open');
+                }
+            });
+
         });
     </script>
 @endpush

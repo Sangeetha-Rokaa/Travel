@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* =============================================
-               DESTINATIONS PAGE STYLES
-            ============================================= */
+                                       DESTINATIONS PAGE STYLES
+                                    ============================================= */
 
         .dest-page-wrapper {
             background: #e8e4dc;
@@ -106,6 +106,12 @@
         .dest-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.13);
+        }
+
+        .dest-card {
+            display: block;
+            text-decoration: none;
+            color: inherit;
         }
 
         .dest-card-img {
@@ -219,47 +225,45 @@
         {{-- ===================== TOP 4 DESTINATION CARDS ===================== --}}
         <div class="dest-grid">
             @forelse($featured as $destination)
-                <div class="dest-card" data-url="{{ route('destinations.show', $destination->slug) }}" style="cursor:pointer;">
+                <a href="{{ route('destinations.show', $destination->slug) }}" class="dest-card">
                     <img src="{{ Str::startsWith($destination->featured_image, 'http')
                         ? $destination->featured_image
                         : asset('storage/' . $destination->featured_image) }}"
                         alt="{{ $destination->name }}" class="dest-card-img" />
+
                     <div class="dest-card-body">
                         <h3 class="dest-card-title">{{ $destination->name }}</h3>
                         <p class="dest-card-tag">({{ $destination->region ?? $destination->location }})</p>
                     </div>
-                </div>
+                </a>
             @empty
                 <p class="text-muted">No featured destinations found.</p>
             @endforelse
-        </div>{{-- end .dest-grid --}}
-
+        </div>
         {{-- ===================== BOTTOM ROW: 2 cards + map ===================== --}}
         <div class="dest-bottom-row">
-
             @foreach ($bottom as $destination)
-                <div class="dest-card" data-url="{{ route('destinations.show', $destination->slug) }}"
-                    style="cursor:pointer;">
+                <a href="{{ route('destinations.show', $destination->slug) }}" class="dest-card">
                     <img src="{{ Str::startsWith($destination->featured_image, 'http')
                         ? $destination->featured_image
                         : asset('storage/' . $destination->featured_image) }}"
                         alt="{{ $destination->name }}" class="dest-card-img" />
+
                     <div class="dest-card-body">
                         <h3 class="dest-card-title">{{ $destination->name }}</h3>
                         <p class="dest-card-tag">({{ $destination->region ?? $destination->location }})</p>
                     </div>
-                </div>
+                </a>
             @endforeach
+        </div>
+        {{-- Nepal Map --}}
+        <div class="dest-map-container">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3642089.7864566!2d82.34808!3d28.394857!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3995e8c77d506e17%3A0x5a4b9a1ed82e21e!2sNepal!5e0!3m2!1sen!2snp!4v1699999999999!5m2!1sen!2snp"
+                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Nepal Map"></iframe>
+        </div>
 
-            {{-- Nepal Map --}}
-            <div class="dest-map-container">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3642089.7864566!2d82.34808!3d28.394857!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3995e8c77d506e17%3A0x5a4b9a1ed82e21e!2sNepal!5e0!3m2!1sen!2snp!4v1699999999999!5m2!1sen!2snp"
-                    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-                    title="Nepal Map"></iframe>
-            </div>
-
-        </div>{{-- end .dest-bottom-row --}}
+    </div>{{-- end .dest-bottom-row --}}
 
     </div>{{-- end .dest-page-wrapper --}}
 @endsection
@@ -271,6 +275,11 @@
             card.addEventListener('click', function() {
                 // You can wire up routing here, e.g.:
                 // window.location.href = card.dataset.url;
+            });
+        });
+        document.querySelectorAll('.dest-card').forEach(card => {
+            card.addEventListener('click', () => {
+                window.location.href = card.dataset.url;
             });
         });
     </script>

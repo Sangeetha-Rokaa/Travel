@@ -50,6 +50,10 @@ class Destination extends Model
     {
         return $this->hasMany(Trek::class);
     }
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 
     // ─── Scopes ──────────────────────────────────────────────────────────────────
 
@@ -65,7 +69,7 @@ class Destination extends Model
 
     public function scopeOrdered($query)
     {
-        return $query->orderBy('sort_order')->orderBy('name');
+        return $query->orderBy('id', 'desc');
     }
 
     // ─── Accessors ───────────────────────────────────────────────────────────────

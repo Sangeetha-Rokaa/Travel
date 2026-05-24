@@ -95,48 +95,50 @@ class BookingController extends Controller
             'phone' => 'nullable|string|max:50',
             'nationality' => 'nullable|string|max:100',
             'passport_number' => 'nullable|string|max:50',
-            'date_of_birth' => 'nullable|date',
             'trip_start_date' => 'required|date',
             'trip_end_date' => 'nullable|date|after_or_equal:trip_start_date',
             'num_adults' => 'required|integer|min:1',
             'num_children' => 'required|integer|min:0',
-            'special_requirements' => 'nullable|string',
-            'accommodation_preference' => 'nullable|string|max:50',
-            'pickup_location' => 'nullable|string|max:200',
-            'base_price' => 'required|numeric|min:0',
-            'discount_amount' => 'nullable|numeric|min:0',
             'total_price' => 'required|numeric|min:0',
-            'currency' => 'required|string|size:3',
             'payment_status' => 'required|in:' . implode(',', Booking::PAYMENT_STATUSES),
             'amount_paid' => 'required|numeric|min:0',
             'payment_method' => 'nullable|string|max:50',
-            'transaction_id' => 'nullable|string|max:100',
             'status' => 'required|in:' . implode(',', array_keys(Booking::BOOKING_STATUSES)),
             'admin_notes' => 'nullable|string',
-            'cancellation_reason' => 'nullable|string',
         ]);
 
-        // Recalculate if needed
-        if ($request->has('recalculate_totals')) {
-            $validated['total_price'] = $validated['base_price'] - ($validated['discount_amount'] ?? 0);
-
-            if ($validated['amount_paid'] >= $validated['total_price']) {
-                $validated['payment_status'] = 'paid';
-                $validated['paid_at'] = now();
-            } elseif ($validated['amount_paid'] > 0) {
-                $validated['payment_status'] = 'partial';
-            } else {
-                $validated['payment_status'] = 'pending';
-            }
+        // Auto-update payment status based on amount paid
+        if ($validated['amount_paid'] >= $validated['total_price']) {
+            $validated['payment_status'] = 'paid';
+            $validated['paid_at'] = now();
+        } elseif ($validated['amount_paid'] > 0) {
+            $validated['payment_status'] = 'partial';
+            $validated['paid_at'] = null;
+        } else {
+            $validated['payment_status'] = 'pending';
+            $validated['paid_at'] = null;
         }
 
-        // Handle status change actions
+        // Handle status change timestamps
         if ($validated['status'] === 'confirmed' && $booking->status !== 'confirmed') {
             $validated['confirmed_at'] = now();
+        } elseif ($validated['status'] !== 'confirmed') {
+            $validated['confirmed_at'] = null;
         }
 
         if ($validated['status'] === 'cancelled' && $booking->status !== 'cancelled') {
             $validated['cancelled_at'] = now();
+        } elseif ($validated['status'] !== 'cancelled') {
+            $validated['cancelled_at'] = null;
+        }
+
+        // Don't override existing timestamps if status hasn't changed
+        if ($booking->status === 'confirmed') {
+            $validated['confirmed_at'] = $booking->confirmed_at;
+        }
+
+        if ($booking->status === 'cancelled') {
+            $validated['cancelled_at'] = $booking->cancelled_at;
         }
 
         $booking->update($validated);
@@ -144,7 +146,6 @@ class BookingController extends Controller
         return redirect()->route('admin.bookings.show', $booking)
             ->with('success', 'Booking updated successfully.');
     }
-
     public function destroy(Booking $booking): RedirectResponse
     {
         $booking->delete();

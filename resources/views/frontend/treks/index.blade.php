@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* =============================================
-                               TREKS INDEX PAGE STYLES
-                            ============================================= */
+                                                               TREKS INDEX PAGE STYLES
+                                                            ============================================= */
 
         /* ---- Hero Section ---- */
         .trek-hero {
@@ -357,6 +357,55 @@
             cursor: pointer;
         }
 
+        .hero-book-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 34px;
+            margin-top: 24px;
+
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-decoration: none;
+
+            border-radius: 999px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-book-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.35);
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            color: #fff;
+        }
+
+        .hero-book-btn:active {
+            transform: scale(0.98);
+        }
+
+        .hero-book-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: skewX(-25deg);
+            transition: 0.6s;
+        }
+
+        .hero-book-btn:hover::before {
+            left: 120%;
+        }
+
         .filter-check-item input[type="checkbox"] {
             accent-color: #2b7be0;
             width: 15px;
@@ -428,10 +477,10 @@
             <div class="trek-hero-content">
                 <h1>Himalayan Treks</h1>
                 <p>
-                    Lorem located trekking experiences across the Himalayas<br>
+                    Nepal located trekking experiences across the Himalayas<br>
                     for your adventure and unforgettable journey in Nepal.
                 </p>
-                <a href="{{ route('bookings.create') }}" class="btn-book-card">
+                <a href="{{ route('bookings.create', ['trek' => $treks->first()?->slug]) }}" class="btn-book-now">
                     Book Now
                 </a>
             </div>

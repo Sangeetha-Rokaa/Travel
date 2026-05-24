@@ -3,465 +3,1195 @@
 
 @section('title', 'Create New Trek - Nepal Travel')
 @section('page_title', 'Create New Trek')
-@section('page_icon', 'fas fa-plus-circle')
+@section('page_icon', 'fas fa-mountain')
 
 @section('content')
-    <div class="container-fluid px-0">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="tc-wrap">
+        {{-- HEADER --}}
+        <div class="tc-top">
             <div>
-                <h4 class="mb-1" style="color: #1e2a2e;">
-                    <i class="fas fa-hiking me-2" style="color: #e9b35f;"></i>
-                    Add New Trek
-                </h4>
-                <p class="text-muted small mb-0">Create a new trekking package for your customers</p>
+                <p class="tc-breadcrumb">Treks / <span>Create New</span></p>
+                <h1 class="tc-title"><i class="fas fa-person-hiking"></i> Add New Trek</h1>
             </div>
-
-            <a href="{{ route('admin.treks.index') }}" class="btn"
-                style="background: #6c757d; color: white; border-radius: 40px; padding: 8px 20px;">
-                <i class="fas fa-arrow-left me-2"></i> Back to Treks
+            <a href="{{ route('admin.treks.index') }}" class="tc-btn-ghost">
+                <i class="fas fa-arrow-left"></i> Back
             </a>
         </div>
 
+        {{-- ERRORS --}}
         @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert"
-                style="border-radius: 16px; border-left: 4px solid #ef4444;">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <strong>Please fix the following errors:</strong>
-                <ul class="mb-0 mt-2">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="tc-error-box" id="errorBox">
+                <i class="fas fa-circle-exclamation"></i>
+                <div>
+                    <strong>Fix these errors before saving:</strong>
+                    <ul>
+                        @foreach ($errors->all() as $e)
+                            <li>{{ $e }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                <button onclick="this.closest('.tc-error-box').remove()" type="button"><i
+                        class="fas fa-xmark"></i></button>
             </div>
         @endif
 
-        <div class="card border-0 rounded-4 shadow-sm" style="background: white; border-radius: 28px !important;">
-            <div class="card-body p-4">
+        <form action="{{ route('admin.treks.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
 
-                <form action="{{ route('admin.treks.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
+            <div class="tc-layout">
 
-                    <div class="row">
-                        <!-- Basic Information -->
-                        <div class="col-12">
-                            <h5 class="mb-3" style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-info-circle me-2"></i> Basic Information
-                            </h5>
+                {{-- ═══ MAIN COLUMN ═══ --}}
+                <div class="tc-main">
+
+                    {{-- 1. BASIC INFO --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-circle-info"></i> Basic Information</div>
+
+                        <div class="tc-row-2">
+                            <div class="tc-field">
+                                <label>Trek Name <span class="req">*</span></label>
+                                <input type="text" id="name" name="name" value="{{ old('name') }}"
+                                    class="tc-input @error('name') err @enderror" placeholder="e.g. Everest Base Camp Trek"
+                                    required>
+                                @error('name')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>URL Slug <small>— leave blank to auto-generate</small></label>
+                                <input type="text" id="slug" name="slug" value="{{ old('slug') }}"
+                                    class="tc-input @error('slug') err @enderror" placeholder="everest-base-camp-trek">
+                                @error('slug')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>Destination</label>
+                                <select name="destination_id"
+                                    class="tc-input tc-select @error('destination_id') err @enderror">
+                                    <option value="">— Select —</option>
+                                    @foreach ($destinations as $id => $dest)
+                                        <option value="{{ $id }}"
+                                            {{ old('destination_id') == $id ? 'selected' : '' }}>{{ $dest }}</option>
+                                    @endforeach
+                                </select>
+                                @error('destination_id')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>Difficulty <span class="req">*</span></label>
+                                <select name="difficulty" class="tc-input tc-select @error('difficulty') err @enderror"
+                                    required>
+                                    <option value="">— Select —</option>
+                                    @foreach ($difficulties as $d)
+                                        <option value="{{ $d }}" {{ old('difficulty') == $d ? 'selected' : '' }}>
+                                            {{ $d }}</option>
+                                    @endforeach
+                                </select>
+                                @error('difficulty')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label fw-semibold">Trek Name <span
-                                    class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
-                                name="name" value="{{ old('name') }}" required
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="slug" class="form-label fw-semibold">Slug (URL)</label>
-                            <input type="text" class="form-control @error('slug') is-invalid @enderror" id="slug"
-                                name="slug" value="{{ old('slug') }}" placeholder="auto-generated from name"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            <small class="text-muted">Leave empty to auto-generate from name</small>
-                            @error('slug')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="destination_id" class="form-label fw-semibold">Destination</label>
-                            <select class="form-select @error('destination_id') is-invalid @enderror" id="destination_id"
-                                name="destination_id" style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                                <option value="">Select Destination</option>
-                                @foreach ($destinations as $id => $name)
-                                    <option value="{{ $id }}"
-                                        {{ old('destination_id') == $id ? 'selected' : '' }}>
-                                        {{ $name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('destination_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="difficulty" class="form-label fw-semibold">Difficulty <span
-                                    class="text-danger">*</span></label>
-                            <select class="form-select @error('difficulty') is-invalid @enderror" id="difficulty"
-                                name="difficulty" required style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                                <option value="">Select Difficulty</option>
-                                @foreach ($difficulties as $difficulty)
-                                    <option value="{{ $difficulty }}"
-                                        {{ old('difficulty') == $difficulty ? 'selected' : '' }}>
-                                        {{ $difficulty }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('difficulty')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-12 mb-3">
-                            <label for="short_description" class="form-label fw-semibold">Short Description <span
-                                    class="text-danger">*</span></label>
-                            <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description"
-                                name="short_description" rows="3" required style="border-radius: 12px; border: 1px solid #e0d5c0;">{{ old('short_description') }}</textarea>
-                            <small class="text-muted">Brief summary (max 500 characters)</small>
+                        <div class="tc-field tc-mt">
+                            <label>Short Description <span class="req">*</span></label>
+                            <textarea id="short_description" name="short_description" rows="3"
+                                class="tc-input tc-ta @error('short_description') err @enderror"
+                                placeholder="Brief overview shown in search results and cards…" required>{{ old('short_description') }}</textarea>
+                            <div class="tc-counter-row">
+                                <span>Max 500 characters</span>
+                                <span id="charCounter" class="tc-counter">500 left</span>
+                            </div>
                             @error('short_description')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <span class="tc-err">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <div class="col-md-12 mb-3">
-                            <label for="description" class="form-label fw-semibold">Full Description <span
-                                    class="text-danger">*</span></label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description"
-                                rows="8" required style="border-radius: 12px; border: 1px solid #e0d5c0;">{{ old('description') }}</textarea>
+                        <div class="tc-field tc-mt">
+                            <label>Full Description <span class="req">*</span></label>
+                            <textarea id="description" name="description" rows="6" class="tc-input tc-ta @error('description') err @enderror"
+                                placeholder="Detailed, engaging description of the trek experience…" required>{{ old('description') }}</textarea>
                             @error('description')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <span class="tc-err">{{ $message }}</span>
                             @enderror
                         </div>
+                    </div>
 
-                        <!-- Trek Details -->
-                        <div class="col-12 mt-3">
-                            <h5 class="mb-3" style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-route me-2"></i> Trek Details
-                            </h5>
+                    {{-- 2. TREK DETAILS --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-route"></i> Trek Details</div>
+
+                        <div class="tc-row-4">
+                            <div class="tc-field">
+                                <label>Duration (Days)</label>
+                                <input type="number" name="duration_days" value="{{ old('duration_days') }}"
+                                    class="tc-input @error('duration_days') err @enderror" min="1" placeholder="14">
+                                @error('duration_days')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>Max Altitude</label>
+                                <input type="text" name="max_altitude" value="{{ old('max_altitude') }}"
+                                    class="tc-input @error('max_altitude') err @enderror" placeholder="5,364m">
+                                @error('max_altitude')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>Start Point</label>
+                                <input type="text" name="start_point" value="{{ old('start_point') }}"
+                                    class="tc-input @error('start_point') err @enderror" placeholder="Lukla">
+                                @error('start_point')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>End Point</label>
+                                <input type="text" name="end_point" value="{{ old('end_point') }}"
+                                    class="tc-input @error('end_point') err @enderror" placeholder="Kathmandu">
+                                @error('end_point')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
 
-                        <div class="col-md-3 mb-3">
-                            <label for="duration_days" class="form-label fw-semibold">Duration (Days) <span
-                                    class="text-danger">*</span></label>
-                            <input type="number" class="form-control @error('duration_days') is-invalid @enderror"
-                                id="duration_days" name="duration_days" value="{{ old('duration_days') }}" required
-                                min="1" style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            @error('duration_days')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="tc-row-2 tc-mt">
+                            <div class="tc-field">
+                                <label>Best Season</label>
+                                <input type="text" name="best_season" value="{{ old('best_season') }}"
+                                    class="tc-input @error('best_season') err @enderror"
+                                    placeholder="Spring (Mar–May) & Autumn (Sep–Nov)">
+                                @error('best_season')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>Price (USD)</label>
+                                <div class="tc-prefix-wrap">
+                                    <span class="tc-prefix">$</span>
+                                    <input type="number" step="0.01" name="price_usd"
+                                        value="{{ old('price_usd') }}"
+                                        class="tc-input tc-input-prefixed @error('price_usd') err @enderror"
+                                        placeholder="1499.00">
+                                </div>
+                                @error('price_usd')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 3. HIGHLIGHTS & FEATURES --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-list-check"></i> Highlights & Features
+                            <small>— one item per line</small>
                         </div>
 
-                        <div class="col-md-3 mb-3">
-                            <label for="max_altitude" class="form-label fw-semibold">Max Altitude</label>
-                            <input type="text" class="form-control @error('max_altitude') is-invalid @enderror"
-                                id="max_altitude" name="max_altitude" value="{{ old('max_altitude') }}"
-                                placeholder="e.g., 5,364m" style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            @error('max_altitude')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="tc-row-2">
+                            <div class="tc-field">
+                                <label><span class="dot dot-gold"></span> Highlights</label>
+                                <textarea name="highlights" rows="6" class="tc-input tc-ta tc-mono"
+                                    placeholder="Stunning Everest views&#10;Namche Bazaar market&#10;Kala Patthar sunrise">{{ old('highlights') }}</textarea>
+                            </div>
+                            <div class="tc-field">
+                                <label><span class="dot dot-green"></span> What's Included</label>
+                                <textarea name="included" rows="6" class="tc-input tc-ta tc-mono"
+                                    placeholder="Airport transfers&#10;Teahouse accommodation&#10;All meals on trek">{{ old('included') }}</textarea>
+                            </div>
+                            <div class="tc-field">
+                                <label><span class="dot dot-red"></span> What's Excluded</label>
+                                <textarea name="excluded" rows="6" class="tc-input tc-ta tc-mono"
+                                    placeholder="International flights&#10;Travel insurance&#10;Personal gear">{{ old('excluded') }}</textarea>
+                            </div>
+                            <div class="tc-field">
+                                <label><span class="dot dot-purple"></span> Required Gear</label>
+                                <textarea name="required_gear" rows="6" class="tc-input tc-ta tc-mono"
+                                    placeholder="Down jacket&#10;Trekking boots&#10;Trekking poles">{{ old('required_gear') }}</textarea>
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="col-md-3 mb-3">
-                            <label for="start_point" class="form-label fw-semibold">Start Point <span
-                                    class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('start_point') is-invalid @enderror"
-                                id="start_point" name="start_point" value="{{ old('start_point') }}" required
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            @error('start_point')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                    {{-- 4. ITINERARY — Quill Rich Editor --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-calendar-days"></i> Day-by-Day Itinerary</div>
+
+                        {{-- Hidden input that holds the HTML for form submission --}}
+                        <input type="hidden" name="itinerary" id="itinerary_hidden">
+
+                        {{-- Quill toolbar + editor --}}
+                        <div id="quill-toolbar">
+                            <span class="ql-formats">
+                                <select class="ql-header">
+                                    <option value="1">Heading</option>
+                                    <option value="2">Sub-heading</option>
+                                    <option selected>Normal</option>
+                                </select>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-bold"></button>
+                                <button class="ql-italic"></button>
+                                <button class="ql-underline"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered"></button>
+                                <button class="ql-list" value="bullet"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-blockquote"></button>
+                                <button class="ql-code-block"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-link"></button>
+                                <button class="ql-image"></button>
+                                <button class="ql-clean"></button>
+                            </span>
                         </div>
-
-                        <div class="col-md-3 mb-3">
-                            <label for="end_point" class="form-label fw-semibold">End Point <span
-                                    class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('end_point') is-invalid @enderror"
-                                id="end_point" name="end_point" value="{{ old('end_point') }}" required
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            @error('end_point')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div id="quill-editor" style="min-height:300px;">
+                            {!! old('itinerary') !!}
                         </div>
+                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="best_season" class="form-label fw-semibold">Best Season</label>
-                            <input type="text" class="form-control @error('best_season') is-invalid @enderror"
-                                id="best_season" name="best_season" value="{{ old('best_season') }}"
-                                placeholder="e.g., Spring (Mar-May), Autumn (Sep-Nov)"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            @error('best_season')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                </div>{{-- /tc-main --}}
 
-                        <div class="col-md-6 mb-3">
-                            <label for="price_usd" class="form-label fw-semibold">Price (USD)</label>
-                            <input type="number" step="0.01"
-                                class="form-control @error('price_usd') is-invalid @enderror" id="price_usd"
-                                name="price_usd" value="{{ old('price_usd') }}" placeholder="e.g., 1499.00"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            @error('price_usd')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                {{-- ═══ SIDEBAR ═══ --}}
+                <div class="tc-sidebar">
 
-                        <!-- Group Size -->
-                        <div class="col-12 mt-3">
-                            <h5 class="mb-3"
-                                style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-users me-2"></i> Group Size
-                            </h5>
-                        </div>
+                    {{-- SUBMIT --}}
+                    <div class="tc-card tc-card-cta">
+                        <button type="submit" class="tc-btn-primary w-100">
+                            <i class="fas fa-floppy-disk"></i> Publish Trek
+                        </button>
+                        <a href="{{ route('admin.treks.index') }}" class="tc-btn-cancel w-100">
+                            <i class="fas fa-xmark"></i> Discard
+                        </a>
+                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="group_size_min" class="form-label fw-semibold">Min Group Size</label>
-                            <input type="number" class="form-control @error('group_size_min') is-invalid @enderror"
-                                id="group_size_min" name="group_size_min" value="{{ old('group_size_min', 1) }}"
-                                min="1" style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            @error('group_size_min')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                    {{-- IMAGES --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-images"></i> Media</div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="group_size_max" class="form-label fw-semibold">Max Group Size</label>
-                            <input type="number" class="form-control @error('group_size_max') is-invalid @enderror"
-                                id="group_size_max" name="group_size_max" value="{{ old('group_size_max', 16) }}"
-                                min="1" style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            @error('group_size_max')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Lists (Highlights, Included, Excluded, Required Gear) -->
-                        <div class="col-12 mt-3">
-                            <h5 class="mb-3"
-                                style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-list-ul me-2"></i> Lists (One item per line)
-                            </h5>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="highlights" class="form-label fw-semibold">Highlights</label>
-                            <textarea class="form-control @error('highlights') is-invalid @enderror" id="highlights" name="highlights"
-                                rows="5" style="border-radius: 12px; border: 1px solid #e0d5c0;"
-                                placeholder="Amazing views of Mount Everest&#10;Visit ancient monasteries&#10;Experience Sherpa culture">{{ old('highlights') }}</textarea>
-                            <small class="text-muted">One highlight per line</small>
-                            @error('highlights')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="included" class="form-label fw-semibold">What's Included</label>
-                            <textarea class="form-control @error('included') is-invalid @enderror" id="included" name="included"
-                                rows="5" style="border-radius: 12px; border: 1px solid #e0d5c0;"
-                                placeholder="Airport transfers&#10;Accommodation in teahouses&#10;All meals during trek">{{ old('included') }}</textarea>
-                            <small class="text-muted">One item per line</small>
-                            @error('included')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="excluded" class="form-label fw-semibold">What's Excluded</label>
-                            <textarea class="form-control @error('excluded') is-invalid @enderror" id="excluded" name="excluded"
-                                rows="5" style="border-radius: 12px; border: 1px solid #e0d5c0;"
-                                placeholder="International flights&#10;Travel insurance&#10;Personal expenses">{{ old('excluded') }}</textarea>
-                            <small class="text-muted">One item per line</small>
-                            @error('excluded')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="required_gear" class="form-label fw-semibold">Required Gear</label>
-                            <textarea class="form-control @error('required_gear') is-invalid @enderror" id="required_gear" name="required_gear"
-                                rows="5" style="border-radius: 12px; border: 1px solid #e0d5c0;"
-                                placeholder="Trekking boots&#10;Warm clothing layers&#10;Sleeping bag">{{ old('required_gear') }}</textarea>
-                            <small class="text-muted">One item per line</small>
-                            @error('required_gear')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Itinerary -->
-                        <div class="col-12 mt-3">
-                            <h5 class="mb-3"
-                                style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-calendar-week me-2"></i> Itinerary
-                            </h5>
-                        </div>
-
-                        <div class="col-md-12 mb-3">
-                            <label for="itinerary" class="form-label fw-semibold">Day-by-Day Itinerary</label>
-                            <textarea class="form-control @error('itinerary') is-invalid @enderror" id="itinerary" name="itinerary"
-                                rows="10" style="border-radius: 12px; border: 1px solid #e0d5c0;"
-                                placeholder="Day 1: Arrive in Kathmandu (1,300m)&#10;Day 2: Fly to Lukla and trek to Phakding (2,652m) - 3-4 hours&#10;Day 3: Trek from Phakding to Namche Bazaar (3,440m) - 5-6 hours">{{ old('itinerary') }}</textarea>
-                            <small class="text-muted">One day per line. Format: Day X: Description</small>
-                            @error('itinerary')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Images -->
-                        <div class="col-12 mt-3">
-                            <h5 class="mb-3"
-                                style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-image me-2"></i> Images
-                            </h5>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="featured_image" class="form-label fw-semibold">Featured Image</label>
-                            <input type="file" class="form-control @error('featured_image') is-invalid @enderror"
-                                id="featured_image" name="featured_image" accept="image/*"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            <small class="text-muted">Max 3MB. JPG, PNG, or GIF</small>
+                        <div class="tc-field">
+                            <label>Featured Image</label>
+                            <label class="tc-dropzone" id="dropzone" for="featured_image">
+                                <div id="dzIdle">
+                                    <i class="fas fa-cloud-arrow-up"></i>
+                                    <span>Click to upload</span>
+                                    <small>PNG, JPG, WEBP · max 5MB</small>
+                                </div>
+                                <div id="dzPreview" class="d-none">
+                                    <img id="previewImage" alt="">
+                                    <button type="button" id="removeImg"><i class="fas fa-xmark"></i></button>
+                                </div>
+                            </label>
+                            <input type="file" id="featured_image" name="featured_image" accept="image/*"
+                                class="d-none
+                            @error('featured_image') err @enderror">
                             @error('featured_image')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <span class="tc-err">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="gallery_images" class="form-label fw-semibold">Gallery Images</label>
-                            <input type="file" class="form-control" id="gallery_images" name="gallery_images[]"
-                                accept="image/*" multiple style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            <small class="text-muted">You can select multiple images</small>
+                        <div class="tc-field tc-mt">
+                            <label>Gallery Images</label>
+                            <label class="tc-gallery-btn" for="gallery_images">
+                                <i class="fas fa-photo-film"></i> Choose multiple photos
+                            </label>
+                            <input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" multiple
+                                class="d-none">
+                            <div class="tc-thumbs" id="galleryThumbs"></div>
                         </div>
-
-                        <!-- Status Settings -->
-                        <div class="col-12 mt-3">
-                            <h5 class="mb-3"
-                                style="color: #1e2a2e; border-left: 3px solid #e9b35f; padding-left: 12px;">
-                                <i class="fas fa-toggle-on me-2"></i> Status Settings
-                            </h5>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured"
-                                    value="1" {{ old('is_featured') ? 'checked' : '' }}
-                                    style="width: 40px; height: 20px;">
-                                <label class="form-check-label fw-semibold ms-2" for="is_featured">
-                                    Feature this trek
-                                </label>
-                                <br>
-                                <small class="text-muted">Featured treks appear on homepage</small>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
-                                    value="1" {{ old('is_active', '1') ? 'checked' : '' }}
-                                    style="width: 40px; height: 20px;">
-                                <label class="form-check-label fw-semibold ms-2" for="is_active">
-                                    Active
-                                </label>
-                                <br>
-                                <small class="text-muted">Inactive treks won't show on website</small>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="sort_order" class="form-label fw-semibold">Sort Order</label>
-                            <input type="number" class="form-control @error('sort_order') is-invalid @enderror"
-                                id="sort_order" name="sort_order" value="{{ old('sort_order', 0) }}" min="0"
-                                style="border-radius: 12px; border: 1px solid #e0d5c0;">
-                            <small class="text-muted">Lower numbers appear first</small>
-                            @error('sort_order')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
                     </div>
 
-                    <!-- Form Actions -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <hr style="border-color: #f0e2ce;">
-                            <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('admin.treks.index') }}" class="btn"
-                                    style="background: #6c757d; color: white; border-radius: 30px; padding: 10px 30px;">
-                                    <i class="fas fa-times me-2"></i> Cancel
-                                </a>
-                                <button type="submit" class="btn"
-                                    style="background: linear-gradient(135deg, #1e2a2e, #2c4a3e); color: white; border-radius: 30px; padding: 10px 30px;">
-                                    <i class="fas fa-save me-2"></i> Create Trek
-                                </button>
+                    {{-- GROUP SIZE --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-users"></i> Group Size</div>
+                        <div class="tc-row-2">
+                            <div class="tc-field">
+                                <label>Minimum</label>
+                                <input type="number" name="group_size_min" min="1"
+                                    value="{{ old('group_size_min', 1) }}" class="tc-input">
+                            </div>
+                            <div class="tc-field">
+                                <label>Maximum</label>
+                                <input type="number" name="group_size_max" min="1"
+                                    value="{{ old('group_size_max', 16) }}" class="tc-input">
                             </div>
                         </div>
                     </div>
 
-                </form>
+                    {{-- STATUS --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-sliders"></i> Settings</div>
+
+                        <label class="tc-toggle-row">
+                            <div>
+                                <span>Featured Trek</span>
+                                <small>Show on homepage</small>
+                            </div>
+                            <div class="tc-switch">
+                                <input type="checkbox" name="is_featured" value="1"
+                                    {{ old('is_featured') ? 'checked' : '' }}>
+                                <span></span>
+                            </div>
+                        </label>
+
+                        <label class="tc-toggle-row">
+                            <div>
+                                <span>Active / Published</span>
+                                <small>Visible on website</small>
+                            </div>
+                            <div class="tc-switch">
+                                <input type="checkbox" name="is_active" value="1"
+                                    {{ old('is_active', '1') ? 'checked' : '' }}>
+                                <span></span>
+                            </div>
+                        </label>
+
+                        <div class="tc-field tc-mt">
+                            <label>Sort Order</label>
+                            <input type="number" name="sort_order" min="0" value="{{ old('sort_order', 0) }}"
+                                class="tc-input">
+                        </div>
+                    </div>
+
+                </div>{{-- /tc-sidebar --}}
 
             </div>
-        </div>
-
+        </form>
     </div>
 @endsection
 
 @push('styles')
+    {{-- Quill snow theme --}}
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+
     <style>
-        .form-label {
-            color: #1e2a2e;
-            margin-bottom: 8px;
+        /* ════════════════════════════════════
+       TOKENS
+    ════════════════════════════════════ */
+        :root {
+            --c-bg: #f4f6f8;
+            --c-surface: #ffffff;
+            --c-border: #e2e8f0;
+            --c-text: #1e293b;
+            --c-muted: #64748b;
+            --c-faint: #94a3b8;
+            --c-primary: #1e3a32;
+            --c-gold: #d97706;
+            --c-gold-bg: rgba(217, 119, 6, .08);
+            --c-focus: rgba(217, 119, 6, .22);
+            --c-danger: #dc2626;
+            --c-danger-bg: #fef2f2;
+            --r: 12px;
         }
 
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #e9b35f;
-            box-shadow: 0 0 0 0.2rem rgba(233, 179, 95, 0.25);
+        /* ════════════════════════════════════
+       WRAPPER
+    ════════════════════════════════════ */
+        .tc-wrap {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-bottom: 60px;
+            color: var(--c-text);
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 14px;
         }
 
-        textarea {
+        /* ════════════════════════════════════
+       TOP BAR
+    ════════════════════════════════════ */
+        .tc-top {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .tc-breadcrumb {
+            font-size: 12px;
+            color: var(--c-faint);
+            margin: 0 0 4px;
+        }
+
+        .tc-breadcrumb span {
+            color: var(--c-gold);
+            font-weight: 600;
+        }
+
+        .tc-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--c-text);
+        }
+
+        .tc-title i {
+            color: var(--c-gold);
+            font-size: 1.1rem;
+        }
+
+        /* ════════════════════════════════════
+       ERROR BOX
+    ════════════════════════════════════ */
+        .tc-error-box {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: var(--c-danger-bg);
+            border: 1px solid rgba(220, 38, 38, .2);
+            border-left: 4px solid var(--c-danger);
+            border-radius: var(--r);
+            padding: 16px 18px;
+            margin-bottom: 20px;
+            color: #7f1d1d;
+        }
+
+        .tc-error-box>i {
+            color: var(--c-danger);
+            margin-top: 2px;
+            font-size: 16px;
+        }
+
+        .tc-error-box>div {
+            flex: 1;
+        }
+
+        .tc-error-box strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .tc-error-box ul {
+            margin: 0;
+            padding-left: 16px;
+            font-size: 12.5px;
+        }
+
+        .tc-error-box ul li {
+            margin-bottom: 2px;
+        }
+
+        .tc-error-box>button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #7f1d1d;
+            opacity: .5;
+            font-size: 15px;
+            padding: 0;
+        }
+
+        .tc-error-box>button:hover {
+            opacity: 1;
+        }
+
+        /* ════════════════════════════════════
+       LAYOUT
+    ════════════════════════════════════ */
+        .tc-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .tc-main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .tc-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: sticky;
+            top: 72px;
+        }
+
+        @media (max-width: 1024px) {
+            .tc-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .tc-sidebar {
+                position: static;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .tc-sidebar .tc-card-cta {
+                grid-column: 1/-1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .tc-sidebar {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ════════════════════════════════════
+       CARDS
+    ════════════════════════════════════ */
+        .tc-card {
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+        }
+
+        .tc-card-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--c-text);
+            letter-spacing: .01em;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .tc-card-label i {
+            color: var(--c-gold);
+        }
+
+        .tc-card-label small {
+            font-weight: 400;
+            color: var(--c-faint);
+        }
+
+        .tc-card-cta {
+            background: var(--c-primary);
+            border-color: transparent;
+        }
+
+        /* ════════════════════════════════════
+       GRID HELPERS
+    ════════════════════════════════════ */
+        .tc-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .tc-row-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .tc-mt {
+            margin-top: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .tc-row-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .tc-row-2,
+            .tc-row-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ════════════════════════════════════
+       FIELDS
+    ════════════════════════════════════ */
+        .tc-field label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--c-muted);
+            margin-bottom: 6px;
+        }
+
+        .tc-field label small {
+            font-weight: 400;
+            color: var(--c-faint);
+        }
+
+        .req {
+            color: var(--c-danger);
+        }
+
+        .tc-input {
+            width: 100%;
+            height: 42px;
+            padding: 0 13px;
+            background: var(--c-bg);
+            border: 1.5px solid var(--c-border);
+            border-radius: var(--r);
+            font-size: 13.5px;
+            color: var(--c-text);
+            font-family: inherit;
+            transition: border-color .18s, box-shadow .18s;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .tc-input:focus {
+            border-color: var(--c-gold);
+            background: #fff;
+            box-shadow: 0 0 0 3px var(--c-focus);
+        }
+
+        .tc-input.err {
+            border-color: var(--c-danger);
+            background: var(--c-danger-bg);
+        }
+
+        .tc-input.err:focus {
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, .15);
+        }
+
+        .tc-ta {
+            height: auto !important;
+            padding: 11px 13px;
+            line-height: 1.6;
             resize: vertical;
         }
 
-        .form-check-input:checked {
-            background-color: #e9b35f;
-            border-color: #e9b35f;
+        .tc-mono {
+            font-family: 'Courier New', monospace;
+            font-size: 12.5px;
+            line-height: 1.9;
         }
 
-        .form-check-input:focus {
-            border-color: #e9b35f;
-            box-shadow: 0 0 0 0.2rem rgba(233, 179, 95, 0.25);
+        .tc-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 13px center;
+            padding-right: 32px;
+            cursor: pointer;
         }
 
-        .card {
-            transition: transform 0.2s ease;
+        .tc-prefix-wrap {
+            display: flex;
         }
 
-        .alert ul {
-            padding-left: 20px;
+        .tc-prefix {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+            background: var(--c-bg);
+            border: 1.5px solid var(--c-border);
+            border-right: none;
+            border-radius: var(--r) 0 0 var(--r);
+            font-weight: 700;
+            color: var(--c-muted);
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .tc-input-prefixed {
+            border-radius: 0 var(--r) var(--r) 0;
+            padding-left: 12px;
+        }
+
+        .tc-counter-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 11.5px;
+            color: var(--c-faint);
+        }
+
+        .tc-counter.warn {
+            color: #f59e0b;
+        }
+
+        .tc-counter.over {
+            color: var(--c-danger);
+            font-weight: 700;
+        }
+
+        .tc-err {
+            display: block;
+            margin-top: 4px;
+            font-size: 11.5px;
+            color: var(--c-danger);
+            font-weight: 600;
+        }
+
+        /* ════════════════════════════════════
+       COLORED DOTS
+    ════════════════════════════════════ */
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .dot-gold {
+            background: #d97706;
+        }
+
+        .dot-green {
+            background: #16a34a;
+        }
+
+        .dot-red {
+            background: #dc2626;
+        }
+
+        .dot-purple {
+            background: #7c3aed;
+        }
+
+        /* ════════════════════════════════════
+       QUILL EDITOR
+    ════════════════════════════════════ */
+        #quill-toolbar {
+            border: 1.5px solid var(--c-border);
+            border-bottom: none;
+            border-radius: var(--r) var(--r) 0 0;
+            background: var(--c-bg);
+            padding: 6px 10px;
+        }
+
+        #quill-editor {
+            border: 1.5px solid var(--c-border);
+            border-top: none;
+            border-radius: 0 0 var(--r) var(--r);
+            font-size: 13.5px;
+            line-height: 1.75;
+            background: #fff;
+        }
+
+        #quill-editor .ql-editor {
+            min-height: 300px;
+            padding: 16px 18px;
+        }
+
+        #quill-editor .ql-editor.ql-blank::before {
+            color: var(--c-faint);
+            font-style: normal;
+            font-size: 13px;
+        }
+
+        .ql-snow .ql-toolbar button:hover,
+        .ql-snow .ql-toolbar button.ql-active,
+        .ql-snow .ql-toolbar .ql-picker-label:hover {
+            color: var(--c-gold) !important;
+        }
+
+        .ql-snow .ql-toolbar button:hover .ql-stroke,
+        .ql-snow .ql-toolbar button.ql-active .ql-stroke {
+            stroke: var(--c-gold) !important;
+        }
+
+        .ql-snow .ql-toolbar button:hover .ql-fill,
+        .ql-snow .ql-toolbar button.ql-active .ql-fill {
+            fill: var(--c-gold) !important;
+        }
+
+        /* ════════════════════════════════════
+       IMAGE DROPZONE
+    ════════════════════════════════════ */
+        .tc-dropzone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 140px;
+            border: 2px dashed var(--c-border);
+            border-radius: var(--r);
+            cursor: pointer;
+            transition: border-color .18s, background .18s;
+            overflow: hidden;
+            position: relative;
+            text-align: center;
+        }
+
+        .tc-dropzone:hover {
+            border-color: var(--c-gold);
+            background: var(--c-gold-bg);
+        }
+
+        #dzIdle {
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #dzIdle i {
+            font-size: 28px;
+            color: var(--c-faint);
+        }
+
+        #dzIdle span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--c-muted);
+        }
+
+        #dzIdle small {
+            font-size: 11.5px;
+            color: var(--c-faint);
+        }
+
+        #dzPreview {
+            width: 100%;
+            position: relative;
+        }
+
+        #dzPreview img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+
+        #removeImg {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 26px;
+            height: 26px;
+            background: rgba(0, 0, 0, .55);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: background .15s;
+        }
+
+        #removeImg:hover {
+            background: var(--c-danger);
+        }
+
+        .tc-gallery-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--c-bg);
+            border: 1.5px dashed var(--c-border);
+            border-radius: var(--r);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--c-muted);
+            transition: border-color .18s, color .18s;
+        }
+
+        .tc-gallery-btn:hover {
+            border-color: var(--c-gold);
+            color: var(--c-gold);
+        }
+
+        .tc-gallery-btn i {
+            font-size: 16px;
+        }
+
+        .tc-thumbs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .tc-thumbs img {
+            width: 52px;
+            height: 52px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1.5px solid var(--c-border);
+            transition: transform .15s;
+        }
+
+        .tc-thumbs img:hover {
+            transform: scale(1.08);
+        }
+
+        /* ════════════════════════════════════
+       TOGGLES
+    ════════════════════════════════════ */
+        .tc-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--c-border);
+            cursor: pointer;
+        }
+
+        .tc-toggle-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .tc-toggle-row>div>span {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--c-text);
+        }
+
+        .tc-toggle-row>div>small {
+            display: block;
+            font-size: 11.5px;
+            color: var(--c-faint);
+            margin-top: 1px;
+        }
+
+        .tc-switch {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .tc-switch input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .tc-switch span {
+            display: block;
+            width: 42px;
+            height: 24px;
+            background: #cbd5e1;
+            border-radius: 100px;
+            transition: background .2s;
+            position: relative;
+        }
+
+        .tc-switch span::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform .2s;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+        }
+
+        .tc-switch input:checked~span {
+            background: var(--c-gold);
+        }
+
+        .tc-switch input:checked~span::after {
+            transform: translateX(18px);
+        }
+
+        /* ════════════════════════════════════
+       BUTTONS
+    ════════════════════════════════════ */
+        .tc-btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 46px;
+            padding: 0 20px;
+            background: var(--c-gold);
+            color: #fff;
+            border: none;
+            border-radius: var(--r);
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: filter .2s, transform .15s;
+            text-decoration: none;
+        }
+
+        .tc-btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            color: #fff;
+        }
+
+        .tc-btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .tc-btn-cancel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 40px;
+            padding: 0 20px;
+            background: rgba(255, 255, 255, .12);
+            color: rgba(255, 255, 255, .7);
+            border: 1px solid rgba(255, 255, 255, .18);
+            border-radius: var(--r);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background .18s, color .18s;
+            text-decoration: none;
+            margin-top: 8px;
+        }
+
+        .tc-btn-cancel:hover {
+            background: rgba(255, 255, 255, .2);
+            color: #fff;
+        }
+
+        .tc-btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 16px;
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: var(--r);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--c-muted);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .18s, color .18s;
+        }
+
+        .tc-btn-ghost:hover {
+            background: var(--c-bg);
+            color: var(--c-text);
+        }
+
+        .w-100 {
+            width: 100%;
+        }
+
+        /* ════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════ */
+        @media (max-width: 768px) {
+            .tc-card {
+                padding: 16px;
+            }
+
+            .tc-title {
+                font-size: 1.25rem;
+            }
         }
     </style>
 @endpush
 
 @push('scripts')
+    {{-- Quill JS --}}
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <script>
-        // Auto-generate slug from name
-        document.getElementById('name').addEventListener('blur', function() {
-            let slugField = document.getElementById('slug');
-            if (slugField.value.trim() === '') {
-                let name = this.value.trim().toLowerCase();
-                let slug = name
-                    .replace(/[^a-z0-9\s-]/g, '')
-                    .replace(/\s+/g, '-')
-                    .replace(/-+/g, '-');
-                slugField.value = slug;
-            }
-        });
-
-        // Character counter for short_description (optional)
-        const shortDesc = document.getElementById('short_description');
-        if (shortDesc) {
-            shortDesc.addEventListener('input', function() {
-                let remaining = 500 - this.value.length;
-                let counter = document.querySelector('#short_description + small');
-                if (counter && remaining < 0) {
-                    counter.style.color = 'red';
-                } else if (counter) {
-                    counter.style.color = '#6c757d';
-                }
+        (function() {
+            /* ── Quill ── */
+            const quill = new Quill('#quill-editor', {
+                modules: {
+                    toolbar: '#quill-toolbar'
+                },
+                theme: 'snow',
+                placeholder: 'Day 1: Arrival in Kathmandu\nWrite a detailed day-by-day itinerary here…'
             });
-        }
+
+            /* Sync hidden input before form submit */
+            document.querySelector('form').addEventListener('submit', function() {
+                document.getElementById('itinerary_hidden').value = quill.root.innerHTML;
+            });
+
+            /* ── Auto slug ── */
+            const nameEl = document.getElementById('name');
+            const slugEl = document.getElementById('slug');
+            if (nameEl && slugEl) {
+                nameEl.addEventListener('blur', function() {
+                    if (!slugEl.value.trim()) {
+                        slugEl.value = this.value.trim().toLowerCase()
+                            .replace(/[^a-z0-9\s-]/g, '')
+                            .replace(/\s+/g, '-')
+                            .replace(/-+/g, '-');
+                    }
+                });
+            }
+
+            /* ── Char counter ── */
+            const sd = document.getElementById('short_description');
+            const cc = document.getElementById('charCounter');
+            if (sd && cc) {
+                function updateCC() {
+                    const r = 500 - sd.value.length;
+                    cc.textContent = r + ' left';
+                    cc.className = 'tc-counter' + (r < 0 ? ' over' : r < 80 ? ' warn' : '');
+                }
+                sd.addEventListener('input', updateCC);
+                updateCC();
+            }
+
+            /* ── Featured image dropzone ── */
+            const fi = document.getElementById('featured_image');
+            const dzP = document.getElementById('dzPreview');
+            const dzI = document.getElementById('dzIdle');
+            const pi = document.getElementById('previewImage');
+            const rm = document.getElementById('removeImg');
+
+            if (fi) {
+                fi.addEventListener('change', function() {
+                    const f = this.files[0];
+                    if (!f) return;
+                    const r = new FileReader();
+                    r.onload = e => {
+                        pi.src = e.target.result;
+                        dzP.classList.remove('d-none');
+                        dzI.classList.add('d-none');
+                    };
+                    r.readAsDataURL(f);
+                });
+            }
+            if (rm) {
+                rm.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    fi.value = '';
+                    dzP.classList.add('d-none');
+                    dzI.classList.remove('d-none');
+                });
+            }
+
+            /* ── Gallery thumbnails ── */
+            const gi = document.getElementById('gallery_images');
+            const gt = document.getElementById('galleryThumbs');
+            if (gi && gt) {
+                gi.addEventListener('change', function() {
+                    gt.innerHTML = '';
+                    Array.from(this.files).forEach(f => {
+                        const r = new FileReader();
+                        r.onload = e => {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.title = f.name;
+                            gt.appendChild(img);
+                        };
+                        r.readAsDataURL(f);
+                    });
+                });
+            }
+        })();
     </script>
 @endpush

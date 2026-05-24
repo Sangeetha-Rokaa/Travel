@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Mail;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Queue\SerializesModels;
+
+class ContactAdminMail extends Mailable
+{
+    public $contact;
+
+    public function __construct($contact)
+    {
+        $this->contact = $contact;
+    }
+
+    public function build()
+    {
+        return $this->view('emails.contact-admin')
+            ->with([
+                'contact' => $this->contact
+            ]);
+    }
+}

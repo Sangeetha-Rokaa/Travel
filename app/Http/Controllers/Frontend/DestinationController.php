@@ -40,6 +40,15 @@ class DestinationController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        return view('frontend.destinations.show', compact('destination'));
+        // Related destinations
+        $relatedDestinations = Destination::active()
+            ->where('id', '!=', $destination->id)
+            ->take(3)
+            ->get();
+
+        return view('frontend.destinations.show', compact(
+            'destination',
+            'relatedDestinations'
+        ));
     }
 }

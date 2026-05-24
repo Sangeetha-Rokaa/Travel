@@ -3,181 +3,151 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Trek;
-use App\Models\Destination;
-use App\Models\Package;
-use App\Models\Contact;
 use App\Models\Booking;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Contact;
+use App\Models\Destination;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Stats for cards
-        $treksCount = Trek::count();
-        $treksActiveCount = Trek::where('is_active', true)->count();
-        $treksInactiveCount = Trek::where('is_active', false)->count();
-        $treksActivePercentage = $treksCount > 0 ? ($treksActiveCount / $treksCount) * 100 : 0;
+        $now       = Carbon::now();
+        $thisMonth = Carbon::now()->startOfMonth();
+        $lastMonth = Carbon::now()->subMonth()->startOfMonth();
+        $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
 
-        $destinationsCount = Destination::count();
-        $destinationsActiveCount = Destination::where('is_active', true)->count();
-        $destinationsInactiveCount = Destination::where('is_active', false)->count();
-        $destinationsActivePercentage = $destinationsCount > 0 ? ($destinationsActiveCount / $destinationsCount) * 100 : 0;
+        // ── Stat cards ────────────────────────────────────────────────────────
 
-        $packagesCount = Package::count();
-        $packagesActiveCount = Package::where('is_active', true)->count();
-        $packagesInactiveCount = Package::where('is_active', false)->count();
-        $packagesActivePercentage = $packagesCount > 0 ? ($packagesActiveCount / $packagesCount) * 100 : 0;
+        $totalBookings   = Booking::count();
+        $totalRevenue    = Booking::where('status', '!=', 'cancelled')->sum('total_price');
+        $totalUsers      = User::count();
+        $totalEnquiries  = Contact::count();
 
-        $inquiriesCount = Contact::count();
-        $unreadInquiries = Contact::where('is_read', false)->count();
-        $readInquiries = Contact::where('is_read', true)->count();
-        $inquiriesUnreadPercentage = $inquiriesCount > 0 ? ($unreadInquiries / $inquiriesCount) * 100 : 0;
+        // Month-over-month growth (%)
+        $bookingsThisMonth = Booking::where('created_at', '>=', $thisMonth)->count();
+        $bookingsLastMonth = Booking::whereBetween('created_at', [$lastMonth, $lastMonthEnd])->count();
+        $bookingsGrowth    = $bookingsLastMonth > 0
+            ? round((($bookingsThisMonth - $bookingsLastMonth) / $bookingsLastMonth) * 100, 1)
+            : 0;
 
-        // Monthly data for charts
-        $monthlyTreksData = Trek::select(
-            DB::raw('MONTH(created_at) as month'),
-            DB::raw('COUNT(*) as count')
-        )
-            ->whereYear('created_at', date('Y'))
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('count', 'month')
+        $revenueThisMonth = Booking::where('created_at', '>=', $thisMonth)
+            ->where('status', '!=', 'cancelled')->sum('total_price');
+        $revenueLastMonth = Booking::whereBetween('created_at', [$lastMonth, $lastMonthEnd])
+            ->where('status', '!=', 'cancelled')->sum('total_price');
+        $revenueGrowth    = $revenueLastMonth > 0
+            ? round((($revenueThisMonth - $revenueLastMonth) / $revenueLastMonth) * 100, 1)
+            : 0;
+
+        $usersThisMonth = User::where('created_at', '>=', $thisMonth)->count();
+        $usersLastMonth = User::whereBetween('created_at', [$lastMonth, $lastMonthEnd])->count();
+        $usersGrowth    = $usersLastMonth > 0
+            ? round((($usersThisMonth - $usersLastMonth) / $usersLastMonth) * 100, 1)
+            : 0;
+
+        $enquiriesThisMonth = Contact::where('created_at', '>=', $thisMonth)->count();
+        $enquiriesLastMonth = Contact::whereBetween('created_at', [$lastMonth, $lastMonthEnd])->count();
+        $enquiriesGrowth    = $enquiriesLastMonth > 0
+            ? round((($enquiriesThisMonth - $enquiriesLastMonth) / $enquiriesLastMonth) * 100, 1)
+            : 0;
+
+        // ── Bookings by status (donut) ────────────────────────────────────────
+
+        $bookingsByStatus = Booking::selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
             ->toArray();
 
-        $monthlyInquiriesData = Contact::select(
-            DB::raw('MONTH(created_at) as month'),
-            DB::raw('COUNT(*) as count')
-        )
-            ->whereYear('created_at', date('Y'))
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('count', 'month')
-            ->toArray();
+        // Ensure all keys exist with defaults
+        $bookingsByStatus = array_merge(
+            ['confirmed' => 0, 'pending' => 0, 'cancelled' => 0, 'completed' => 0],
+            array_change_key_case($bookingsByStatus, CASE_LOWER)
+        );
 
-        // Fill missing months with 0
-        $monthlyTreks = [];
-        $monthlyInquiries = [];
-        for ($i = 1; $i <= 12; $i++) {
-            $monthlyTreks[] = $monthlyTreksData[$i] ?? 0;
-            $monthlyInquiries[] = $monthlyInquiriesData[$i] ?? 0;
+        // ── Chart data: last 30 days grouped by date ─────────────────────────
+
+        $start = $now->copy()->subDays(29)->startOfDay();
+
+        $bookingRows = Booking::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->where('created_at', '>=', $start)
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('count', 'date');
+
+        $revenueRows = Booking::selectRaw('DATE(created_at) as date, SUM(total_price) as total')
+            ->where('created_at', '>=', $start)
+            ->where('status', '!=', 'cancelled')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('total', 'date');
+
+        // Build full 30-day series (fill 0 for missing days)
+        $chartLabels      = [];
+        $bookingsChartData = [];
+        $revenueChartData  = [];
+
+        for ($i = 29; $i >= 0; $i--) {
+            $date = $now->copy()->subDays($i)->format('Y-m-d');
+            $label = $now->copy()->subDays($i)->format('M j');
+            $chartLabels[]       = $label;
+            $bookingsChartData[] = (int) ($bookingRows[$date] ?? 0);
+            $revenueChartData[]  = (float) ($revenueRows[$date] ?? 0);
         }
 
-        // Region distribution for treks
-        $regionStats = Trek::select('difficulty', DB::raw('COUNT(*) as count'))
-            ->groupBy('difficulty')
+        // ── Top destinations ──────────────────────────────────────────────────
+
+        $topDestinations = DB::table('destinations')
+            ->join('treks', 'treks.destination_id', '=', 'destinations.id')
+            ->join('bookings', 'bookings.trek_id', '=', 'treks.id')
+            ->select(
+                'destinations.id',
+                'destinations.name',
+                DB::raw('COUNT(bookings.id) as bookings_count')
+            )
+            ->groupBy('destinations.id', 'destinations.name')
+            ->orderByDesc('bookings_count')
+            ->limit(5)
             ->get();
 
-        $regionLabels = $regionStats->pluck('difficulty')->toArray();
-        $regionData = $regionStats->pluck('count')->toArray();
+        // Fallback: if Destination doesn't have a bookings() relation,
+        // you can replace with a raw query like:
+        // DB::table('destinations')
+        //     ->join('bookings', 'bookings.destination_id', '=', 'destinations.id')
+        //     ->selectRaw('destinations.name, COUNT(bookings.id) as bookings_count')
+        //     ->groupBy('destinations.id', 'destinations.name')
+        //     ->orderByDesc('bookings_count')
+        //     ->limit(5)
+        //     ->get();
 
-        // Recent activities (combine recent creations)
-        $recentTreks = Trek::latest()->take(3)->get()->map(function ($trek) {
-            return [
-                'title' => 'New Trek Added',
-                'description' => $trek->name,
-                'time' => $trek->created_at->diffForHumans(),
-                'icon' => 'fas fa-hiking',
-                'color' => '#0ea5e9'
-            ];
-        });
+        // ── Recent bookings ───────────────────────────────────────────────────
 
-        $recentDestinations = Destination::latest()->take(3)->get()->map(function ($destination) {
-            return [
-                'title' => 'New Destination Added',
-                'description' => $destination->name,
-                'time' => $destination->created_at->diffForHumans(),
-                'icon' => 'fas fa-map-marker-alt',
-                'color' => '#10b981'
-            ];
-        });
+        $recentBookings = Booking::with(['user', 'package', 'trek'])
+            ->latest()
+            ->limit(4)
+            ->get();
 
-        $recentContacts = Contact::latest()->take(3)->get()->map(function ($contact) {
-            return [
-                'title' => 'New Inquiry',
-                'description' => 'From: ' . $contact->name . ' - ' . $contact->subject,
-                'time' => $contact->created_at->diffForHumans(),
-                'icon' => 'fas fa-envelope',
-                'color' => '#f59e0b'
-            ];
-        });
+        // ── Date range label (topbar) ─────────────────────────────────────────
 
-        $recentActivities = $recentTreks->concat($recentDestinations)->concat($recentContacts)
-            ->sortByDesc('time')
-            ->take(10);
-
-        // Recent inquiries for sidebar
-        $recentInquiries = Contact::latest()->take(5)->get();
-
-        // Additional stats
-        $todayBookings = Booking::whereDate('created_at', today())->count();
-        $activeUsers = \App\Models\User::where('is_active', true)->count();
+        $dateRangeLabel = $start->format('M j') . ' – ' . $now->format('M j, Y');
 
         return view('admin.dashboard.index', compact(
-            'treksCount',
-            'treksActiveCount',
-            'treksInactiveCount',
-            'treksActivePercentage',
-            'destinationsCount',
-            'destinationsActiveCount',
-            'destinationsInactiveCount',
-            'destinationsActivePercentage',
-            'packagesCount',
-            'packagesActiveCount',
-            'packagesInactiveCount',
-            'packagesActivePercentage',
-            'inquiriesCount',
-            'unreadInquiries',
-            'readInquiries',
-            'inquiriesUnreadPercentage',
-            'monthlyTreks',
-            'monthlyInquiries',
-            'regionLabels',
-            'regionData',
-            'recentActivities',
-            'recentInquiries',
-            'todayBookings',
-            'activeUsers'
+            'totalBookings',
+            'totalRevenue',
+            'totalUsers',
+            'totalEnquiries',
+            'bookingsGrowth',
+            'revenueGrowth',
+            'usersGrowth',
+            'enquiriesGrowth',
+            'bookingsByStatus',
+            'chartLabels',
+            'bookingsChartData',
+            'revenueChartData',
+            'topDestinations',
+            'recentBookings',
+            'dateRangeLabel'
         ));
-    }
-
-    public function chartData(Request $request)
-    {
-        $year = $request->get('year', date('Y'));
-
-        $treks = Trek::select(
-            DB::raw('MONTH(created_at) as month'),
-            DB::raw('COUNT(*) as count')
-        )
-            ->whereYear('created_at', $year)
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('count', 'month')
-            ->toArray();
-
-        $inquiries = Contact::select(
-            DB::raw('MONTH(created_at) as month'),
-            DB::raw('COUNT(*) as count')
-        )
-            ->whereYear('created_at', $year)
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('count', 'month')
-            ->toArray();
-
-        $treksData = [];
-        $inquiriesData = [];
-        for ($i = 1; $i <= 12; $i++) {
-            $treksData[] = $treks[$i] ?? 0;
-            $inquiriesData[] = $inquiries[$i] ?? 0;
-        }
-
-        return response()->json([
-            'treks' => $treksData,
-            'inquiries' => $inquiriesData
-        ]);
     }
 }

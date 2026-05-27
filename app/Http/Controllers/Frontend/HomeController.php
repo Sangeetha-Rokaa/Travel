@@ -12,7 +12,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $featuredDestinations = Destination::active()->featured()->ordered()->take(6)->get();
+        $featuredDestinations = Destination::active()->featured()->ordered()->take(3)->get();
         $featuredTreks        = Trek::active()->featured()->ordered()->with('destination')->take(6)->get();
         $featuredPackages     = Package::active()->featured()->ordered()->take(6)->get();
         $testimonials         = Testimonial::active()->featured()->latest()->take(6)->get();

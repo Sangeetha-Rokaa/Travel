@@ -3,85 +3,140 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\SiteSetting;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 class SettingsController extends Controller
 {
-    /**
-     * Show settings page
-     */
-    public function index()
+    public function index(): View
     {
         return view('admin.settings.index');
     }
 
-    /**
-     * Update all settings
-     */
-    public function update(Request $request)
+    public function update(Request $request): RedirectResponse
     {
         $request->validate([
-            'site_name' => 'nullable|string|max:255',
-            'currency' => 'nullable|string|max:10',
-            'footer_text' => 'nullable|string|max:255',
-            'contact_email' => 'nullable|email|max:255',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:1000',
-            'site_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'admin_email' => 'nullable|email|max:255',
-            'timezone' => 'nullable|string|max:255',
-            'facebook_url' => 'nullable|url|max:255',
-            'twitter_url' => 'nullable|url|max:255',
-            'instagram_url' => 'nullable|url|max:255',
-            'linkedin_url' => 'nullable|url|max:255',
-            'app_name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:50',
-            'address' => 'nullable|string|max:255',
+            // General
+            'site_name'     => 'nullable|string|max:255',
+            'app_name'      => 'nullable|string|max:255',
+            'admin_email'   => 'nullable|email|max:255',
+            'phone'         => 'nullable|string|max:50',
+            'currency'      => 'nullable|string|max:10',
+            'timezone'      => 'nullable|string|max:100',
+
+            // Branding
+            'site_logo'     => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:2048',
+            'favicon'       => 'nullable|image|mimes:jpg,jpeg,png,webp,ico|max:512',
+            'tagline'       => 'nullable|string|max:255',
+            'theme_color'   => 'nullable|string|max:20',
+
+            // SEO
+            'meta_title'       => 'nullable|string|max:70',
+            'meta_description' => 'nullable|string|max:160',
+            'meta_keywords'    => 'nullable|string|max:255',
+            'og_image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
+
+            // Contact
+            'contact_email'  => 'nullable|email|max:255',
+            'support_email'  => 'nullable|email|max:255',
+            'address'        => 'nullable|string|max:500',
+            'working_hours'  => 'nullable|string|max:100',
+            'whatsapp'       => 'nullable|string|max:50',
+            'maps_url'       => 'nullable|string|max:1000',
+
+            // Social
+            'facebook_url'   => 'nullable|url|max:255',
+            'instagram_url'  => 'nullable|url|max:255',
+            'twitter_url'    => 'nullable|url|max:255',
+            'youtube_url'    => 'nullable|url|max:255',
+            'linkedin_url'   => 'nullable|url|max:255',
+            'tiktok_url'     => 'nullable|url|max:255',
+
+            // Footer
+            'footer_text'    => 'nullable|string|max:1000',
+            'copyright'      => 'nullable|string|max:255',
+            'powered_by'     => 'nullable|string|max:255',
         ]);
 
-        // ── TEXT SETTINGS (KEY-VALUE SAVE) ─────────────────────────
-        $this->saveSetting('site_name', $request->site_name);
-        $this->saveSetting('currency', $request->currency);
-        $this->saveSetting('footer_text', $request->footer_text);
-        $this->saveSetting('contact_email', $request->contact_email);
-        $this->saveSetting('meta_title', $request->meta_title);
-        $this->saveSetting('meta_description', $request->meta_description);
-        $this->saveSetting('admin_email', $request->admin_email);
-        $this->saveSetting('timezone', $request->timezone);
-        $this->saveSetting('facebook_url', $request->facebook_url);
-        $this->saveSetting('twitter_url', $request->twitter_url);
-        $this->saveSetting('instagram_url', $request->instagram_url);
-        $this->saveSetting('linkedin_url', $request->linkedin_url);
-        $this->saveSetting('app_name', $request->app_name);
-        $this->saveSetting('phone', $request->phone);
-        $this->saveSetting('address', $request->address);
+        // ── TEXT / SELECT FIELDS ───────────────────────────────
+        $textFields = [
+            // General
+            'site_name',
+            'app_name',
+            'admin_email',
+            'phone',
+            'currency',
+            'timezone',
+            // Branding
+            'tagline',
+            'theme_color',
+            // SEO
+            'meta_title',
+            'meta_description',
+            'meta_keywords',
+            // Contact
+            'contact_email',
+            'support_email',
+            'address',
+            'working_hours',
+            'whatsapp',
+            'maps_url',
+            // Social
+            'facebook_url',
+            'instagram_url',
+            'twitter_url',
+            'youtube_url',
+            'linkedin_url',
+            'tiktok_url',
+            // Footer
+            'footer_text',
+            'copyright',
+            'powered_by',
+        ];
 
-        // ── LOGO UPLOAD ────────────────────────────────────────────
-        if ($request->hasFile('site_logo')) {
+        foreach ($textFields as $field) {
+            if ($request->has($field)) {
+                $this->saveSetting($field, $request->input($field));
+            }
+        }
 
-            $path = $request->file('site_logo')->store('settings', 'public');
+        // ── FILE UPLOADS ───────────────────────────────────────
+        $fileFields = [
+            'site_logo' => 'settings/logos',
+            'favicon'   => 'settings/favicons',
+            'og_image'  => 'settings/seo',
+        ];
 
-            $this->saveSetting('site_logo', $path);
+        foreach ($fileFields as $field => $folder) {
+            if ($request->hasFile($field) && $request->file($field)->isValid()) {
+                // Delete old file if it exists
+                $old = setting($field);
+                if ($old && Storage::disk('public')->exists($old)) {
+                    Storage::disk('public')->delete($old);
+                }
+
+                $path = $request->file($field)->store($folder, 'public');
+                $this->saveSetting($field, $path);
+            }
         }
 
         return redirect()
             ->back()
-            ->with('success', 'Settings updated successfully.');
+            ->with('success', 'Settings saved successfully.');
     }
 
-    /**
-     * Helper: save key-value setting
-     */
-    private function saveSetting($key, $value = null)
+    private function saveSetting(string $key, mixed $value = null): void
     {
+        // Don't save null — only save empty string or actual values
         if ($value === null) {
             return;
         }
 
         SiteSetting::updateOrCreate(
-            ['key' => $key],
+            ['key'   => $key],
             ['value' => $value]
         );
     }

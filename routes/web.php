@@ -30,7 +30,7 @@ Route::prefix('destinations')->name('destinations.')->group(function () {
 Route::get('/destinations', [DestinationController::class, 'index'])
     ->name('destinations.index');
 
-Route::get('/destinations/{slug}', [DestinationController::class, 'show'])
+Route::get('/destinations/{destination}', [DestinationController::class, 'show'])
     ->name('destinations.show');
 
 // Treks  (under Destinations dropdown in nav)
@@ -41,8 +41,8 @@ Route::prefix('treks')->name('treks.')->group(function () {
 Route::get('/treks', [TrekController::class, 'index'])
     ->name('treks.index');
 
-Route::get('/treks/{slug}', [TrekController::class, 'show'])
-    ->name('treks.show');
+// Route::get('/treks/{trek}', [TrekController::class, 'show'])
+//     ->name('treks.show');
 
 // Packages  (under Destinations dropdown in nav)
 Route::prefix('packages')->name('packages.')->group(function () {
@@ -72,11 +72,12 @@ Route::post('/contact',      [ContactController::class, 'store'])->name('contact
 Route::get('/contact', [ContactController::class, 'index'])
     ->name('contact');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+
 Route::get('/contact',       [ContactController::class, 'index'])->name('contact');
 
 
 Route::get('/treks',          [TrekController::class, 'index'])->name('treks.index');
-Route::get('/treks/{slug}',   [TrekController::class, 'show'])->name('treks.show');
+// Route::get('/treks/{slug}',   [TrekController::class, 'show'])->name('treks.show');
 
 Route::get('/testimonials', [TestimonialController::class, 'index'])
     ->name('testimonials.index');
@@ -155,7 +156,7 @@ Route::prefix('admin')
         Route::get('/destinations/{destination}', [AdminDestinationController::class, 'show'])
             ->name('destinations.show');
     });
-Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
+// Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
 Route::prefix('admin')
     ->name('admin.')
@@ -167,7 +168,7 @@ Route::prefix('admin')
 
         // Dashboard
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+        // Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/chart-data', [App\Http\Controllers\Admin\DashboardController::class, 'chartData'])->name('dashboard.chart-data');
 
 

@@ -1961,6 +1961,99 @@ footer {
         transform: translateY(0);
     }
 }
+/* ── Mobile hamburger button ── */
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1001;
+}
+.nav-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition:
+        transform 0.3s,
+        opacity 0.3s;
+}
+.nav-toggle.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+.nav-toggle.open span:nth-child(2) {
+    opacity: 0;
+}
+.nav-toggle.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+    /* ── Navbar ── */
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.96);
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        z-index: 999;
+        padding: 80px 24px 40px;
+        overflow-y: auto;
+    }
+    .nav-links.open {
+        display: flex;
+    }
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+    }
+    .nav-links a {
+        font-size: 1.1rem;
+    }
+
+    .btn-cta-nav {
+        display: none;
+    }
+
+    /* ── Dropdown inside mobile menu ── */
+    .dropdown-menu {
+        position: static !important;
+        display: none;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        margin-top: 8px;
+        padding: 8px 0;
+    }
+    .dropdown-menu.open {
+        display: block;
+    }
+
+    /* ── Footer grid ── */
+    .footer-grid {
+        grid-template-columns: 1fr !important;
+        gap: 2rem;
+    }
+
+    /* ── Video modal ── */
+    #videoModal > div {
+        width: 95% !important;
+    }
+}
 
 /* ══════════════════════════════
            RESPONSIVE

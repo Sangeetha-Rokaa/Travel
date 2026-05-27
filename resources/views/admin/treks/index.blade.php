@@ -481,10 +481,9 @@
                                 <i class="fas fa-pencil-alt" style="color: #f59e0b; width: 16px;"></i>
                                 Edit
                             </a>
-                            <button class="delete-btn"
-                                onclick="openDeleteModal('{{ $trek->name }}', '{{ route('admin.treks.destroy', $trek->id) }}')">
-                                <i class="fas fa-trash-alt" style="width: 16px;"></i>
-                                Delete
+                            <button type="button" class="dd-delete delete-trigger"
+                                data-url="{{ route('admin.treks.destroy', $trek) }}" data-name="{{ $trek->name }}">
+                                <i class="fas fa-trash-alt" style="color:#dc2626;width:16px;"></i> Delete
                             </button>
                         </div>
                     </div>
@@ -521,25 +520,20 @@
     {{-- Delete Confirmation Modal --}}
     <div class="modal-overlay" id="deleteModal">
         <div class="modal-box">
-            <div class="modal-icon">
-                <i class="fas fa-trash-alt"></i>
-            </div>
-            <div style="font-size: 18px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">Delete Trek</div>
-            <div style="font-size: 14px; color: #64748b; margin-bottom: 24px; line-height: 1.6;">
-                Are you sure you want to delete <strong id="deleteTrekName" style="color: #1e293b;"></strong>?
-                This action cannot be undone.
-            </div>
-            <div class="flex items-center gap-3 justify-end">
-                <button onclick="closeDeleteModal()"
-                    style="padding: 9px 18px; border-radius: 9px; border: 1.5px solid #e8edf3; background: #f8fafc; font-size: 13.5px; font-weight: 600; color: #64748b; cursor: pointer;">
-                    Cancel
-                </button>
-                <form id="deleteForm" method="POST">
+            <div class="modal-icon"><i class="fas fa-trash-alt"></i></div>
+            <h3 class="modal-title">Delete Trek</h3>
+            <p class="modal-text">
+                Are you sure you want to delete <strong id="deleteDestName" style="color:#1e293b;"></strong>?<br>
+                <span style="font-size:12.5px;color:#94a3b8;margin-top:6px;display:block;">This action cannot be undone.
+                    Associated treks will keep their data.</span>
+            </p>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="cancelDelete">Cancel</button>
+                <form id="deleteForm" method="POST" style="flex:1;display:flex;">
                     @csrf
                     @method('DELETE')
-                    <button type="submit"
-                        style="padding: 9px 18px; border-radius: 9px; border: none; background: #dc2626; color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer;">
-                        <i class="fas fa-trash-alt mr-1"></i> Delete Trek
+                    <button type="submit" class="btn-delete-confirm" style="width:100%;">
+                        <i class="fas fa-trash-alt" style="margin-right:6px;"></i>Delete
                     </button>
                 </form>
             </div>
@@ -568,21 +562,27 @@
         });
 
         // Delete modal
-        function openDeleteModal(name, url) {
-            document.getElementById('deleteTrekName').textContent = name;
-            document.getElementById('deleteForm').action = url;
-            document.getElementById('deleteModal').classList.add('open');
-            // close any open dropdown
-            document.querySelectorAll('.action-dropdown').forEach(d => d.classList.remove('open'));
-        }
+        const modal = document.getElementById('deleteModal');
+        const deleteForm = document.getElementById('deleteForm');
+        const deleteName = document.getElementById('deleteDestName');
+        const cancelBtn = document.getElementById('cancelDelete');
 
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.remove('open');
-        }
+        document.querySelectorAll('.delete-trigger').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const url = this.getAttribute('data-url');
+                const name = this.getAttribute('data-name');
+                deleteName.textContent = name;
+                deleteForm.action = url;
+                modal.classList.add('open');
+                // close dots menu
+                document.querySelectorAll('.dots-dropdown.open').forEach(d => d.classList
+                    .remove('open'));
+            });
+        });
 
-        // Close modal on overlay click
-        document.getElementById('deleteModal').addEventListener('click', function(e) {
-            if (e.target === this) closeDeleteModal();
+        cancelBtn.addEventListener('click', () => modal.classList.remove('open'));
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('open');
         });
 
         // Live search (debounced)
@@ -606,6 +606,10 @@
             url.searchParams.set('is_active', status);
             url.searchParams.set('page', 1);
             window.location.href = url.toString();
+        }
+
+        function openDeleteModal(name, actionUrl) {
+            document.getElementById('deleteForm').action = actionUrl;
         }
     </script>
 @endpush

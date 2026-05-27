@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 // ═══════════════════════════════════════════════════════════════════════════════
-//  FRONTEND ROUTES
+//  FRONTEND CONTROLLERS
 // ═══════════════════════════════════════════════════════════════════════════════
 
 use App\Http\Controllers\Frontend\HomeController;
@@ -15,76 +15,42 @@ use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\BookingController;
 use App\Http\Controllers\Frontend\TestimonialController;
 
-
+// ═══════════════════════════════════════════════════════════════════════════════
+//  FRONTEND ROUTES
+// ═══════════════════════════════════════════════════════════════════════════════
 
 // Home
-Route::get('/book',  [BookingController::class, 'create'])->name('bookings.create');
-Route::post('/book', [BookingController::class, 'store'])->name('bookings.store');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Destinations
-Route::prefix('destinations')->name('destinations.')->group(function () {
-    Route::get('/',         [DestinationController::class, 'index'])->name('index');
-    Route::get('/{destination}', [DestinationController::class, 'show'])->name('show');
-});
-Route::get('/destinations', [DestinationController::class, 'index'])
-    ->name('destinations.index');
+Route::get('/destinations',        [DestinationController::class, 'index'])->name('destinations.index');
+Route::get('/destinations/{slug}', [DestinationController::class, 'show'])->name('destinations.show');
 
-Route::get('/destinations/{destination}', [DestinationController::class, 'show'])
-    ->name('destinations.show');
+// Treks
+Route::get('/treks',        [TrekController::class, 'index'])->name('treks.index');
+Route::get('/treks/{slug}', [TrekController::class, 'show'])->name('treks.show');
 
-// Treks  (under Destinations dropdown in nav)
-Route::prefix('treks')->name('treks.')->group(function () {
-    Route::get('/',       [TrekController::class, 'index'])->name('index');
-    Route::get('/{trek}', [TrekController::class, 'show'])->name('show');
-});
-Route::get('/treks', [TrekController::class, 'index'])
-    ->name('treks.index');
-
-// Route::get('/treks/{trek}', [TrekController::class, 'show'])
-//     ->name('treks.show');
-
-// Packages  (under Destinations dropdown in nav)
-Route::prefix('packages')->name('packages.')->group(function () {
-    Route::get('/',           [PackageController::class, 'index'])->name('index');
-    Route::get('/{package}',  [PackageController::class, 'show'])->name('show');
-});
-Route::get('/packages',          [PackageController::class, 'index'])->name('packages.index');
-Route::get('/packages/{package}',   [PackageController::class, 'show'])->name('packages.show');
-
-Route::get('/booking', function () {
-    return view('frontend.booking');
-})->name('booking.index');
-Route::get('/book',  [BookingController::class, 'create'])->name('bookings.create');
-Route::post('/book', [BookingController::class, 'store'])->name('bookings.store');
+// Packages
+Route::get('/packages',        [PackageController::class, 'index'])->name('packages.index');
+Route::get('/packages/{slug}', [PackageController::class, 'show'])->name('packages.show');
 
 // About
 Route::get('/about-us', [AboutController::class, 'index'])->name('about.index');
-Route::get('/about', [AboutController::class, 'index'])->name('about.index');
-
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
 
 // Contact
-Route::get('/contact',       [ContactController::class, 'index'])->name('contact.index');
-Route::post('/contact',      [ContactController::class, 'store'])->name('contact.store');
-Route::get('/contact', [ContactController::class, 'index'])
-    ->name('contact');
-Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::get('/contact',  [ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-Route::get('/contact',       [ContactController::class, 'index'])->name('contact');
+// Booking
+Route::get('/book',  [BookingController::class, 'create'])->name('bookings.create');
+Route::post('/book', [BookingController::class, 'store'])->name('bookings.store');
 
+// Testimonials
+Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
 
-Route::get('/treks',          [TrekController::class, 'index'])->name('treks.index');
-// Route::get('/treks/{slug}',   [TrekController::class, 'show'])->name('treks.show');
-
-Route::get('/testimonials', [TestimonialController::class, 'index'])
-    ->name('testimonials.index');
 // ═══════════════════════════════════════════════════════════════════════════════
-//  ADMIN ROUTES  —  protected by 'auth' + 'verified' middleware
+//  ADMIN CONTROLLERS
 // ═══════════════════════════════════════════════════════════════════════════════
-
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -97,151 +63,72 @@ use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN AUTH (NO MIDDLEWARE)
-|--------------------------------------------------------------------------
-*/
+// ═══════════════════════════════════════════════════════════════════════════════
+//  ADMIN — AUTH (unauthenticated)
+// ═══════════════════════════════════════════════════════════════════════════════
 
 Route::prefix('admin')->name('admin.')->group(function () {
-
-    // Login
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::get('/login',  [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  ADMIN — PROTECTED (auth middleware)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+
+    // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-});
 
-Route::prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
+    Route::get('/',               [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData'])->name('dashboard.chart-data');
 
-    Route::resource('bookings', BookingController::class);
-});
-/*
-|--------------------------------------------------------------------------
-| ADMIN PROTECTED ROUTES
-|--------------------------------------------------------------------------
-*/
-Route::prefix('admin')
-    ->name('admin.')
-    ->middleware(['auth'])
-    ->group(function () {
+    // Destinations CRUD
+    Route::resource('destinations', AdminDestinationController::class);
 
-        // Dashboard
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    // Treks CRUD
+    Route::resource('treks', AdminTrekController::class);
+    Route::post('/treks/{trek}/remove-image',         [AdminTrekController::class, 'removeImage'])->name('treks.remove-image');
+    Route::post('/treks/{trek}/remove-gallery-image', [AdminTrekController::class, 'removeGalleryImage'])->name('treks.remove-gallery-image');
 
-        // DESTINATIONS CRUD
+    // Packages CRUD
+    Route::resource('packages', AdminPackageController::class)->except(['show']);
+    Route::post('/packages/{package}/remove-image',         [AdminPackageController::class, 'removeImage'])->name('packages.remove-image');
+    Route::post('/packages/{package}/remove-gallery-image', [AdminPackageController::class, 'removeGalleryImage'])->name('packages.remove-gallery-image');
 
-        // List
-        Route::get('/destinations', [AdminDestinationController::class, 'index'])
-            ->name('destinations.index');
+    // Contacts
+    Route::get('contacts',                      [AdminContactController::class, 'index'])->name('contacts.index');
+    Route::get('contacts/{contact}',            [AdminContactController::class, 'show'])->name('contacts.show');
+    Route::patch('contacts/{contact}/status',   [AdminContactController::class, 'updateStatus'])->name('contacts.updateStatus');
+    Route::delete('contacts/{contact}',         [AdminContactController::class, 'destroy'])->name('contacts.destroy');
 
-        // Create Form
-        Route::get('/destinations/create', [AdminDestinationController::class, 'create'])
-            ->name('destinations.create');
+    // Testimonials CRUD
+    Route::resource('testimonials', AdminTestimonialController::class);
 
-        // Store
-        Route::post('/destinations', [AdminDestinationController::class, 'store'])
-            ->name('destinations.store');
+    // Bookings
+    Route::get('/bookings',                           [AdminBookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/export/csv',                [AdminBookingController::class, 'export'])->name('bookings.export');
+    Route::get('/bookings/stats',                     [AdminBookingController::class, 'stats'])->name('bookings.stats');
+    Route::get('/bookings/{booking}',                 [AdminBookingController::class, 'show'])->name('bookings.show');
+    Route::get('/bookings/{booking}/edit',            [AdminBookingController::class, 'edit'])->name('bookings.edit');
+    Route::put('/bookings/{booking}',                 [AdminBookingController::class, 'update'])->name('bookings.update');
+    Route::delete('/bookings/{booking}',              [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
+    Route::post('/bookings/{booking}/confirm',        [AdminBookingController::class, 'confirm'])->name('bookings.confirm');
+    Route::post('/bookings/{booking}/cancel',         [AdminBookingController::class, 'cancel'])->name('bookings.cancel');
+    Route::post('/bookings/{booking}/payment',        [AdminBookingController::class, 'markPayment'])->name('bookings.mark-payment');
+    Route::post('/bookings/{booking}/complete',       [AdminBookingController::class, 'complete'])->name('bookings.complete');
 
-        // Edit Form
-        Route::get('/destinations/{destination}/edit', [AdminDestinationController::class, 'edit'])
-            ->name('destinations.edit');
-
-        // Update
-        Route::put('/destinations/{destination}', [AdminDestinationController::class, 'update'])
-            ->name('destinations.update');
-
-        // Delete
-        Route::delete('/destinations/{destination}', [AdminDestinationController::class, 'destroy'])
-            ->name('destinations.destroy');
-        Route::get('/destinations/{destination}', [AdminDestinationController::class, 'show'])
-            ->name('destinations.show');
-    });
-// Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
-
-Route::prefix('admin')
-    ->name('admin.')
-    ->middleware(['auth'])
-    ->group(function () {
-
-        // Logout
-        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-        // Dashboard
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-        // Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/dashboard/chart-data', [App\Http\Controllers\Admin\DashboardController::class, 'chartData'])->name('dashboard.chart-data');
-
-
-        // Destinations CRUD
-
-
-        // Treks CRUD
-        Route::resource('treks', AdminTrekController::class);
-        Route::post('/treks/{trek}/remove-image', [TrekController::class, 'removeImage'])->name('admin.treks.remove-image');
-        Route::post('/treks/{trek}/remove-gallery-image', [TrekController::class, 'removeGalleryImage'])->name('admin.treks.remove-gallery-image');
-        // ->except(['show']);
-
-        // Packages CRUD
-        Route::resource('packages', AdminPackageController::class)
-            ->except(['show']);
-        Route::post('/packages/{package}/remove-image', [AdminPackageController::class, 'removeImage'])
-            ->name('admin.packages.remove-image');
-        Route::post('/packages/{package}/remove-gallery-image', [AdminPackageController::class, 'removeGalleryImage'])
-            ->name('admin.packages.remove-gallery-image');
-
-        // Contacts
-        Route::get('contacts', [AdminContactController::class, 'index'])->name('contacts.index');
-        Route::get('contacts/{contact}', [AdminContactController::class, 'show'])->name('contacts.show');
-        Route::patch('contacts/{contact}/status', [AdminContactController::class, 'updateStatus'])->name('contacts.updateStatus');
-        Route::delete('contacts/{contact}', [AdminContactController::class, 'destroy'])->name('contacts.destroy');
-
-        // Testimonials
-        Route::post('/treks/{trek}/remove-image', [TrekController::class, 'removeImage'])->name('treks.remove-image');
-        Route::post('/treks/{trek}/remove-gallery-image', [TrekController::class, 'removeGalleryImage'])->name('treks.remove-gallery-image');
-        Route::resource('testimonials', AdminTestimonialController::class);
-
-        Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
-        Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
-        Route::get('/bookings/{booking}/edit', [AdminBookingController::class, 'edit'])->name('bookings.edit');
-        Route::put('/bookings/{booking}', [AdminBookingController::class, 'update'])->name('bookings.update');
-        Route::delete('/bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
-
-        // Custom booking actions
-        Route::post('/bookings/{booking}/confirm', [AdminBookingController::class, 'confirm'])->name('bookings.confirm');
-        Route::post('/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel'])->name('bookings.cancel');
-        Route::post('/bookings/{booking}/payment', [AdminBookingController::class, 'markPayment'])->name('bookings.mark-payment');
-        Route::post('/bookings/{booking}/complete', [AdminBookingController::class, 'complete'])->name('bookings.complete');
-
-        // Export and stats
-        Route::get('/bookings/export/csv', [AdminBookingController::class, 'export'])->name('bookings.export');
-        Route::get('/bookings/stats', [AdminBookingController::class, 'stats'])->name('bookings.stats');
-        // Route::get('/destinations/{destination}', [DestinationController::class, 'show'])
-        //     ->name('admin.destinations.show');
-        // Settings
-        Route::prefix('admin')->name('admin.')->group(function () {
-            Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-            Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
-        });
-    });
-
-
-Route::prefix('admin')->name('admin.')->group(function () {
-
-    Route::get('/email-settings', [EmailSettingController::class, 'index'])->name('email.index');
-    Route::get('/email-settings/create', [EmailSettingController::class, 'create'])->name('email.create');
-    Route::post('/email-settings', [EmailSettingController::class, 'store'])->name('email.store');
-
-    Route::get('/email-settings/{emailSetting}/edit', [EmailSettingController::class, 'edit'])->name('email.edit');
-    Route::put('/email-settings/{emailSetting}', [EmailSettingController::class, 'update'])->name('email.update');
-
-    Route::delete('/email-settings/{emailSetting}', [EmailSettingController::class, 'destroy'])->name('email.delete');
-});
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    // Settings
+    Route::get('/settings',  [SettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+
+    // Email Settings
+    Route::get('/email-settings',                      [EmailSettingController::class, 'index'])->name('email.index');
+    Route::get('/email-settings/create',               [EmailSettingController::class, 'create'])->name('email.create');
+    Route::post('/email-settings',                     [EmailSettingController::class, 'store'])->name('email.store');
+    Route::get('/email-settings/{emailSetting}/edit',  [EmailSettingController::class, 'edit'])->name('email.edit');
+    Route::put('/email-settings/{emailSetting}',       [EmailSettingController::class, 'update'])->name('email.update');
+    Route::delete('/email-settings/{emailSetting}',    [EmailSettingController::class, 'destroy'])->name('email.delete');
 });
-
-
-Route::get('/about', function () {
-    return view('frontend.about');
-})->name('about');

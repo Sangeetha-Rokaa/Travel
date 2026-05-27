@@ -6,8 +6,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
         /* ═══════════════════════════════════════════════════
-                                               TOKENS
-                                            ═══════════════════════════════════════════════════ */
+                                                                       TOKENS
+                                                                    ═══════════════════════════════════════════════════ */
         :root {
             --navy: #061528;
             --navy-2: #0d2240;
@@ -50,8 +50,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                               PAGE SHELL
-                                            ═══════════════════════════════════════════════════ */
+                                                                       PAGE SHELL
+                                                                    ═══════════════════════════════════════════════════ */
         .booking-page {
             min-height: 100vh;
             background: #f0f5fb;
@@ -127,7 +127,7 @@
 
         /* ── Stepper ── */
         .stepper-wrap {
-            padding: 20px clamp(20px, 5vw, 48px) 0;
+            padding: 60px clamp(30px, 10vw, 60px) 0;
             position: relative;
             z-index: 1;
         }
@@ -250,8 +250,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                               STEP 1 — Package Summary
-                                            ═══════════════════════════════════════════════════ */
+                                                                       STEP 1 — Package Summary
+                                                                    ═══════════════════════════════════════════════════ */
         .pkg-summary-card {
             display: grid;
             grid-template-columns: 380px 1fr;
@@ -566,8 +566,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                               STEP 2 — Traveler Details
-                                            ═══════════════════════════════════════════════════ */
+                                                                       STEP 2 — Traveler Details
+                                                                    ═══════════════════════════════════════════════════ */
         .traveler-card {
             background: var(--surface);
             border-radius: var(--radius-lg);
@@ -767,8 +767,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                               STEP 3 — Payment Options
-                                            ═══════════════════════════════════════════════════ */
+                                                                       STEP 3 — Payment Options
+                                                                    ═══════════════════════════════════════════════════ */
         .payment-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -907,8 +907,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                               STEP 4 — Stripe Card
-                                            ═══════════════════════════════════════════════════ */
+                                                                       STEP 4 — Stripe Card
+                                                                    ═══════════════════════════════════════════════════ */
         .stripe-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1041,8 +1041,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                               STEP 5 — Confirmation
-                                            ═══════════════════════════════════════════════════ */
+                                                                       STEP 5 — Confirmation
+                                                                    ═══════════════════════════════════════════════════ */
         .confirmation-card {
             background: var(--surface);
             border-radius: var(--radius-lg);
@@ -1188,8 +1188,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                               RESPONSIVE
-                                            ═══════════════════════════════════════════════════ */
+                                                                       RESPONSIVE
+                                                                    ═══════════════════════════════════════════════════ */
         @media (max-width: 920px) {
             .pkg-summary-card {
                 grid-template-columns: 1fr;
@@ -1807,8 +1807,8 @@
 @push('scripts')
     <script>
         /* ═══════════════════════════════════════════
-                                               BOOKING WIZARD — unchanged backend logic
-                                            ═══════════════════════════════════════════ */
+                                                                       BOOKING WIZARD — unchanged backend logic
+                                                                    ═══════════════════════════════════════════ */
         let currentStep = 1;
 
         const booking = {

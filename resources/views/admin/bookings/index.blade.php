@@ -765,14 +765,32 @@
                             {{-- Actions --}}
                             <td style="text-align:center;">
                                 <div style="display:flex;gap:6px;justify-content:center;">
+
                                     <a href="{{ route('admin.bookings.show', $booking->id) }}"
                                         class="action-btn action-btn-view" title="View">
                                         <i class="fas fa-eye"></i>
                                     </a>
+
                                     <a href="{{ route('admin.bookings.edit', $booking->id) }}"
                                         class="action-btn action-btn-edit" title="Edit">
                                         <i class="fas fa-pen"></i>
                                     </a>
+
+                                    <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST"
+                                        onsubmit="return confirm('Are you sure?')">
+
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit" class="action-btn action-btn-delete" title="Delete"
+                                            style="border:none;background:none;cursor:pointer;">
+
+                                            <i class="fas fa-trash"></i>
+
+                                        </button>
+
+                                    </form>
+
                                 </div>
                             </td>
                         </tr>

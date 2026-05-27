@@ -20,11 +20,10 @@ class TrekController extends Controller
 
     public function create(): View
     {
-        $destinations = Destination::active()->ordered()->pluck('name', 'id');
+        $destinations = Destination::active()->ordered()->get();
         $difficulties = Trek::DIFFICULTIES;
         return view('admin.treks.create', compact('destinations', 'difficulties'));
     }
-
     public function store(Request $request): RedirectResponse
     {
         $validated = $this->validateRequest($request);

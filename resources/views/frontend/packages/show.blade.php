@@ -148,7 +148,10 @@
                             </div>
                         </div>
 
-                        <button class="btn btn--primary btn--block">Book Now</button>
+                        <a href="{{ route('bookings.create', ['package' => $package->slug]) }}"
+                            class="btn btn--primary btn--block">
+                            <i class="fas fa-check-circle"></i> Book This Trek
+                        </a>
 
                         <div class="booking-card__actions">
                             <a href="#" class="text-link">Request Customization</a>

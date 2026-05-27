@@ -253,13 +253,31 @@
         <!-- Logo -->
         <div class="sidebar-logo">
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
+
                 <div class="logo-icon">
-                    <i class="fas fa-mountain text-white text-base"></i>
+                    @php
+                        $logo = setting('site_logo');
+                        $logoUrl = $logo ? (Str::startsWith($logo, 'http') ? $logo : asset('storage/' . $logo)) : null;
+                    @endphp
+
+                    @if ($logoUrl)
+                        <img src="{{ $logoUrl }}" alt="{{ setting('site_name', 'Admin') }}" class="h-10 w-auto"
+                            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                        <i class="fas fa-mountain" style="display:none;color:#fff;font-size:22px;"></i>
+                    @else
+                        <i class="fas fa-mountain" style="color:#fff;font-size:22px;"></i>
+                    @endif
                 </div>
+
                 <div>
-                    <div class="text-white font-bold text-sm leading-tight">Nepal</div>
-                    <div class="text-blue-400 text-xs font-medium">Tourism & Guide</div>
+                    <div class="text-white font-bold text-sm leading-tight">
+                        {{ setting('site_name', 'Apex Nepal') }}
+                    </div>
+                    <div class="text-blue-400 text-xs font-medium">
+                        {{ setting('tagline', 'Tourism & Guide') }}
+                    </div>
                 </div>
+
             </a>
         </div>
 
@@ -297,17 +315,17 @@
             </a>
             <a href="{{ route('admin.contacts.index') }}"
                 class="nav-item {{ request()->routeIs('admin.contacts*') ? 'active' : '' }}">
-                <i class="far fa-address-book"></i>
-                <span>Contacts</span>
+                <i class="far fa-envelope"></i>
+                <span>Enquiries</span>
             </a>
             <a href="#" class="nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
                 <i class="far fa-user"></i>
                 <span>Users</span>
             </a>
-            <a href="#" class="nav-item {{ request()->routeIs('admin.enquiries*') ? 'active' : '' }}">
+            {{-- <a href="#" class="nav-item {{ request()->routeIs('admin.enquiries*') ? 'active' : '' }}">
                 <i class="far fa-envelope"></i>
                 <span>Enquiries</span>
-            </a>
+            </a> --}}
             <a href="{{ route('admin.settings.index') }}"
                 class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
                 <i class="fas fa-cog"></i>

@@ -39,18 +39,31 @@ class ContactController extends Controller
             'message'         => 'required|string',
         ]);
 
-        // 1. Save contact
         $contact = Contact::create($data);
+
+        // Load DB settings into Laravel config
         MailConfigService::load();
-        // 2. Send email to ADMIN
-        $adminEmail = setting('admin_email', 'test@example.com');
 
-        Mail::to($adminEmail)
-            ->send(new ContactAdminNotificationMail($contact));
+        // Resolve from — column is from_address, not mail_from_address
+        $fromAddress = MailConfigService::get('from_address')
+            ?: env('MAIL_FROM_ADDRESS', 'no-reply@visitnepal.com');
 
-        // 3. Send confirmation email to USER
-        Mail::to($contact->email)
-            ->send(new ContactFormMail($contact));
+        $fromName = MailConfigService::get('from_name')
+            ?: env('MAIL_FROM_NAME', 'Visit Nepal');
+
+        $adminEmail = MailConfigService::get('from_address')
+            ?: env('MAIL_FROM_ADDRESS', $fromAddress);
+
+        try {
+            Mail::to($adminEmail)
+                ->send(new ContactAdminNotificationMail($contact, $fromAddress, $fromName));
+
+            Mail::to($contact->email)
+                ->send(new ContactFormMail($contact, $fromAddress, $fromName));
+        } catch (\Exception $e) {
+            \Log::error('Contact mail failed: ' . $e->getMessage());
+            return back()->with('error', 'Message saved but email could not be sent. Please try again later.');
+        }
 
         return back()->with('success', 'Your message has been sent. We will get back to you soon!');
     }

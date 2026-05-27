@@ -1,382 +1,1030 @@
+{{-- resources/views/admin/treks/edit.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Edit Trek')
-@section('page-title', 'Edit Trek')
+@section('title', 'Edit Trek - ' . $trek->name)
+@section('page_title', 'Edit Trek')
+@section('page_icon', 'fas fa-mountain')
+
+@section('content')
+    <div class="tc-wrap">
+        {{-- HEADER --}}
+        <div class="tc-top">
+            <div>
+                <p class="tc-breadcrumb">Treks / <span>Edit</span></p>
+                <h1 class="tc-title"><i class="fas fa-person-hiking"></i> Edit Trek</h1>
+                <p class="tc-subtitle">Editing: <strong>{{ $trek->name }}</strong></p>
+            </div>
+            <a href="{{ route('admin.treks.index') }}" class="tc-btn-ghost">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+
+        {{-- ERRORS --}}
+        @if ($errors->any())
+            <div class="tc-error-box" id="errorBox">
+                <i class="fas fa-circle-exclamation"></i>
+                <div>
+                    <strong>Fix these errors before saving:</strong>
+                    <ul>
+                        @foreach ($errors->all() as $e)
+                            <li>{{ $e }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                <button onclick="this.closest('.tc-error-box').remove()" type="button"><i
+                        class="fas fa-xmark"></i></button>
+            </div>
+        @endif
+
+        <form action="{{ route('admin.treks.update', $trek) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+
+            <div class="tc-layout">
+
+                {{-- ═══ MAIN COLUMN ═══ --}}
+                <div class="tc-main">
+
+                    {{-- 1. BASIC INFO --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-circle-info"></i> Basic Information</div>
+
+                        <div class="tc-row-2">
+                            <div class="tc-field">
+                                <label>Trek Name <span class="req">*</span></label>
+                                <input type="text" id="name" name="name" value="{{ old('name', $trek->name) }}"
+                                    class="tc-input @error('name') err @enderror" placeholder="e.g. Everest Base Camp Trek"
+                                    required>
+                                @error('name')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>URL Slug <small>— leave blank to auto-generate</small></label>
+                                <input type="text" id="slug" name="slug" value="{{ old('slug', $trek->slug) }}"
+                                    class="tc-input @error('slug') err @enderror" placeholder="everest-base-camp-trek">
+                                @error('slug')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>Destination</label>
+                                <select name="destination_id"
+                                    class="tc-input tc-select @error('destination_id') err @enderror">
+                                    <option value="">— Select —</option>
+                                    @foreach ($destinations as $destination)
+                                        <option value="{{ $destination->id }}"
+                                            {{ old('destination_id', $trek->destination_id) == $destination->id ? 'selected' : '' }}>
+                                            {{ $destination->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('destination_id')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>Difficulty <span class="req">*</span></label>
+                                <select name="difficulty" class="tc-input tc-select @error('difficulty') err @enderror"
+                                    required>
+                                    <option value="">— Select —</option>
+                                    @foreach ($difficulties as $d)
+                                        <option value="{{ $d }}"
+                                            {{ old('difficulty', $trek->difficulty) == $d ? 'selected' : '' }}>
+                                            {{ $d }}</option>
+                                    @endforeach
+                                </select>
+                                @error('difficulty')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="tc-field tc-mt">
+                            <label>Short Description <span class="req">*</span></label>
+                            <textarea id="short_description" name="short_description" rows="3"
+                                class="tc-input tc-ta @error('short_description') err @enderror"
+                                placeholder="Brief overview shown in search results and cards…" required>{{ old('short_description', $trek->short_description) }}</textarea>
+                            <div class="tc-counter-row">
+                                <span>Max 500 characters</span>
+                                <span id="charCounter" class="tc-counter">500 left</span>
+                            </div>
+                            @error('short_description')
+                                <span class="tc-err">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="tc-field tc-mt">
+                            <label>Full Description <span class="req">*</span></label>
+                            <textarea id="description" name="description" rows="6" class="tc-input tc-ta @error('description') err @enderror"
+                                placeholder="Detailed, engaging description of the trek experience…" required>{{ old('description', $trek->description) }}</textarea>
+                            @error('description')
+                                <span class="tc-err">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- 2. TREK DETAILS --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-route"></i> Trek Details</div>
+
+                        <div class="tc-row-4">
+                            <div class="tc-field">
+                                <label>Duration (Days)</label>
+                                <input type="number" name="duration_days"
+                                    value="{{ old('duration_days', $trek->duration_days) }}"
+                                    class="tc-input @error('duration_days') err @enderror" min="1" placeholder="14">
+                                @error('duration_days')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>Max Altitude</label>
+                                <input type="text" name="max_altitude"
+                                    value="{{ old('max_altitude', $trek->max_altitude) }}"
+                                    class="tc-input @error('max_altitude') err @enderror" placeholder="5,364m">
+                                @error('max_altitude')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>Start Point</label>
+                                <input type="text" name="start_point"
+                                    value="{{ old('start_point', $trek->start_point) }}"
+                                    class="tc-input @error('start_point') err @enderror" placeholder="Lukla">
+                                @error('start_point')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>End Point</label>
+                                <input type="text" name="end_point" value="{{ old('end_point', $trek->end_point) }}"
+                                    class="tc-input @error('end_point') err @enderror" placeholder="Kathmandu">
+                                @error('end_point')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="tc-row-2 tc-mt">
+                            <div class="tc-field">
+                                <label>Best Season</label>
+                                <input type="text" name="best_season"
+                                    value="{{ old('best_season', $trek->best_season) }}"
+                                    class="tc-input @error('best_season') err @enderror"
+                                    placeholder="Spring (Mar–May) & Autumn (Sep–Nov)">
+                                @error('best_season')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="tc-field">
+                                <label>Price (USD)</label>
+                                <div class="tc-prefix-wrap">
+                                    <span class="tc-prefix">$</span>
+                                    <input type="number" step="0.01" name="price_usd"
+                                        value="{{ old('price_usd', $trek->price_usd) }}"
+                                        class="tc-input tc-input-prefixed @error('price_usd') err @enderror"
+                                        placeholder="1499.00">
+                                </div>
+                                @error('price_usd')
+                                    <span class="tc-err">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 3. HIGHLIGHTS & FEATURES --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-list-check"></i> Highlights & Features
+                            <small>— one item per line</small>
+                        </div>
+
+                        <div class="tc-row-2">
+                            <div class="tc-field">
+                                <label><span class="dot dot-gold"></span> Highlights</label>
+                                <textarea name="highlights" rows="6" class="tc-input tc-ta tc-mono"
+                                    placeholder="Stunning Everest views&#10;Namche Bazaar market&#10;Kala Patthar sunrise">{{ old('highlights', is_array($trek->highlights) ? implode("\n", $trek->highlights) : $trek->highlights) }}</textarea>
+                            </div>
+                            <div class="tc-field">
+                                <label><span class="dot dot-green"></span> What's Included</label>
+                                <textarea name="included" rows="6" class="tc-input tc-ta tc-mono"
+                                    placeholder="Airport transfers&#10;Teahouse accommodation&#10;All meals on trek">{{ old('included', is_array($trek->included) ? implode("\n", $trek->included) : $trek->included) }}</textarea>
+                            </div>
+                            <div class="tc-field">
+                                <label><span class="dot dot-red"></span> What's Excluded</label>
+                                <textarea name="excluded" rows="6" class="tc-input tc-ta tc-mono"
+                                    placeholder="International flights&#10;Travel insurance&#10;Personal gear">{{ old('excluded', is_array($trek->excluded) ? implode("\n", $trek->excluded) : $trek->excluded) }}</textarea>
+                            </div>
+                            <div class="tc-field">
+                                <label><span class="dot dot-purple"></span> Required Gear</label>
+                                <textarea name="required_gear" rows="6" class="tc-input tc-ta tc-mono"
+                                    placeholder="Down jacket&#10;Trekking boots&#10;Trekking poles">{{ old('required_gear', is_array($trek->required_gear) ? implode("\n", $trek->required_gear) : $trek->required_gear) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 4. ITINERARY — Quill Rich Editor --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-calendar-days"></i> Day-by-Day Itinerary</div>
+
+                        {{-- Hidden input that holds the HTML for form submission --}}
+                        <input type="hidden" name="itinerary" id="itinerary_hidden">
+
+                        {{-- Quill toolbar + editor --}}
+                        <div id="quill-toolbar">
+                            <span class="ql-formats">
+                                <select class="ql-header">
+                                    <option value="1">Heading</option>
+                                    <option value="2">Sub-heading</option>
+                                    <option selected>Normal</option>
+                                </select>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-bold"></button>
+                                <button class="ql-italic"></button>
+                                <button class="ql-underline"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered"></button>
+                                <button class="ql-list" value="bullet"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-blockquote"></button>
+                                <button class="ql-code-block"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-link"></button>
+                                <button class="ql-image"></button>
+                                <button class="ql-clean"></button>
+                            </span>
+                        </div>
+                        <div id="quill-editor" style="min-height:300px;">
+                            {!! old('itinerary', $trek->itinerary) !!}
+                        </div>
+                    </div>
+
+                </div>{{-- /tc-main --}}
+
+                {{-- ═══ SIDEBAR ═══ --}}
+                <div class="tc-sidebar">
+
+                    {{-- SUBMIT --}}
+                    <div class="tc-card tc-card-cta">
+                        <button type="submit" class="tc-btn-primary w-100">
+                            <i class="fas fa-floppy-disk"></i> Update Trek
+                        </button>
+                        <a href="{{ route('admin.treks.index') }}" class="tc-btn-cancel w-100">
+                            <i class="fas fa-xmark"></i> Cancel
+                        </a>
+                    </div>
+
+                    {{-- IMAGES --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-images"></i> Media</div>
+
+                        <div class="tc-field">
+                            <label>Featured Image</label>
+                            <label class="tc-dropzone" id="dropzone" for="featured_image">
+                                <div id="dzIdle" class="{{ $trek->featured_image ? 'd-none' : '' }}">
+                                    <i class="fas fa-cloud-arrow-up"></i>
+                                    <span>Click to upload</span>
+                                    <small>PNG, JPG, WEBP · max 5MB</small>
+                                </div>
+                                <div id="dzPreview" class="{{ $trek->featured_image ? '' : 'd-none' }}">
+                                    <img id="previewImage"
+                                        src="{{ $trek->featured_image ? Storage::url($trek->featured_image) : '' }}"
+                                        alt="Featured image">
+                                    <button type="button" id="removeImg" data-remove-featured="{{ $trek->id }}">
+                                        <i class="fas fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </label>
+                            <input type="file" id="featured_image" name="featured_image" accept="image/*"
+                                class="d-none @error('featured_image') err @enderror">
+                            @error('featured_image')
+                                <span class="tc-err">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="tc-field tc-mt">
+                            <label>Gallery Images</label>
+                            <label class="tc-gallery-btn" for="gallery_images">
+                                <i class="fas fa-photo-film"></i> Add more photos
+                            </label>
+                            <input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" multiple
+                                class="d-none">
+
+                            @if ($trek->gallery_images && count($trek->gallery_images) > 0)
+                                <div class="tc-thumbs" id="galleryThumbs">
+                                    @foreach ($trek->gallery_images as $index => $image)
+                                        <div class="tc-thumb-item" data-index="{{ $index }}">
+                                            <img src="{{ Storage::url($image) }}" alt="Gallery image">
+                                            <button type="button" class="remove-gallery-img"
+                                                data-index="{{ $index }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="tc-thumbs" id="galleryThumbs"></div>
+                            @endif
+
+                            {{-- Hidden input to track gallery images to delete --}}
+                            <input type="hidden" name="remove_gallery_images" id="removeGalleryImages" value="">
+                        </div>
+                    </div>
+
+                    {{-- GROUP SIZE --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-users"></i> Group Size</div>
+                        <div class="tc-row-2">
+                            <div class="tc-field">
+                                <label>Minimum</label>
+                                <input type="number" name="group_size_min" min="1"
+                                    value="{{ old('group_size_min', $trek->group_size_min) }}" class="tc-input">
+                            </div>
+                            <div class="tc-field">
+                                <label>Maximum</label>
+                                <input type="number" name="group_size_max" min="1"
+                                    value="{{ old('group_size_max', $trek->group_size_max) }}" class="tc-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- STATUS --}}
+                    <div class="tc-card">
+                        <div class="tc-card-label"><i class="fas fa-sliders"></i> Settings</div>
+
+                        <label class="tc-toggle-row">
+                            <div>
+                                <span>Featured Trek</span>
+                                <small>Show on homepage</small>
+                            </div>
+                            <div class="tc-switch">
+                                <input type="checkbox" name="is_featured" value="1"
+                                    {{ old('is_featured', $trek->is_featured) ? 'checked' : '' }}>
+                                <span></span>
+                            </div>
+                        </label>
+
+                        <label class="tc-toggle-row">
+                            <div>
+                                <span>Active / Published</span>
+                                <small>Visible on website</small>
+                            </div>
+                            <div class="tc-switch">
+                                <input type="checkbox" name="is_active" value="1"
+                                    {{ old('is_active', $trek->is_active) ? 'checked' : '' }}>
+                                <span></span>
+                            </div>
+                        </label>
+
+                        <div class="tc-field tc-mt">
+                            <label>Sort Order</label>
+                            <input type="number" name="sort_order" min="0"
+                                value="{{ old('sort_order', $trek->sort_order) }}" class="tc-input">
+                        </div>
+                    </div>
+
+                </div>{{-- /tc-sidebar --}}
+
+            </div>
+        </form>
+    </div>
+@endsection
 
 @push('styles')
+    {{-- Quill snow theme --}}
     <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+
     <style>
-        /* ── Layout ──────────────────────────────────────────────── */
-        .trek-edit-grid {
+        /* ════════════════════════════════════
+                                               TOKENS
+                                            ════════════════════════════════════ */
+        :root {
+            --c-bg: #f4f6f8;
+            --c-surface: #ffffff;
+            --c-border: #e2e8f0;
+            --c-text: #1e293b;
+            --c-muted: #64748b;
+            --c-faint: #94a3b8;
+            --c-primary: #1e3a32;
+            --c-gold: #d97706;
+            --c-gold-bg: rgba(217, 119, 6, .08);
+            --c-focus: rgba(217, 119, 6, .22);
+            --c-danger: #dc2626;
+            --c-danger-bg: #fef2f2;
+            --r: 12px;
+        }
+
+        /* ════════════════════════════════════
+                                               WRAPPER
+                                            ════════════════════════════════════ */
+        .tc-wrap {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-bottom: 60px;
+            color: var(--c-text);
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 14px;
+        }
+
+        /* ════════════════════════════════════
+                                               TOP BAR
+                                            ════════════════════════════════════ */
+        .tc-top {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .tc-breadcrumb {
+            font-size: 12px;
+            color: var(--c-faint);
+            margin: 0 0 4px;
+        }
+
+        .tc-breadcrumb span {
+            color: var(--c-gold);
+            font-weight: 600;
+        }
+
+        .tc-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--c-text);
+        }
+
+        .tc-title i {
+            color: var(--c-gold);
+            font-size: 1.1rem;
+        }
+
+        .tc-subtitle {
+            font-size: 13px;
+            color: var(--c-muted);
+            margin-top: 6px;
+        }
+
+        .tc-subtitle strong {
+            color: var(--c-gold);
+            font-weight: 600;
+        }
+
+        /* ════════════════════════════════════
+                                               ERROR BOX
+                                            ════════════════════════════════════ */
+        .tc-error-box {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: var(--c-danger-bg);
+            border: 1px solid rgba(220, 38, 38, .2);
+            border-left: 4px solid var(--c-danger);
+            border-radius: var(--r);
+            padding: 16px 18px;
+            margin-bottom: 20px;
+            color: #7f1d1d;
+        }
+
+        .tc-error-box>i {
+            color: var(--c-danger);
+            margin-top: 2px;
+            font-size: 16px;
+        }
+
+        .tc-error-box>div {
+            flex: 1;
+        }
+
+        .tc-error-box strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .tc-error-box ul {
+            margin: 0;
+            padding-left: 16px;
+            font-size: 12.5px;
+        }
+
+        .tc-error-box ul li {
+            margin-bottom: 2px;
+        }
+
+        .tc-error-box>button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #7f1d1d;
+            opacity: .5;
+            font-size: 15px;
+            padding: 0;
+        }
+
+        .tc-error-box>button:hover {
+            opacity: 1;
+        }
+
+        /* ════════════════════════════════════
+                                               LAYOUT
+                                            ════════════════════════════════════ */
+        .tc-layout {
             display: grid;
             grid-template-columns: 1fr 300px;
-            gap: 22px;
+            gap: 20px;
             align-items: start;
         }
 
-        @media (max-width: 1100px) {
-            .trek-edit-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .trek-main {
+        .tc-main {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .trek-sidebar {
+        .tc-sidebar {
             display: flex;
             flex-direction: column;
             gap: 16px;
             position: sticky;
-            top: 86px;
+            top: 72px;
         }
 
-        @media (max-width: 1100px) {
-            .trek-sidebar {
+        @media (max-width: 1024px) {
+            .tc-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .tc-sidebar {
                 position: static;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .tc-sidebar .tc-card-cta {
+                grid-column: 1/-1;
             }
         }
 
-        /* ── Cards ───────────────────────────────────────────────── */
-        .e-card {
-            background: #fff;
+        @media (max-width: 600px) {
+            .tc-sidebar {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ════════════════════════════════════
+                                               CARDS
+                                            ════════════════════════════════════ */
+        .tc-card {
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
             border-radius: 16px;
-            border: 1px solid #f0f4f8;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-        }
-
-        .e-card-header {
-            padding: 14px 22px;
-            border-bottom: 1px solid #f0f4f8;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .e-card-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-
-        .e-card-header h3 {
-            font-size: 13.5px;
-            font-weight: 700;
-            color: #1e293b;
-            margin: 0;
-        }
-
-        .e-card-body {
             padding: 22px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
         }
 
-        /* ── Field grid helpers ───────────────────────────────────── */
-        .fg-2 {
+        .tc-card-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--c-text);
+            letter-spacing: .01em;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .tc-card-label i {
+            color: var(--c-gold);
+        }
+
+        .tc-card-label small {
+            font-weight: 400;
+            color: var(--c-faint);
+        }
+
+        .tc-card-cta {
+            background: var(--c-primary);
+            border-color: transparent;
+        }
+
+        /* ════════════════════════════════════
+                                               GRID HELPERS
+                                            ════════════════════════════════════ */
+        .tc-row-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 14px;
         }
 
-        .fg-4 {
+        .tc-row-4 {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 14px;
         }
 
-        .fg-1 {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
+        .tc-mt {
+            margin-top: 14px;
         }
 
         @media (max-width: 768px) {
-            .fg-4 {
+            .tc-row-4 {
                 grid-template-columns: 1fr 1fr;
             }
         }
 
-        @media (max-width: 560px) {
+        @media (max-width: 500px) {
 
-            .fg-2,
-            .fg-4 {
+            .tc-row-2,
+            .tc-row-4 {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* ── Labels & inputs ─────────────────────────────────────── */
-        .e-field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
+        /* ════════════════════════════════════
+                                               FIELDS
+                                            ════════════════════════════════════ */
+        .tc-field label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--c-muted);
+            margin-bottom: 6px;
         }
 
-        .e-label {
-            font-size: 11.5px;
-            font-weight: 700;
-            color: #64748b;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
+        .tc-field label small {
+            font-weight: 400;
+            color: var(--c-faint);
         }
 
-        .e-input,
-        .e-select,
-        .e-textarea {
-            border: 1.5px solid #e8edf3;
-            border-radius: 10px;
-            padding: 9px 13px;
-            font-size: 13.5px;
-            color: #1e293b;
-            background: #f8fafc;
-            outline: none;
+        .req {
+            color: var(--c-danger);
+        }
+
+        .tc-input {
             width: 100%;
+            height: 42px;
+            padding: 0 13px;
+            background: var(--c-bg);
+            border: 1.5px solid var(--c-border);
+            border-radius: var(--r);
+            font-size: 13.5px;
+            color: var(--c-text);
             font-family: inherit;
-            transition: border 0.15s, background 0.15s, box-shadow 0.15s;
+            transition: border-color .18s, box-shadow .18s;
+            outline: none;
+            -webkit-appearance: none;
         }
 
-        .e-input:focus,
-        .e-select:focus,
-        .e-textarea:focus {
-            border-color: #3b82f6;
+        .tc-input:focus {
+            border-color: var(--c-gold);
             background: #fff;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.10);
+            box-shadow: 0 0 0 3px var(--c-focus);
         }
 
-        .e-input.is-invalid,
-        .e-select.is-invalid,
-        .e-textarea.is-invalid {
-            border-color: #f87171;
-            background: #fff;
+        .tc-input.err {
+            border-color: var(--c-danger);
+            background: var(--c-danger-bg);
         }
 
-        .e-textarea {
-            resize: vertical;
-            min-height: 90px;
+        .tc-input.err:focus {
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, .15);
+        }
+
+        .tc-ta {
+            height: auto !important;
+            padding: 11px 13px;
             line-height: 1.6;
+            resize: vertical;
         }
 
-        .e-select {
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        .tc-mono {
+            font-family: 'Courier New', monospace;
+            font-size: 12.5px;
+            line-height: 1.9;
+        }
+
+        .tc-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 13px center;
-            background-size: 10px;
-            padding-right: 34px;
+            padding-right: 32px;
+            cursor: pointer;
         }
 
-        .e-prefix-wrap {
-            position: relative;
+        .tc-prefix-wrap {
+            display: flex;
         }
 
-        .e-prefix-wrap .e-prefix-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 12px;
-            pointer-events: none;
-        }
-
-        .e-prefix-wrap .e-input {
-            padding-left: 30px;
-        }
-
-        .e-error {
-            font-size: 11.5px;
-            color: #ef4444;
-            margin-top: 1px;
-        }
-
-        /* ── Section divider ─────────────────────────────────────── */
-        .e-sep {
-            font-size: 11px;
-            font-weight: 700;
-            color: #94a3b8;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            margin: 20px 0 14px;
+        .tc-prefix {
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            padding: 0 12px;
+            background: var(--c-bg);
+            border: 1.5px solid var(--c-border);
+            border-right: none;
+            border-radius: var(--r) 0 0 var(--r);
+            font-weight: 700;
+            color: var(--c-muted);
+            font-size: 13px;
+            flex-shrink: 0;
         }
 
-        .e-sep::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #f0f4f8;
+        .tc-input-prefixed {
+            border-radius: 0 var(--r) var(--r) 0;
+            padding-left: 12px;
         }
 
-        /* ── Quill editor ────────────────────────────────────────── */
-        .quill-wrap {
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1.5px solid #e8edf3;
+        .tc-counter-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 11.5px;
+            color: var(--c-faint);
         }
 
-        .quill-wrap:focus-within {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.10);
+        .tc-counter.warn {
+            color: #f59e0b;
         }
 
+        .tc-counter.over {
+            color: var(--c-danger);
+            font-weight: 700;
+        }
+
+        .tc-err {
+            display: block;
+            margin-top: 4px;
+            font-size: 11.5px;
+            color: var(--c-danger);
+            font-weight: 600;
+        }
+
+        /* ════════════════════════════════════
+                                               COLORED DOTS
+                                            ════════════════════════════════════ */
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .dot-gold {
+            background: #d97706;
+        }
+
+        .dot-green {
+            background: #16a34a;
+        }
+
+        .dot-red {
+            background: #dc2626;
+        }
+
+        .dot-purple {
+            background: #7c3aed;
+        }
+
+        /* ════════════════════════════════════
+                                               QUILL EDITOR
+                                            ════════════════════════════════════ */
         #quill-toolbar {
-            background: #f8fafc;
-            border: none;
-            border-bottom: 1px solid #e8edf3;
+            border: 1.5px solid var(--c-border);
+            border-bottom: none;
+            border-radius: var(--r) var(--r) 0 0;
+            background: var(--c-bg);
             padding: 6px 10px;
         }
 
         #quill-editor {
+            border: 1.5px solid var(--c-border);
+            border-top: none;
+            border-radius: 0 0 var(--r) var(--r);
+            font-size: 13.5px;
+            line-height: 1.75;
             background: #fff;
-            border: none;
         }
 
         #quill-editor .ql-editor {
-            min-height: 280px;
+            min-height: 300px;
             padding: 16px 18px;
-            font-size: 13.5px;
-            line-height: 1.75;
-            color: #1e293b;
         }
 
         #quill-editor .ql-editor.ql-blank::before {
-            color: #94a3b8;
+            color: var(--c-faint);
             font-style: normal;
             font-size: 13px;
         }
 
         .ql-snow .ql-toolbar button:hover,
-        .ql-snow .ql-toolbar button.ql-active {
-            color: #3b82f6 !important;
+        .ql-snow .ql-toolbar button.ql-active,
+        .ql-snow .ql-toolbar .ql-picker-label:hover {
+            color: var(--c-gold) !important;
         }
 
         .ql-snow .ql-toolbar button:hover .ql-stroke,
         .ql-snow .ql-toolbar button.ql-active .ql-stroke {
-            stroke: #3b82f6 !important;
+            stroke: var(--c-gold) !important;
         }
 
         .ql-snow .ql-toolbar button:hover .ql-fill,
         .ql-snow .ql-toolbar button.ql-active .ql-fill {
-            fill: #3b82f6 !important;
+            fill: var(--c-gold) !important;
         }
 
-        /* ── Image dropzone ──────────────────────────────────────── */
-        .dropzone {
-            border: 2px dashed #e8edf3;
-            border-radius: 12px;
+        /* ════════════════════════════════════
+                                               IMAGE DROPZONE
+                                            ════════════════════════════════════ */
+        .tc-dropzone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 140px;
+            border: 2px dashed var(--c-border);
+            border-radius: var(--r);
             cursor: pointer;
-            transition: border-color 0.18s, background 0.18s;
+            transition: border-color .18s, background .18s;
             overflow: hidden;
+            position: relative;
+            text-align: center;
         }
 
-        .dropzone:hover {
-            border-color: #3b82f6;
-            background: #f0f7ff;
+        .tc-dropzone:hover {
+            border-color: var(--c-gold);
+            background: var(--c-gold-bg);
         }
 
-        .dz-idle {
+        #dzIdle {
+            padding: 24px 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 5px;
-            padding: 28px 16px;
-            text-align: center;
         }
 
-        .dz-idle i {
-            font-size: 26px;
-            color: #cbd5e1;
+        #dzIdle i {
+            font-size: 28px;
+            color: var(--c-faint);
         }
 
-        .dz-idle span {
+        #dzIdle span {
             font-size: 13px;
             font-weight: 600;
-            color: #64748b;
+            color: var(--c-muted);
         }
 
-        .dz-idle small {
+        #dzIdle small {
             font-size: 11.5px;
-            color: #94a3b8;
+            color: var(--c-faint);
         }
 
-        .dz-preview {
-            position: relative;
-            display: none;
-        }
-
-        .dz-preview img {
+        #dzPreview {
             width: 100%;
-            height: 170px;
+            position: relative;
+        }
+
+        #dzPreview img {
+            width: 100%;
+            height: 160px;
             object-fit: cover;
             display: block;
         }
 
-        .dz-remove {
+        #removeImg {
             position: absolute;
             top: 8px;
             right: 8px;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.55);
+            width: 26px;
+            height: 26px;
+            background: rgba(0, 0, 0, .55);
             color: #fff;
             border: none;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.15s;
-        }
-
-        .dz-remove:hover {
-            background: #dc2626;
-        }
-
-        .dz-replace {
-            padding: 8px 14px;
             font-size: 12px;
-            color: #64748b;
-            background: #f8fafc;
-            border-top: 1px solid #e8edf3;
-            text-align: center;
+            transition: background .15s;
         }
 
-        /* ── Toggle switches ─────────────────────────────────────── */
-        .toggle-row {
+        #removeImg:hover {
+            background: var(--c-danger);
+        }
+
+        .tc-gallery-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--c-bg);
+            border: 1.5px dashed var(--c-border);
+            border-radius: var(--r);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--c-muted);
+            transition: border-color .18s, color .18s;
+        }
+
+        .tc-gallery-btn:hover {
+            border-color: var(--c-gold);
+            color: var(--c-gold);
+        }
+
+        .tc-gallery-btn i {
+            font-size: 16px;
+        }
+
+        .tc-thumbs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .tc-thumb-item {
+            position: relative;
+        }
+
+        .tc-thumb-item img {
+            width: 52px;
+            height: 52px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1.5px solid var(--c-border);
+            transition: transform .15s;
+        }
+
+        .tc-thumb-item img:hover {
+            transform: scale(1.08);
+        }
+
+        .remove-gallery-img {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 18px;
+            height: 18px;
+            background: var(--c-danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            padding: 0;
+            transition: transform .15s;
+        }
+
+        .remove-gallery-img:hover {
+            transform: scale(1.1);
+        }
+
+        /* ════════════════════════════════════
+                                               TOGGLES
+                                            ════════════════════════════════════ */
+        .tc-toggle-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
             padding: 12px 0;
-            border-bottom: 1px solid #f0f4f8;
+            border-bottom: 1px solid var(--c-border);
             cursor: pointer;
         }
 
-        .toggle-row:last-of-type {
+        .tc-toggle-row:last-of-type {
             border-bottom: none;
         }
 
-        .toggle-row .t-label {
+        .tc-toggle-row>div>span {
+            display: block;
             font-size: 13px;
             font-weight: 600;
-            color: #1e293b;
+            color: var(--c-text);
         }
 
-        .toggle-row .t-sub {
+        .tc-toggle-row>div>small {
+            display: block;
             font-size: 11.5px;
-            color: #94a3b8;
-            margin-top: 2px;
+            color: var(--c-faint);
+            margin-top: 1px;
         }
 
         .tc-switch {
@@ -397,7 +1045,7 @@
             height: 24px;
             background: #cbd5e1;
             border-radius: 100px;
-            transition: background 0.2s;
+            transition: background .2s;
             position: relative;
         }
 
@@ -410,635 +1058,141 @@
             height: 18px;
             background: #fff;
             border-radius: 50%;
-            transition: transform 0.2s;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+            transition: transform .2s;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
         }
 
         .tc-switch input:checked~span {
-            background: #3b82f6;
+            background: var(--c-gold);
         }
 
         .tc-switch input:checked~span::after {
             transform: translateX(18px);
         }
 
-        /* ── Buttons ─────────────────────────────────────────────── */
-        .save-btn {
+        /* ════════════════════════════════════
+                                               BUTTONS
+                                            ════════════════════════════════════ */
+        .tc-btn-primary {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            width: 100%;
             height: 46px;
-            background: #3b82f6;
+            padding: 0 20px;
+            background: var(--c-gold);
             color: #fff;
             border: none;
-            border-radius: 12px;
+            border-radius: var(--r);
             font-size: 14px;
             font-weight: 700;
             font-family: inherit;
             cursor: pointer;
-            transition: background 0.15s, transform 0.13s;
-        }
-
-        .save-btn:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 8px 16px;
-            border-radius: 9px;
-            border: 1.5px solid #e8edf3;
-            background: #fff;
-            font-size: 13px;
-            font-weight: 600;
-            color: #475569;
+            transition: filter .2s, transform .15s;
             text-decoration: none;
-            transition: all 0.15s;
         }
 
-        .back-btn:hover {
-            background: #f8fafc;
-            border-color: #cbd5e1;
-            color: #334155;
+        .tc-btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            color: #fff;
         }
 
-        .cancel-link {
+        .tc-btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .tc-btn-cancel {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            padding: 10px;
-            border-radius: 10px;
+            gap: 8px;
+            height: 40px;
+            padding: 0 20px;
+            background: rgba(255, 255, 255, .12);
+            color: rgba(255, 255, 255, .7);
+            border: 1px solid rgba(255, 255, 255, .18);
+            border-radius: var(--r);
             font-size: 13px;
             font-weight: 600;
-            color: #64748b;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background .18s, color .18s;
             text-decoration: none;
-            transition: color 0.13s;
+            margin-top: 8px;
         }
 
-        .cancel-link:hover {
-            color: #334155;
+        .tc-btn-cancel:hover {
+            background: rgba(255, 255, 255, .2);
+            color: #fff;
         }
 
-        /* ── Error box ───────────────────────────────────────────── */
-        .error-box {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            background: #fef2f2;
-            border: 1px solid rgba(220, 38, 38, 0.2);
-            border-left: 4px solid #dc2626;
-            border-radius: 12px;
-            padding: 16px 18px;
-            margin-bottom: 20px;
-            color: #7f1d1d;
-        }
-
-        .error-box i {
-            color: #dc2626;
-            font-size: 15px;
-            margin-top: 1px;
-        }
-
-        .error-box strong {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
-        }
-
-        .error-box ul {
-            margin: 0;
-            padding-left: 16px;
-            font-size: 12.5px;
-        }
-
-        .error-box ul li {
-            margin-bottom: 3px;
-        }
-
-        /* ── Success flash ───────────────────────────────────────── */
-        .alert-ok {
-            background: #dcfce7;
-            color: #15803d;
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-size: 13.5px;
-            font-weight: 500;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* ── Trek ref badge ──────────────────────────────────────── */
-        .trek-badge {
+        .tc-btn-ghost {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            background: #eff6ff;
-            color: #1d4ed8;
-            font-size: 12px;
+            gap: 7px;
+            padding: 9px 16px;
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: var(--r);
+            font-size: 13px;
             font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid #bfdbfe;
+            color: var(--c-muted);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .18s, color .18s;
         }
 
-        .diff-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 4px;
+        .tc-btn-ghost:hover {
+            background: var(--c-bg);
+            color: var(--c-text);
+        }
+
+        .w-100 {
+            width: 100%;
+        }
+
+        .d-none {
+            display: none !important;
+        }
+
+        /* ════════════════════════════════════
+                                               RESPONSIVE
+                                            ════════════════════════════════════ */
+        @media (max-width: 768px) {
+            .tc-card {
+                padding: 16px;
+            }
+
+            .tc-title {
+                font-size: 1.25rem;
+            }
         }
     </style>
 @endpush
 
-@section('content')
-
-    {{-- ── Top bar ─────────────────────────────────────────────────── --}}
-    <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-            <a href="{{ route('admin.treks.index') }}" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back
-            </a>
-            <div>
-                <div style="font-size:12px; color:#94a3b8; margin-bottom:3px;">Treks / Edit</div>
-                <span class="trek-badge">
-                    <i class="fas fa-mountain" style="font-size:10px;"></i>
-                    {{ $trek->name }}
-                </span>
-            </div>
-        </div>
-        <div class="flex items-center gap-2">
-            @if ($trek->is_active)
-                <span
-                    style="background:#dcfce7;color:#16a34a;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">Active</span>
-            @else
-                <span
-                    style="background:#f1f5f9;color:#64748b;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">Inactive</span>
-            @endif
-            @if ($trek->is_featured)
-                <span
-                    style="background:#fef3c7;color:#d97706;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">
-                    <i class="fas fa-star" style="font-size:9px;margin-right:2px;"></i> Featured
-                </span>
-            @endif
-        </div>
-    </div>
-
-    {{-- ── Errors ───────────────────────────────────────────────────── --}}
-    @if ($errors->any())
-        <div class="error-box">
-            <i class="fas fa-circle-exclamation"></i>
-            <div>
-                <strong>Please fix the following errors:</strong>
-                <ul>
-                    @foreach ($errors->all() as $e)
-                        <li>{{ $e }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-    @endif
-
-    @if (session('success'))
-        <div class="alert-ok"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
-    @endif
-
-    {{-- ── Form ─────────────────────────────────────────────────────── --}}
-    <form action="{{ route('admin.treks.update', $trek->slug) }}" method="POST" enctype="multipart/form-data"
-        id="trekForm">
-        @csrf
-        @method('PUT')
-
-        <div class="trek-edit-grid">
-
-            {{-- ══ LEFT COLUMN ══════════════════════════════════════════ --}}
-            <div class="trek-main">
-
-                {{-- Basic Information --}}
-                <div class="e-card">
-                    <div class="e-card-header">
-                        <div class="e-card-icon" style="background:#eff6ff;">
-                            <i class="fas fa-circle-info text-blue-500"></i>
-                        </div>
-                        <h3>Basic Information</h3>
-                    </div>
-                    <div class="e-card-body">
-
-                        <div class="fg-2">
-                            <div class="e-field">
-                                <label class="e-label">Trek Name <span style="color:#ef4444;">*</span></label>
-                                <input type="text" name="name" id="trekName"
-                                    class="e-input @error('name') is-invalid @enderror"
-                                    value="{{ old('name', $trek->name) }}" placeholder="e.g. Everest Base Camp Trek">
-                                @error('name')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="e-field">
-                                <label class="e-label">Slug</label>
-                                <div class="e-prefix-wrap">
-                                    <i class="fas fa-link e-prefix-icon"></i>
-                                    <input type="text" name="slug" id="trekSlug"
-                                        class="e-input @error('slug') is-invalid @enderror"
-                                        value="{{ old('slug', $trek->slug) }}" placeholder="everest-base-camp-trek">
-                                </div>
-                                @error('slug')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="fg-2" style="margin-top:16px;">
-                            <div class="e-field">
-                                <label class="e-label">Destination</label>
-                                <select name="destination_id"
-                                    class="e-select @error('destination_id') is-invalid @enderror">
-                                    <option value="">— Select Destination —</option>
-                                    @foreach ($destinations as $id => $dest)
-                                        <option value="{{ $id }}"
-                                            {{ old('destination_id', $trek->destination_id) == $id ? 'selected' : '' }}>
-                                            {{ $dest }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('destination_id')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="e-field">
-                                <label class="e-label">Difficulty</label>
-                                <select name="difficulty" class="e-select @error('difficulty') is-invalid @enderror">
-                                    @foreach ($difficulties as $d)
-                                        <option value="{{ $d }}"
-                                            {{ old('difficulty', $trek->difficulty) == $d ? 'selected' : '' }}>
-                                            {{ ucfirst($d) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('difficulty')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div style="margin-top:16px;">
-                            <div class="e-field">
-                                <label class="e-label">Short Description
-                                    <span style="font-weight:400;text-transform:none;color:#94a3b8;margin-left:4px;"
-                                        id="shortDescCounter"></span>
-                                </label>
-                                <textarea name="short_description" id="shortDesc" class="e-textarea @error('short_description') is-invalid @enderror"
-                                    rows="3" placeholder="A brief compelling summary shown on listing pages...">{{ old('short_description', $trek->short_description) }}</textarea>
-                                @error('short_description')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div style="margin-top:16px;">
-                            <div class="e-field">
-                                <label class="e-label">Full Description</label>
-                                <textarea name="description" class="e-textarea @error('description') is-invalid @enderror" rows="5"
-                                    placeholder="Detailed overview of the trek, highlights, and what to expect...">{{ old('description', $trek->description) }}</textarea>
-                                @error('description')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                {{-- Trek Details --}}
-                <div class="e-card">
-                    <div class="e-card-header">
-                        <div class="e-card-icon" style="background:#f0fdf4;">
-                            <i class="fas fa-route text-green-500"></i>
-                        </div>
-                        <h3>Trek Details</h3>
-                    </div>
-                    <div class="e-card-body">
-
-                        <div class="fg-4">
-                            <div class="e-field">
-                                <label class="e-label">Duration (Days)</label>
-                                <div class="e-prefix-wrap">
-                                    <i class="fas fa-clock e-prefix-icon"></i>
-                                    <input type="number" name="duration_days" min="1"
-                                        class="e-input @error('duration_days') is-invalid @enderror"
-                                        value="{{ old('duration_days', $trek->duration_days) }}" placeholder="14">
-                                </div>
-                                @error('duration_days')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="e-field">
-                                <label class="e-label">Max Altitude</label>
-                                <div class="e-prefix-wrap">
-                                    <i class="fas fa-mountain e-prefix-icon"></i>
-                                    <input type="text" name="max_altitude"
-                                        class="e-input @error('max_altitude') is-invalid @enderror"
-                                        value="{{ old('max_altitude', $trek->max_altitude) }}" placeholder="5,364 m">
-                                </div>
-                                @error('max_altitude')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="e-field">
-                                <label class="e-label">Start Point</label>
-                                <div class="e-prefix-wrap">
-                                    <i class="fas fa-map-pin e-prefix-icon"></i>
-                                    <input type="text" name="start_point"
-                                        class="e-input @error('start_point') is-invalid @enderror"
-                                        value="{{ old('start_point', $trek->start_point) }}" placeholder="Lukla">
-                                </div>
-                                @error('start_point')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="e-field">
-                                <label class="e-label">End Point</label>
-                                <div class="e-prefix-wrap">
-                                    <i class="fas fa-flag-checkered e-prefix-icon"></i>
-                                    <input type="text" name="end_point"
-                                        class="e-input @error('end_point') is-invalid @enderror"
-                                        value="{{ old('end_point', $trek->end_point) }}" placeholder="Kathmandu">
-                                </div>
-                                @error('end_point')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="fg-4" style="margin-top:16px;">
-                            <div class="e-field">
-                                <label class="e-label">Best Season</label>
-                                <div class="e-prefix-wrap">
-                                    <i class="fas fa-sun e-prefix-icon"></i>
-                                    <input type="text" name="best_season"
-                                        class="e-input @error('best_season') is-invalid @enderror"
-                                        value="{{ old('best_season', $trek->best_season) }}"
-                                        placeholder="Oct–Nov, Mar–May">
-                                </div>
-                                @error('best_season')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="e-field">
-                                <label class="e-label">Price (USD)</label>
-                                <div class="e-prefix-wrap">
-                                    <i class="fas fa-dollar-sign e-prefix-icon"></i>
-                                    <input type="number" name="price_usd" min="0" step="0.01"
-                                        class="e-input @error('price_usd') is-invalid @enderror"
-                                        value="{{ old('price_usd', $trek->price_usd) }}" placeholder="1250">
-                                </div>
-                                @error('price_usd')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="e-field">
-                                <label class="e-label">Min Group Size</label>
-                                <div class="e-prefix-wrap">
-                                    <i class="fas fa-user e-prefix-icon"></i>
-                                    <input type="number" name="group_size_min" min="1"
-                                        class="e-input @error('group_size_min') is-invalid @enderror"
-                                        value="{{ old('group_size_min', $trek->group_size_min) }}" placeholder="1">
-                                </div>
-                                @error('group_size_min')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="e-field">
-                                <label class="e-label">Max Group Size</label>
-                                <div class="e-prefix-wrap">
-                                    <i class="fas fa-users e-prefix-icon"></i>
-                                    <input type="number" name="group_size_max" min="1"
-                                        class="e-input @error('group_size_max') is-invalid @enderror"
-                                        value="{{ old('group_size_max', $trek->group_size_max) }}" placeholder="16">
-                                </div>
-                                @error('group_size_max')
-                                    <span class="e-error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                {{-- Itinerary (Quill) --}}
-                <div class="e-card">
-                    <div class="e-card-header">
-                        <div class="e-card-icon" style="background:#fef9c3;">
-                            <i class="fas fa-list-ol" style="color:#d97706;"></i>
-                        </div>
-                        <h3>Itinerary</h3>
-                    </div>
-                    <div class="e-card-body">
-                        <input type="hidden" name="itinerary" id="itinerary_hidden">
-                        <div class="quill-wrap">
-                            <div id="quill-toolbar">
-                                <span class="ql-formats">
-                                    <select class="ql-header">
-                                        <option value="2">Heading</option>
-                                        <option value="3">Subheading</option>
-                                        <option selected>Normal</option>
-                                    </select>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-bold"></button>
-                                    <button class="ql-italic"></button>
-                                    <button class="ql-underline"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-list" value="ordered"></button>
-                                    <button class="ql-list" value="bullet"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-link"></button>
-                                    <button class="ql-blockquote"></button>
-                                    <button class="ql-clean"></button>
-                                </span>
-                            </div>
-                            <div id="quill-editor">{!! old('itinerary', $trek->itinerary) !!}</div>
-                        </div>
-                        @error('itinerary')
-                            <span class="e-error" style="margin-top:6px;display:block;">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- ══ RIGHT SIDEBAR ════════════════════════════════════════ --}}
-            <div class="trek-sidebar">
-
-                {{-- Save button --}}
-                <div class="e-card">
-                    <div class="e-card-body" style="padding:16px;">
-                        <button type="submit" class="save-btn">
-                            <i class="fas fa-save"></i> Update Trek
-                        </button>
-                        <a href="{{ route('admin.treks.index') }}" class="cancel-link">
-                            Cancel
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Featured Image --}}
-                <div class="e-card">
-                    <div class="e-card-header">
-                        <div class="e-card-icon" style="background:#fdf4ff;">
-                            <i class="fas fa-image" style="color:#9333ea;"></i>
-                        </div>
-                        <h3>Featured Image</h3>
-                    </div>
-                    <div class="e-card-body" style="padding-top:16px;">
-                        <div class="dropzone" id="dropzone" onclick="document.getElementById('featured_image').click()">
-                            {{-- Idle state --}}
-                            <div class="dz-idle" id="dzIdle">
-                                @if ($trek->featured_image)
-                                    {{-- hidden by JS after load --}}
-                                @else
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <span>Click to upload image</span>
-                                    <small>JPG, PNG or WebP · Max 2MB</small>
-                                @endif
-                            </div>
-                            {{-- Preview state --}}
-                            <div class="dz-preview" id="dzPreview">
-                                <img id="previewImg" src="" alt="Preview">
-                                <button type="button" class="dz-remove" id="removeImg"
-                                    onclick="event.stopPropagation(); removeImage()">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                                <div class="dz-replace">Click to replace</div>
-                            </div>
-                        </div>
-                        <input type="file" name="featured_image" id="featured_image" accept="image/*"
-                            style="display:none;">
-                        @error('featured_image')
-                            <span class="e-error" style="display:block;margin-top:6px;">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-
-                {{-- Status & Visibility --}}
-                <div class="e-card">
-                    <div class="e-card-header">
-                        <div class="e-card-icon" style="background:#f0fdf4;">
-                            <i class="fas fa-toggle-on text-green-500"></i>
-                        </div>
-                        <h3>Visibility</h3>
-                    </div>
-                    <div class="e-card-body" style="padding-top:12px; padding-bottom:12px;">
-
-                        <label class="toggle-row" for="is_active">
-                            <div>
-                                <span class="t-label">Active</span>
-                                <span class="t-sub">Visible on the website</span>
-                            </div>
-                            <div class="tc-switch">
-                                <input type="checkbox" id="is_active" name="is_active" value="1"
-                                    {{ old('is_active', $trek->is_active) ? 'checked' : '' }}>
-                                <span></span>
-                            </div>
-                        </label>
-
-                        <label class="toggle-row" for="is_featured">
-                            <div>
-                                <span class="t-label">Featured</span>
-                                <span class="t-sub">Show in featured sections</span>
-                            </div>
-                            <div class="tc-switch">
-                                <input type="checkbox" id="is_featured" name="is_featured" value="1"
-                                    {{ old('is_featured', $trek->is_featured) ? 'checked' : '' }}>
-                                <span></span>
-                            </div>
-                        </label>
-
-                        <div class="e-field" style="margin-top:16px;">
-                            <label class="e-label">Sort Order</label>
-                            <input type="number" name="sort_order" min="0" class="e-input"
-                                value="{{ old('sort_order', $trek->sort_order ?? 0) }}" placeholder="0">
-                        </div>
-
-                    </div>
-                </div>
-
-                {{-- Quick info --}}
-                <div class="e-card">
-                    <div class="e-card-header">
-                        <div class="e-card-icon" style="background:#f0f9ff;">
-                            <i class="fas fa-info-circle text-sky-500"></i>
-                        </div>
-                        <h3>Quick Info</h3>
-                    </div>
-                    <div class="e-card-body" style="padding-top:14px; padding-bottom:14px;">
-                        <div style="display:flex;flex-direction:column;gap:0;">
-                            @php
-                                $rows = [
-                                    ['label' => 'Created', 'value' => $trek->created_at->format('M j, Y')],
-                                    ['label' => 'Updated', 'value' => $trek->updated_at->diffForHumans()],
-                                    ['label' => 'Bookings', 'value' => $trek->bookings_count ?? '—'],
-                                ];
-                            @endphp
-                            @foreach ($rows as $row)
-                                <div
-                                    style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f3f6fa;">
-                                    <span
-                                        style="font-size:12.5px;color:#94a3b8;font-weight:500;">{{ $row['label'] }}</span>
-                                    <span
-                                        style="font-size:12.5px;font-weight:600;color:#334155;">{{ $row['value'] }}</span>
-                                </div>
-                            @endforeach
-                            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;">
-                                <span style="font-size:12.5px;color:#94a3b8;font-weight:500;">View Live</span>
-                                <a href="{{ route('treks.show', $trek->slug) }}" target="_blank"
-                                    style="font-size:12.5px;font-weight:600;color:#3b82f6;text-decoration:none;">
-                                    Open <i class="fas fa-external-link-alt" style="font-size:10px;"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-    </form>
-
-@endsection
-
 @push('scripts')
+    {{-- Quill JS --}}
     <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // ── Quill editor ────────────────────────────────────────────
+        (function() {
+            /* ── Quill ── */
             const quill = new Quill('#quill-editor', {
                 modules: {
                     toolbar: '#quill-toolbar'
                 },
                 theme: 'snow',
-                placeholder: 'Day 1: Arrival in Kathmandu…\nWrite a detailed day-by-day itinerary here.'
+                placeholder: 'Day 1: Arrival in Kathmandu\nWrite a detailed day-by-day itinerary here…'
             });
 
-            // Sync hidden input on submit
-            document.getElementById('trekForm').addEventListener('submit', function() {
+            /* Sync hidden input before form submit */
+            document.querySelector('form').addEventListener('submit', function() {
                 document.getElementById('itinerary_hidden').value = quill.root.innerHTML;
             });
 
-            // ── Auto-generate slug from name ─────────────────────────────
-            const nameEl = document.getElementById('trekName');
-            const slugEl = document.getElementById('trekSlug');
+            /* ── Auto slug ── */
+            const nameEl = document.getElementById('name');
+            const slugEl = document.getElementById('slug');
             if (nameEl && slugEl) {
                 nameEl.addEventListener('blur', function() {
                     if (!slugEl.value.trim()) {
@@ -1050,57 +1204,115 @@
                 });
             }
 
-            // ── Short description char counter ───────────────────────────
-            const sdEl = document.getElementById('shortDesc');
-            const ccEl = document.getElementById('shortDescCounter');
-            const SD_MAX = 500;
-            if (sdEl && ccEl) {
-                function updateCounter() {
-                    const rem = SD_MAX - sdEl.value.length;
-                    ccEl.textContent = rem >= 0 ? rem + ' chars left' : Math.abs(rem) + ' over limit';
-                    ccEl.style.color = rem < 0 ? '#ef4444' : rem < 80 ? '#f59e0b' : '#94a3b8';
+            /* ── Char counter ── */
+            const sd = document.getElementById('short_description');
+            const cc = document.getElementById('charCounter');
+            if (sd && cc) {
+                function updateCC() {
+                    const remaining = 500 - sd.value.length;
+                    cc.textContent = remaining + ' left';
+                    cc.className = 'tc-counter' + (remaining < 0 ? ' over' : remaining < 80 ? ' warn' : '');
                 }
-                sdEl.addEventListener('input', updateCounter);
-                updateCounter();
+                sd.addEventListener('input', updateCC);
+                updateCC();
             }
 
-            // ── Featured image dropzone ───────────────────────────────────
-            const fileInput = document.getElementById('featured_image');
-            const dzIdle = document.getElementById('dzIdle');
-            const dzPreview = document.getElementById('dzPreview');
-            const previewImg = document.getElementById('previewImg');
+            /* ── Featured image dropzone ── */
+            const fi = document.getElementById('featured_image');
+            const dzP = document.getElementById('dzPreview');
+            const dzI = document.getElementById('dzIdle');
+            const pi = document.getElementById('previewImage');
+            const rm = document.getElementById('removeImg');
 
-            // Show existing image on load
-            @if ($trek->featured_image)
-                dzIdle.style.display = 'none';
-                dzPreview.style.display = 'block';
-                previewImg.src = '{{ Storage::url($trek->featured_image) }}';
-            @endif
+            if (fi) {
+                fi.addEventListener('change', function() {
+                    const f = this.files[0];
+                    if (!f) return;
+                    const r = new FileReader();
+                    r.onload = e => {
+                        pi.src = e.target.result;
+                        dzP.classList.remove('d-none');
+                        dzI.classList.add('d-none');
+                    };
+                    r.readAsDataURL(f);
+                });
+            }
 
-            fileInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    dzIdle.style.display = 'none';
-                    dzPreview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
+            // Remove featured image via AJAX
+            if (rm) {
+                rm.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const trekId = this.getAttribute('data-remove-featured');
+                    if (trekId && confirm('Remove featured image?')) {
+                        fetch(`{{ url('admin/treks') }}/${trekId}/remove-featured-image`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    dzP.classList.add('d-none');
+                                    dzI.classList.remove('d-none');
+                                    fi.value = '';
+                                    alert('Image removed successfully');
+                                } else {
+                                    alert('Error: ' + data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Failed to remove image');
+                            });
+                    }
+                });
+            }
+
+            /* ── Gallery thumbnails preview (new images) ── */
+            const gi = document.getElementById('gallery_images');
+            const gt = document.getElementById('galleryThumbs');
+            let removedGalleryIndices = [];
+
+            if (gi && gt) {
+                gi.addEventListener('change', function() {
+                    Array.from(this.files).forEach(f => {
+                        const r = new FileReader();
+                        r.onload = e => {
+                            const wrapper = document.createElement('div');
+                            wrapper.className = 'tc-thumb-item';
+                            wrapper.style.position = 'relative';
+
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.title = f.name;
+
+                            wrapper.appendChild(img);
+                            gt.appendChild(wrapper);
+                        };
+                        r.readAsDataURL(f);
+                    });
+                });
+            }
+
+            /* ── Remove existing gallery images ── */
+            document.querySelectorAll('.remove-gallery-img').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const index = this.getAttribute('data-index');
+                    if (confirm('Remove this gallery image?')) {
+                        // Track index to remove
+                        removedGalleryIndices.push(parseInt(index));
+                        document.getElementById('removeGalleryImages').value = removedGalleryIndices
+                            .join(',');
+
+                        // Remove from DOM
+                        this.closest('.tc-thumb-item').remove();
+                    }
+                });
             });
-
-            window.removeImage = function() {
-                fileInput.value = '';
-                previewImg.src = '';
-                dzPreview.style.display = 'none';
-                dzIdle.style.display = 'flex';
-                dzIdle.innerHTML = `
-            <i class="fas fa-cloud-upload-alt"></i>
-            <span>Click to upload image</span>
-            <small>JPG, PNG or WebP · Max 2MB</small>
-        `;
-            };
-
-        });
+        })();
     </script>
 @endpush

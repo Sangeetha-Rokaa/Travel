@@ -39,7 +39,7 @@
 
         {{-- Form --}}
         <div class="form-card">
-            <form action="{{ route('admin.packages.update', $package->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.packages.update', $package) }}" method="POST" enctype="multipart/form-data">
 
                 @csrf
                 @method('PUT')

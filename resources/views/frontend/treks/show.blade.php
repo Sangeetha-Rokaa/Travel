@@ -152,7 +152,7 @@
                                 class="btn btn--primary btn--block">
                                 <i class="fas fa-check-circle"></i> Book This Trek
                             </a>
-                            <a href="{{ route('contact.index') }}" class="btn btn--outline btn--block">
+                            <a href="{{ url('/contact') }}" class="btn btn--outline btn--block">
                                 <i class="fas fa-envelope"></i> Ask a Question
                             </a>
 
@@ -226,8 +226,8 @@
 
     <style>
         /* ========================================
-                                   VARIABLES & RESET
-                                ======================================== */
+                                       VARIABLES & RESET
+                                    ======================================== */
         .trek-detail {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             background: #f5f7fa;
@@ -235,8 +235,8 @@
         }
 
         /* ========================================
-                                   HERO SECTION
-                                ======================================== */
+                                       HERO SECTION
+                                    ======================================== */
         .trek-hero {
             position: relative;
             height: 500px;
@@ -331,8 +331,8 @@
         }
 
         /* ========================================
-                                   CONTAINER & GRID
-                                ======================================== */
+                                       CONTAINER & GRID
+                                    ======================================== */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -353,8 +353,8 @@
         }
 
         /* ========================================
-                                   CARDS
-                                ======================================== */
+                                       CARDS
+                                    ======================================== */
         .card {
             background: white;
             border-radius: 20px;
@@ -390,8 +390,8 @@
         }
 
         /* ========================================
-                                   LISTS
-                                ======================================== */
+                                       LISTS
+                                    ======================================== */
         .list {
             list-style: none;
             padding: 0;
@@ -429,8 +429,8 @@
         }
 
         /* ========================================
-                                   ITINERARY
-                                ======================================== */
+                                       ITINERARY
+                                    ======================================== */
         .itinerary__item {
             padding: 20px 0;
             border-bottom: 1px solid #e5e7eb;
@@ -462,8 +462,8 @@
         }
 
         /* ========================================
-                                   SIDEBAR
-                                ======================================== */
+                                       SIDEBAR
+                                    ======================================== */
         .trek-sidebar {
             position: sticky;
             top: 24px;
@@ -541,8 +541,8 @@
         }
 
         /* ========================================
-                                   BUTTONS
-                                ======================================== */
+                                       BUTTONS
+                                    ======================================== */
         .btn {
             display: flex;
             align-items: center;
@@ -616,8 +616,8 @@
         }
 
         /* ========================================
-                                   INFO CARDS
-                                ======================================== */
+                                       INFO CARDS
+                                    ======================================== */
         .info-card {
             background: white;
             border-radius: 20px;
@@ -685,8 +685,8 @@
         }
 
         /* ========================================
-                                   RESPONSIVE DESIGN
-                                ======================================== */
+                                       RESPONSIVE DESIGN
+                                    ======================================== */
         @media (max-width: 1024px) {
             .trek-grid {
                 grid-template-columns: 1fr 320px;
@@ -802,8 +802,8 @@
         }
 
         /* ========================================
-                                   UTILITIES
-                                ======================================== */
+                                       UTILITIES
+                                    ======================================== */
         @keyframes fadeInUp {
             from {
                 opacity: 0;

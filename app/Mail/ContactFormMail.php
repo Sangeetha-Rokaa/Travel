@@ -3,11 +3,7 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Attachment;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class ContactFormMail extends Mailable
@@ -21,12 +17,15 @@ class ContactFormMail extends Mailable
         $this->contact = $contact;
     }
 
-    public function build()
+    public function build(): self
     {
-        return $this->subject('We received your message')
+        return $this
+            ->from(
+                config('mail.from.address', 'no-reply@visitnepal.com'),
+                config('mail.from.name',    'Visit Nepal')
+            )
+            ->subject('We received your message – Visit Nepal')
             ->view('emails.contact-user')
-            ->with([
-                'contact' => $this->contact
-            ]);
+            ->with(['contact' => $this->contact]);
     }
 }

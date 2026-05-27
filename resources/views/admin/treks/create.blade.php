@@ -70,9 +70,12 @@
                                 <select name="destination_id"
                                     class="tc-input tc-select @error('destination_id') err @enderror">
                                     <option value="">— Select —</option>
-                                    @foreach ($destinations as $id => $dest)
-                                        <option value="{{ $id }}"
-                                            {{ old('destination_id') == $id ? 'selected' : '' }}>{{ $dest }}</option>
+
+                                    @foreach ($destinations as $destination)
+                                        <option value="{{ $destination->id }}"
+                                            {{ old('destination_id') == $destination->id ? 'selected' : '' }}>
+                                            {{ $destination->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                                 @error('destination_id')
@@ -85,7 +88,8 @@
                                     required>
                                     <option value="">— Select —</option>
                                     @foreach ($difficulties as $d)
-                                        <option value="{{ $d }}" {{ old('difficulty') == $d ? 'selected' : '' }}>
+                                        <option value="{{ $d }}"
+                                            {{ old('difficulty') == $d ? 'selected' : '' }}>
                                             {{ $d }}</option>
                                     @endforeach
                                 </select>
@@ -370,8 +374,8 @@
 
     <style>
         /* ════════════════════════════════════
-       TOKENS
-    ════════════════════════════════════ */
+                                           TOKENS
+                                        ════════════════════════════════════ */
         :root {
             --c-bg: #f4f6f8;
             --c-surface: #ffffff;
@@ -389,8 +393,8 @@
         }
 
         /* ════════════════════════════════════
-       WRAPPER
-    ════════════════════════════════════ */
+                                           WRAPPER
+                                        ════════════════════════════════════ */
         .tc-wrap {
             max-width: 1280px;
             margin: 0 auto;
@@ -401,8 +405,8 @@
         }
 
         /* ════════════════════════════════════
-       TOP BAR
-    ════════════════════════════════════ */
+                                           TOP BAR
+                                        ════════════════════════════════════ */
         .tc-top {
             display: flex;
             align-items: flex-end;
@@ -439,8 +443,8 @@
         }
 
         /* ════════════════════════════════════
-       ERROR BOX
-    ════════════════════════════════════ */
+                                           ERROR BOX
+                                        ════════════════════════════════════ */
         .tc-error-box {
             display: flex;
             gap: 12px;
@@ -495,8 +499,8 @@
         }
 
         /* ════════════════════════════════════
-       LAYOUT
-    ════════════════════════════════════ */
+                                           LAYOUT
+                                        ════════════════════════════════════ */
         .tc-layout {
             display: grid;
             grid-template-columns: 1fr 300px;
@@ -541,8 +545,8 @@
         }
 
         /* ════════════════════════════════════
-       CARDS
-    ════════════════════════════════════ */
+                                           CARDS
+                                        ════════════════════════════════════ */
         .tc-card {
             background: var(--c-surface);
             border: 1px solid var(--c-border);
@@ -577,8 +581,8 @@
         }
 
         /* ════════════════════════════════════
-       GRID HELPERS
-    ════════════════════════════════════ */
+                                           GRID HELPERS
+                                        ════════════════════════════════════ */
         .tc-row-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -610,8 +614,8 @@
         }
 
         /* ════════════════════════════════════
-       FIELDS
-    ════════════════════════════════════ */
+                                           FIELDS
+                                        ════════════════════════════════════ */
         .tc-field label {
             display: block;
             font-size: 12.5px;
@@ -730,8 +734,8 @@
         }
 
         /* ════════════════════════════════════
-       COLORED DOTS
-    ════════════════════════════════════ */
+                                           COLORED DOTS
+                                        ════════════════════════════════════ */
         .dot {
             display: inline-block;
             width: 8px;
@@ -756,8 +760,8 @@
         }
 
         /* ════════════════════════════════════
-       QUILL EDITOR
-    ════════════════════════════════════ */
+                                           QUILL EDITOR
+                                        ════════════════════════════════════ */
         #quill-toolbar {
             border: 1.5px solid var(--c-border);
             border-bottom: none;
@@ -803,8 +807,8 @@
         }
 
         /* ════════════════════════════════════
-       IMAGE DROPZONE
-    ════════════════════════════════════ */
+                                           IMAGE DROPZONE
+                                        ════════════════════════════════════ */
         .tc-dropzone {
             display: flex;
             flex-direction: column;
@@ -929,8 +933,8 @@
         }
 
         /* ════════════════════════════════════
-       TOGGLES
-    ════════════════════════════════════ */
+                                           TOGGLES
+                                        ════════════════════════════════════ */
         .tc-toggle-row {
             display: flex;
             align-items: center;
@@ -1003,8 +1007,8 @@
         }
 
         /* ════════════════════════════════════
-       BUTTONS
-    ════════════════════════════════════ */
+                                           BUTTONS
+                                        ════════════════════════════════════ */
         .tc-btn-primary {
             display: flex;
             align-items: center;
@@ -1085,8 +1089,8 @@
         }
 
         /* ════════════════════════════════════
-       RESPONSIVE
-    ════════════════════════════════════ */
+                                           RESPONSIVE
+                                        ════════════════════════════════════ */
         @media (max-width: 768px) {
             .tc-card {
                 padding: 16px;

@@ -1,4 +1,3 @@
-{{-- resources/views/admin/packages/index.blade.php --}}
 @extends('layouts.admin')
 
 @section('title', 'Packages')
@@ -7,8 +6,8 @@
 @push('styles')
     <style>
         /* ─────────────────────────────────────────
-                   ANIMATION
-                ───────────────────────────────────────── */
+                                                       ANIMATION
+                                                    ───────────────────────────────────────── */
         @keyframes fadeSlideUp {
             from {
                 opacity: 0;
@@ -26,8 +25,8 @@
         }
 
         /* ─────────────────────────────────────────
-                   HEADER
-                ───────────────────────────────────────── */
+                                                       HEADER
+                                                    ───────────────────────────────────────── */
         .page-header {
             display: flex;
             align-items: center;
@@ -68,8 +67,8 @@
         }
 
         /* ─────────────────────────────────────────
-                   TOP PACKAGE CARDS
-                ───────────────────────────────────────── */
+                                                       TOP PACKAGE CARDS
+                                                    ───────────────────────────────────────── */
         .package-cards-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -170,8 +169,8 @@
         }
 
         /* ─────────────────────────────────────────
-                   FILTER BAR
-                ───────────────────────────────────────── */
+                                                       FILTER BAR
+                                                    ───────────────────────────────────────── */
         .filter-card {
             background: #fff;
             border-radius: 16px;
@@ -274,8 +273,8 @@
         }
 
         /* ─────────────────────────────────────────
-                   ALERTS
-                ───────────────────────────────────────── */
+                                                       ALERTS
+                                                    ───────────────────────────────────────── */
         .alert-box {
             border-radius: 14px;
             padding: 14px 18px;
@@ -300,8 +299,8 @@
         }
 
         /* ─────────────────────────────────────────
-                   TABLE CARD
-                ───────────────────────────────────────── */
+                                                       TABLE CARD
+                                                    ───────────────────────────────────────── */
         .table-card {
             background: #fff;
             border-radius: 18px;
@@ -406,8 +405,8 @@
         }
 
         /* ─────────────────────────────────────────
-                   DOTS MENU
-                ───────────────────────────────────────── */
+                                                       DOTS MENU
+                                                    ───────────────────────────────────────── */
         .dots-menu-wrap {
             position: relative;
             display: inline-block;
@@ -474,8 +473,8 @@
         }
 
         /* ─────────────────────────────────────────
-                   EMPTY
-                ───────────────────────────────────────── */
+                                                       EMPTY
+                                                    ───────────────────────────────────────── */
         .empty-state {
             text-align: center;
             padding: 70px 20px;
@@ -495,8 +494,8 @@
         }
 
         /* ─────────────────────────────────────────
-                   MODAL
-                ───────────────────────────────────────── */
+                                                       MODAL
+                                                    ───────────────────────────────────────── */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -576,8 +575,8 @@
         }
 
         /* ─────────────────────────────────────────
-                   RESPONSIVE
-                ───────────────────────────────────────── */
+                                                       RESPONSIVE
+                                                    ───────────────────────────────────────── */
         @media(max-width:1200px) {
             .package-cards-grid {
                 grid-template-columns: repeat(3, 1fr);
@@ -643,7 +642,7 @@
     {{-- TOP CARDS --}}
     <div class="package-cards-grid">
         @forelse($packages->take(4) as $package)
-            <a href="{{ route('admin.packages.edit', $package->id) }}" class="package-card anim">
+            <a href="{{ route('admin.packages.edit', $package) }}" class="package-card anim">
 
                 <div class="package-card-image">
 
@@ -885,12 +884,9 @@
                                         <div class="dots-divider"></div>
 
                                         <button type="button" class="dd-delete delete-trigger"
-                                            data-url="{{ route('admin.packages.destroy', $package->id) }}"
+                                            data-url="{{ route('admin.packages.destroy', $package) }}"
                                             data-name="{{ $package->name }}">
-
-                                            <i class="fas fa-trash-alt"></i>
-                                            Delete
-
+                                            <i class="fas fa-trash-alt" style="color:#dc2626;width:16px;"></i> Delete
                                         </button>
 
                                     </div>
@@ -951,43 +947,26 @@
 
     {{-- DELETE MODAL --}}
     <div class="modal-overlay" id="deleteModal">
-
         <div class="modal-box">
-
-            <div class="modal-icon">
-                <i class="fas fa-trash-alt"></i>
-            </div>
-
-            <h3 class="modal-title">
-                Delete Package
-            </h3>
-
+            <div class="modal-icon"><i class="fas fa-trash-alt"></i></div>
+            <h3 class="modal-title">Delete Package</h3>
             <p class="modal-text">
-                Are you sure you want to delete
-                <strong id="deletePackageName"></strong>?
+                Are you sure you want to delete <strong id="deleteDestName" style="color:#1e293b;"></strong>?<br>
+                <span style="font-size:12.5px;color:#94a3b8;margin-top:6px;display:block;">This action cannot be undone.
+                    Associated treks will keep their data.</span>
             </p>
-
             <div class="modal-actions">
-
-                <button type="button" class="btn-cancel" id="cancelDelete">
-                    Cancel
-                </button>
-
-                <form id="deleteForm" method="POST" style="flex:1;">
+                <button class="btn-cancel" id="cancelDelete">Cancel</button>
+                <form id="deleteForm" method="POST" style="flex:1;display:flex;">
                     @csrf
                     @method('DELETE')
-
                     <button type="submit" class="btn-delete-confirm" style="width:100%;">
-                        Delete
+                        <i class="fas fa-trash-alt" style="margin-right:6px;"></i>Delete
                     </button>
                 </form>
-
             </div>
-
         </div>
-
     </div>
-
 @endsection
 
 @push('scripts')
@@ -1020,32 +999,37 @@
             // delete modal
             const modal = document.getElementById('deleteModal');
             const deleteForm = document.getElementById('deleteForm');
-            const deleteName = document.getElementById('deletePackageName');
+            const deleteName = document.getElementById('deleteDestName');
+            const cancelBtn = document.getElementById('cancelDelete');
 
             document.querySelectorAll('.delete-trigger').forEach(btn => {
-
                 btn.addEventListener('click', function() {
-
-                    deleteName.textContent = this.dataset.name;
-                    deleteForm.action = this.dataset.url;
-
+                    const url = this.getAttribute('data-url');
+                    const name = this.getAttribute('data-name');
+                    deleteName.textContent = name;
+                    deleteForm.action = url;
                     modal.classList.add('open');
-
+                    // close dots menu
+                    document.querySelectorAll('.dots-dropdown.open').forEach(d => d.classList
+                        .remove('open'));
                 });
-
             });
 
-            document.getElementById('cancelDelete')
-                .addEventListener('click', function() {
-                    modal.classList.remove('open');
-                });
-
+            cancelBtn.addEventListener('click', () => modal.classList.remove('open'));
             modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.classList.remove('open');
-                }
+                if (e.target === this) this.classList.remove('open');
             });
 
+        });
+        document.querySelectorAll('.delete-trigger').forEach(button => {
+            button.addEventListener('click', function() {
+
+                let url = this.dataset.url;
+
+                let form = document.getElementById('deleteForm');
+
+                form.action = url;
+            });
         });
     </script>
 @endpush

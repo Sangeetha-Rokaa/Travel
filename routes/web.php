@@ -48,6 +48,10 @@ Route::post('/book', [BookingController::class, 'store'])->name('bookings.store'
 // Testimonials
 Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
 
+// web.php
+Route::get('/bookings/{booking_ref}/invoice', [BookingController::class, 'downloadInvoice'])
+    ->name('booking.invoice');
+
 // ═══════════════════════════════════════════════════════════════════════════════
 //  ADMIN CONTROLLERS
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -94,7 +98,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::post('/treks/{trek}/remove-gallery-image', [AdminTrekController::class, 'removeGalleryImage'])->name('treks.remove-gallery-image');
 
     // Packages CRUD
-    Route::resource('packages', AdminPackageController::class)->except(['show']);
+    Route::resource('packages', AdminPackageController::class);
     Route::post('/packages/{package}/remove-image',         [AdminPackageController::class, 'removeImage'])->name('packages.remove-image');
     Route::post('/packages/{package}/remove-gallery-image', [AdminPackageController::class, 'removeGalleryImage'])->name('packages.remove-gallery-image');
 

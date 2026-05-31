@@ -178,4 +178,8 @@ class PackageController extends Controller
 
         return response()->json(['success' => true]);
     }
+    public function show(Package $package): View
+    {
+        return view('admin.packages.show', compact('package'));
+    }
 }

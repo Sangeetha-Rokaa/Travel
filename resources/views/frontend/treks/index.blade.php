@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         /* =============================================
-                                                               TREKS INDEX PAGE STYLES
-                                                            ============================================= */
+                                                                   TREKS INDEX PAGE STYLES
+                                                                ============================================= */
 
         /* ---- Hero Section ---- */
         .trek-hero {
@@ -425,7 +425,7 @@
         .treks-page-wrapper {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 36px 24px 60px;
+            padding: 20px 24px 60px;
             background: #f1ede6;
             min-height: 100vh;
         }

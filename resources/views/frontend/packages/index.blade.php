@@ -5,13 +5,13 @@
 @push('styles')
     <style>
         /* =============================================
-                   PACKAGES PAGE STYLES
-                ============================================= */
+                       PACKAGES PAGE STYLES
+                    ============================================= */
 
         .pkg-page-wrapper {
             background: #eae6de;
             min-height: 100vh;
-            padding: 32px 32px 60px;
+            padding: 20px 32px 60px;
             max-width: 1200px;
             margin: 0 auto;
         }

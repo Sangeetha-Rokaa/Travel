@@ -914,6 +914,23 @@
             <!-- Contact Info -->
             <div class="footer-col" data-aos="fade-up" data-aos-delay="400">
                 <h4>Contact Info</h4>
+
+                <div class="footer-contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Thamel, Kathmandu, Nepal</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>+977 9800000000</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>info@ApeakNepal.com</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-globe"></i>
+                    <span>www.ApeakNepal.com</span>
+                </div>
                 @if (setting('address'))
                     <div class="footer-contact-item"><i
                             class="fas fa-map-marker-alt"></i><span>{{ setting('address') }}</span></div>
@@ -930,11 +947,16 @@
                     <div class="footer-contact-item"><i
                             class="fab fa-whatsapp"></i><span>{{ setting('whatsapp') }}</span></div>
                 @endif
+
             </div>
 
         </div>
         <div class="footer-bottom">
+
+            &copy; 2024 Apeak Nepal. All Rights Reserved.
+
             {{ setting('copyright', '© ' . date('Y') . ' ' . setting('site_name', config('app.name')) . '. All Rights Reserved.') }}
+
         </div>
     </footer>
 

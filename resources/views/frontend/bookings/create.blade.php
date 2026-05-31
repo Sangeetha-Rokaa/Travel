@@ -6,8 +6,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
         /* ═══════════════════════════════════════════════════
-                                                                       TOKENS
-                                                                    ═══════════════════════════════════════════════════ */
+                                                                                                       TOKENS
+                                                                                                    ═══════════════════════════════════════════════════ */
         :root {
             --navy: #061528;
             --navy-2: #0d2240;
@@ -50,8 +50,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                                                       PAGE SHELL
-                                                                    ═══════════════════════════════════════════════════ */
+                                                                                                       PAGE SHELL
+                                                                                                    ═══════════════════════════════════════════════════ */
         .booking-page {
             min-height: 100vh;
             background: #f0f5fb;
@@ -250,8 +250,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                                                       STEP 1 — Package Summary
-                                                                    ═══════════════════════════════════════════════════ */
+                                                                                                       STEP 1 — Package Summary
+                                                                                                    ═══════════════════════════════════════════════════ */
         .pkg-summary-card {
             display: grid;
             grid-template-columns: 380px 1fr;
@@ -566,8 +566,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                                                       STEP 2 — Traveler Details
-                                                                    ═══════════════════════════════════════════════════ */
+                                                                                                       STEP 2 — Traveler Details
+                                                                                                    ═══════════════════════════════════════════════════ */
         .traveler-card {
             background: var(--surface);
             border-radius: var(--radius-lg);
@@ -767,8 +767,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                                                       STEP 3 — Payment Options
-                                                                    ═══════════════════════════════════════════════════ */
+                                                                                                       STEP 3 — Payment Options
+                                                                                                    ═══════════════════════════════════════════════════ */
         .payment-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -907,8 +907,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                                                       STEP 4 — Stripe Card
-                                                                    ═══════════════════════════════════════════════════ */
+                                                                                                       STEP 4 — Stripe Card
+                                                                                                    ═══════════════════════════════════════════════════ */
         .stripe-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1041,8 +1041,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                                                       STEP 5 — Confirmation
-                                                                    ═══════════════════════════════════════════════════ */
+                                                                                                       STEP 5 — Confirmation
+                                                                                                    ═══════════════════════════════════════════════════ */
         .confirmation-card {
             background: var(--surface);
             border-radius: var(--radius-lg);
@@ -1188,8 +1188,8 @@
         }
 
         /* ═══════════════════════════════════════════════════
-                                                                       RESPONSIVE
-                                                                    ═══════════════════════════════════════════════════ */
+                                                                                                       RESPONSIVE
+                                                                                                    ═══════════════════════════════════════════════════ */
         @media (max-width: 920px) {
             .pkg-summary-card {
                 grid-template-columns: 1fr;
@@ -1792,7 +1792,10 @@
                                 class="cr-value paid">Paid</span></div>
                     </div>
                     <div class="confirm-btn-row">
-                        <a href="#" class="btn-download"><i class="fas fa-download"></i> Download Invoice</a>
+                        <a href="#" id="invoiceDownloadBtn" class="btn-download">
+                            <i class="fas fa-download"></i>
+                            Download Invoice
+                        </a>
                         <a href="{{ route('home') }}" class="btn-home">Back to Home</a>
                     </div>
                 </div>
@@ -1807,8 +1810,8 @@
 @push('scripts')
     <script>
         /* ═══════════════════════════════════════════
-                                                                       BOOKING WIZARD — unchanged backend logic
-                                                                    ═══════════════════════════════════════════ */
+                                                                                                       BOOKING WIZARD — unchanged backend logic
+                                                                                                    ═══════════════════════════════════════════ */
         let currentStep = 1;
 
         const booking = {
@@ -2027,15 +2030,20 @@
                     return;
                 }
 
+                // ── Confirmation details ──
                 document.getElementById('conf_booking_id').textContent = data.booking_ref;
                 document.getElementById('conf_traveler').textContent = `${booking.firstName} ${booking.lastName}`;
                 document.getElementById('conf_package').textContent = booking.pkgName;
                 document.getElementById('conf_duration').textContent =
-                    `${booking.days} Days / ${booking.nights} Nights`;
+                `${booking.days} Days / ${booking.nights} Nights`;
                 document.getElementById('conf_start_date').textContent = booking.startDate;
                 document.getElementById('conf_travelers').textContent =
                     `${booking.travelers} Adult(s) / ${booking.children} Child(ren)`;
                 document.getElementById('conf_total').textContent = `$${data.total.toLocaleString()}`;
+
+                // ── Set invoice download link dynamically ──
+                document.getElementById('invoiceDownloadBtn').href = `/bookings/${data.booking_ref}/invoice`;
+
                 goToStep(5);
 
             } catch {
@@ -2044,5 +2052,11 @@
                 btn.innerHTML = `Pay $${booking.total.toLocaleString()}`;
             }
         }
+
+        // after receiving `data` from the store response
+        document.getElementById('conf_booking_id').textContent = data.booking_ref;
+
+        // set the invoice download link dynamically
+        document.getElementById('invoiceDownloadBtn').href = `/bookings/${data.booking_ref}/invoice`;
     </script>
 @endpush

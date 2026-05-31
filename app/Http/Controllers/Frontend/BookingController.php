@@ -9,6 +9,10 @@ use App\Models\Trek;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Mail;
+use App\Services\MailConfigService;
+use App\Mail\BookingAdminNotificationMail;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
@@ -106,7 +110,7 @@ class BookingController extends Controller
             'pickup_location' => $validated['pickup_location'] ?? null,
             'accommodation_type' => $validated['accommodation_type'] ?? null,
             'first_name'      => $validated['first_name'],
-            'last_name'       => 'N/A', // wizard collects full name in one field
+            'last_name'       => $validated['last_name'], // wizard collects full name in one field
             'email'           => $validated['email'],
             'phone'           => $validated['phone'] ?? null,
             'date_of_birth'   => $validated['date_of_birth'] ?? null,
@@ -128,11 +132,39 @@ class BookingController extends Controller
             'paid_at'         => now(),
             'status'          => 'pending', // admin will confirm after verifying payment
         ]);
+        MailConfigService::load();
 
+        $fromAddress = MailConfigService::get('from_address')
+            ?: env('MAIL_FROM_ADDRESS');
+
+        $fromName = MailConfigService::get('from_name')
+            ?: env('MAIL_FROM_NAME');
+
+        $adminEmail = MailConfigService::get('from_address')
+            ?: env('MAIL_FROM_ADDRESS');
+
+        try {
+            Mail::to($adminEmail)
+                ->send(new BookingAdminNotificationMail(
+                    $booking,
+                    $fromAddress,
+                    $fromName
+                ));
+        } catch (\Exception $e) {
+            \Log::error('Booking mail failed: ' . $e->getMessage());
+        }
         return response()->json([
             'success'     => true,
             'booking_ref' => $booking->booking_ref,
             'total'       => $totalPrice,
         ]);
+    }
+    public function downloadInvoice($booking_ref)
+    {
+        $booking = Booking::where('booking_ref', $booking_ref)->firstOrFail();
+
+        $pdf = Pdf::loadView('invoices.booking', compact('booking'));
+
+        return $pdf->download('invoice-' . $booking->booking_ref . '.pdf');
     }
 }

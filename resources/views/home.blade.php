@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'ApeakNepal – Dream · Explore · Discover')
+@section('title', 'Visit Nepal – Dream · Explore · Discover')
 @section('extra-styles')
 <style>
 /* ── HERO ─────────────────────────────────── */

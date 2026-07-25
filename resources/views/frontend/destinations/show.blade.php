@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('title', $destination->name . ' - Visit Nepal')
+@section('title', $destination->name . ' - ApeakNepal')
 
 @section('content')
 

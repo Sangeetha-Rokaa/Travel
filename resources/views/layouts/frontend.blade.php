@@ -8,7 +8,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png"
         href="{{ setting('site_favicon') ? asset(setting('favicon')) : asset('favicon.png') }}">
-    <title>@yield('title', 'Visit Nepal – Dream · Explore · Discover')</title>
+    <title>@yield('title', 'ApeakNepal – Dream · Explore · Discover')</title>
 
     {{-- Fonts --}}
     <link
@@ -887,30 +887,6 @@
                 </ul>
             </div>
 
-            <!-- Top Destinations -->
-            <div class="footer-col" data-aos="fade-up" data-aos-delay="200">
-                <h4>Top Destinations</h4>
-                <ul>
-                    <li><a href="#">Pokhara</a></li>
-                    <li><a href="#">Everest Region</a></li>
-                    <li><a href="#">Annapurna Region</a></li>
-                    <li><a href="#">Kathmandu</a></li>
-                    <li><a href="#">Lumbini</a></li>
-                </ul>
-            </div>
-
-            <!-- Company -->
-            <div class="footer-col" data-aos="fade-up" data-aos-delay="300">
-                <h4>Company</h4>
-                <ul>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Our Team</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Terms &amp; Conditions</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                </ul>
-            </div>
-
             <!-- Contact Info -->
             <div class="footer-col" data-aos="fade-up" data-aos-delay="400">
                 <h4>Contact Info</h4>
@@ -952,8 +928,6 @@
 
         </div>
         <div class="footer-bottom">
-
-            &copy; 2024 Apeak Nepal. All Rights Reserved.
 
             {{ setting('copyright', '© ' . date('Y') . ' ' . setting('site_name', config('app.name')) . '. All Rights Reserved.') }}
 

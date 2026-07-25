@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('title', 'Himalayan Treks - Visit Nepal')
+@section('title', 'Himalayan Treks - ApeakNepal')
 
 @push('styles')
     <style>

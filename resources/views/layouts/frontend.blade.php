@@ -792,7 +792,8 @@
             <li><a href="{{ route('packages.index') }}">Packages</a></li>
             <li><a href="{{ route('about.index') }}">About Us</a></li>
             <li><a href="{{ url('/contact') }}">Contact</a></li>
-                        <li><a href="{{ url('/store') }}">Store</a></li>
+             <li><a href="{{ url('/store') }}">Store</a></li>
+             
 
 
             <li class="mobile-cta-li">

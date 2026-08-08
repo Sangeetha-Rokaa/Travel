@@ -14,6 +14,7 @@ use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\BookingController;
 use App\Http\Controllers\Frontend\TestimonialController;
+use App\Http\Controllers\Frontend\storeController;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  FRONTEND ROUTES
@@ -41,12 +42,18 @@ Route::get('/about-us', [AboutController::class, 'index'])->name('about.index');
 Route::get('/contact',  [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
+//Store
+Route::get('/store', [storecontroller::class, 'index'])->name('store.index');
+
+
 // Booking
 Route::get('/book',  [BookingController::class, 'create'])->name('bookings.create');
 Route::post('/book', [BookingController::class, 'store'])->name('bookings.store');
 
 // Testimonials
 Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
+
+
 
 // web.php
 Route::get('/bookings/{booking_ref}/invoice', [BookingController::class, 'downloadInvoice'])
@@ -135,4 +142,40 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/email-settings/{emailSetting}/edit',  [EmailSettingController::class, 'edit'])->name('email.edit');
     Route::put('/email-settings/{emailSetting}',       [EmailSettingController::class, 'update'])->name('email.update');
     Route::delete('/email-settings/{emailSetting}',    [EmailSettingController::class, 'destroy'])->name('email.delete');
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  STORE — ADMIN CONTROLLERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+use App\Http\Controllers\Admin\CartController as AdminCartController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\CartController;
+
+// Admin routes — wrap with your auth/admin middleware, e.g. ['auth', 'admin']
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::resource('categories', CategoryController::class);
+    Route::resource('products', ProductController::class);
+    Route::resource('orders', OrderController::class)->except(['create', 'store']);
+
+    Route::get('cart', [AdminCartController::class, 'index'])->name('cart.index');
+    Route::get('cart/{cart}', [AdminCartController::class, 'show'])->name('cart.show');
+    Route::delete('cart/{cart}', [AdminCartController::class, 'destroy'])->name('cart.destroy');
+});
+
+// Customer-facing cart routes
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::post('/add/{product}', [CartController::class, 'add'])->name('add');
+    Route::patch('/{cart}/{product}', [CartController::class, 'updateQuantity'])->name('update');
+    Route::delete('/{cart}/{product}', [CartController::class, 'remove'])->name('remove');
+});
+
+//orders
+
+Route::middleware('auth')->prefix('my-orders')->name('orders.')->group(function () {
+    Route::get('/', [OrderController::class, 'index'])->name('index');
+    Route::get('/{order}', [OrderController::class, 'show'])->name('show');
 });

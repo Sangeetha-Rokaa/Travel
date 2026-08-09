@@ -1693,10 +1693,15 @@
         <div class="hero-overlay"></div>
 
         <div class="social-sidebar">
-            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.facebook.com/sangeetha.g.roka" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
             <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
             <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="https://wa.me/9779744591363" aria-label="WhatsApp" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+</a>
         </div>
+
+    
 
         <div class="hero-content">
             <p class="welcome-to">Welcome To</p>
@@ -2078,6 +2083,7 @@
                                 <span class="ci-label">Phone</span>
                                 <span class="ci-value">{{ setting('phone') }}</span>
                             </div>
+                            
                         </li>
                     @endif
                     @if (setting('whatsapp'))

@@ -898,10 +898,7 @@
                     <i class="fas fa-map-marker-alt"></i>
                     <span>Thamel, Kathmandu, Nepal</span>
                 </div>
-                <div class="footer-contact-item">
-                    <i class="fas fa-phone-alt"></i>
-                    <span>+977 9800000000</span>
-                </div>
+            
                 <div class="footer-contact-item">
                     <i class="fas fa-envelope"></i>
                     <span>info@ApeakNepal.com</span>
@@ -932,7 +929,7 @@
         </div>
         <div class="footer-bottom">
 
-            {{ setting('copyright', '© ' . date('Y') . ' ' . setting('site_name', config('app.name')) . '. All Rights Reserved.') }}
+            {{ setting('copyright', '© ' . date('Y') . ' ' . setting('site_name', config('app.name')) . '. All Rights Reserved.Made with love') }}
 
         </div>
     </footer>

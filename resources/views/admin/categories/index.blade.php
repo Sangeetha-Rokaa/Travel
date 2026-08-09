@@ -1,25 +1,25 @@
-{{-- resources/views/admin/products/index.blade.php --}}
+{{-- resources/views/admin/categories/index.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Products')
-@section('page_title', 'Products')
-@section('page_icon', 'fas fa-box')
+@section('title', 'Categories')
+@section('page_title', 'Categories')
+@section('page_icon', 'fas fa-layer-group')
 
 @section('content')
 
-    <div class="product-wrapper">
+    <div class="category-wrapper">
 
         {{-- Header --}}
         <div class="page-header">
 
             <div>
-                <h2>Products</h2>
-                <p>Manage trekking gear products</p>
+                <h2>Categories</h2>
+                <p>Manage trekking gear categories</p>
             </div>
 
-            <a href="{{ route('admin.products.create') }}" class="add-btn">
+            <a href="{{ route('admin.categories.create') }}" class="add-btn">
                 <i class="fas fa-plus"></i>
-                Add Product
+                Add Category
             </a>
 
         </div>
@@ -37,19 +37,7 @@
             <form method="GET" class="filter-form">
 
                 <div class="filter-group">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products...">
-                </div>
-
-                <div class="filter-group">
-                    <select name="category">
-                        <option value="">All Categories</option>
-                        @foreach ($categories as $category)
-                            <option value="{{ $category->id }}"
-                                {{ request('category') == $category->id ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search categories...">
                 </div>
 
                 <div class="filter-group">
@@ -57,8 +45,15 @@
                         <option value="">All Status</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
-                        <option value="out_of_stock" {{ request('status') === 'out_of_stock' ? 'selected' : '' }}>Out of
-                            Stock</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <select name="parent">
+                        <option value="">All Levels</option>
+                        <option value="top" {{ request('parent') === 'top' ? 'selected' : '' }}>Top Level Only</option>
+                        <option value="sub" {{ request('parent') === 'sub' ? 'selected' : '' }}>Subcategories Only
+                        </option>
                     </select>
                 </div>
 
@@ -67,7 +62,7 @@
                     Filter
                 </button>
 
-                <a href="{{ route('admin.products.index') }}" class="reset-btn">
+                <a href="{{ route('admin.categories.index') }}" class="reset-btn">
                     Reset
                 </a>
 
@@ -84,22 +79,21 @@
                     <tr>
                         <th>Image</th>
                         <th>Name</th>
-                        <th>Category</th>
-                        <th>SKU</th>
-                        <th>Price</th>
-                        <th>Stock</th>
+                        <th>Slug</th>
+                        <th>Parent</th>
                         <th>Status</th>
+                        <th>Created</th>
                         <th class="text-right">Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
 
-                    @forelse ($products as $product)
+                    @forelse ($categories as $category)
                         <tr>
                             <td>
-                                @if ($product->image)
-                                    <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}"
+                                @if ($category->image)
+                                    <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}"
                                         class="thumb">
                                 @else
                                     <div class="thumb no-thumb">
@@ -109,51 +103,46 @@
                             </td>
 
                             <td>
-                                <span class="cell-title">{{ $product->name }}</span>
+                                <span class="cell-title">{{ $category->name }}</span>
                             </td>
 
                             <td>
-                                <span class="cell-muted">{{ $product->category->name ?? '—' }}</span>
+                                <span class="cell-muted">{{ $category->slug }}</span>
                             </td>
 
                             <td>
-                                <span class="cell-muted">{{ $product->sku ?: '—' }}</span>
-                            </td>
-
-                            <td>
-                                @if ($product->sale_price)
-                                    <span class="old-price">${{ number_format($product->price, 2) }}</span>
-                                    ${{ number_format($product->sale_price, 2) }}
+                                @if ($category->parent)
+                                    <span class="parent-chip">{{ $category->parent->name }}</span>
                                 @else
-                                    ${{ number_format($product->price, 2) }}
+                                    <span class="cell-muted">—</span>
                                 @endif
                             </td>
 
                             <td>
-                                <span class="cell-muted">{{ $product->stock }}</span>
+                                <span class="status-badge {{ $category->is_active ? 'active' : 'inactive' }}">
+                                    {{ $category->is_active ? 'Active' : 'Inactive' }}
+                                </span>
                             </td>
 
                             <td>
-                                <span class="status-badge {{ $product->is_active ? 'active' : 'inactive' }}">
-                                    {{ $product->is_active ? 'Active' : 'Inactive' }}
-                                </span>
+                                <span class="cell-muted">{{ $category->created_at->format('M d, Y') }}</span>
                             </td>
 
                             <td class="text-right">
                                 <div class="action-group">
 
-                                    <a href="{{ route('admin.products.show', $product) }}" class="action-btn view"
+                                    <a href="{{ route('admin.categories.show', $category) }}" class="action-btn view"
                                         title="View">
                                         <i class="fas fa-eye"></i>
                                     </a>
 
-                                    <a href="{{ route('admin.products.edit', $product) }}" class="action-btn edit"
+                                    <a href="{{ route('admin.categories.edit', $category) }}" class="action-btn edit"
                                         title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
 
-                                    <form action="{{ route('admin.products.destroy', $product) }}" method="POST"
-                                        onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
+                                        onsubmit="return confirm('Are you sure you want to delete this category?');">
                                         @csrf
                                         @method('DELETE')
 
@@ -167,10 +156,10 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8">
+                            <td colspan="7">
                                 <div class="empty-state">
                                     <i class="fas fa-box-open"></i>
-                                    <p>No products found.</p>
+                                    <p>No categories found.</p>
                                 </div>
                             </td>
                         </tr>
@@ -182,9 +171,9 @@
 
         </div>
 
-        @if ($products->hasPages())
+        @if ($categories->hasPages())
             <div class="pagination-wrap">
-                {{ $products->links() }}
+                {{ $categories->links() }}
             </div>
         @endif
 
@@ -194,7 +183,7 @@
 
 @push('styles')
     <style>
-        .product-wrapper {
+        .category-wrapper {
             max-width: 1300px;
             margin: auto;
         }
@@ -334,7 +323,6 @@
             padding: 14px 18px;
             border-bottom: 1px solid #f1f5f9;
             vertical-align: middle;
-            white-space: nowrap;
         }
 
         tbody tr:last-child td {
@@ -375,11 +363,13 @@
             font-size: 13px;
         }
 
-        .old-price {
+        .parent-chip {
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 5px 12px;
+            border-radius: 20px;
             font-size: 12px;
-            color: #94a3b8;
-            text-decoration: line-through;
-            margin-right: 4px;
+            font-weight: 500;
         }
 
         .status-badge {
@@ -450,7 +440,6 @@
             text-align: center;
             padding: 60px 20px;
             color: #94a3b8;
-            white-space: normal;
         }
 
         .empty-state i {

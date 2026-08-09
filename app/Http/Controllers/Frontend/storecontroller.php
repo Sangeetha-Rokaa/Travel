@@ -15,17 +15,17 @@ class StoreController extends Controller
         $products = Product::query()
             ->with('category')
             ->where('is_active', true)
-            ->when($request->filled('category'), fn ($q) => $q->whereHas(
+            ->when($request->filled('category'), fn($q) => $q->whereHas(
                 'category',
-                fn ($cq) => $cq->where('slug', $request->category)
+                fn($cq) => $cq->where('slug', $request->category)
             ))
-            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
+            ->when($request->filled('search'), fn($q) => $q->where('name', 'like', '%' . $request->search . '%'))
             ->orderByDesc('created_at')
             ->paginate(12)
             ->withQueryString();
 
         $categories = Category::where('is_active', true)->orderBy('name')->get();
 
-        return view('store.index', compact('products', 'categories'));
+        return view('frontend.store.index', compact('products', 'categories'));
     }
 }

@@ -63,6 +63,148 @@
         }
 
         /* ═══════════════════════════════════════════
+   STORE PAGE TRANSITION LOADER
+═══════════════════════════════════════════ */
+        #storeTransition {
+            position: fixed;
+            inset: 0;
+            z-index: 999999;
+            background: radial-gradient(circle at 50% 40%, #0f2847 0%, #0a1628 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.45s ease;
+        }
+
+        #storeTransition.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .st-inner {
+            text-align: center;
+            transform: translateY(14px);
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+        }
+
+        #storeTransition.active .st-inner {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .st-icon-wrap {
+            width: 84px;
+            height: 84px;
+            margin: 0 auto 26px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, var(--clr-mid), var(--clr-gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(232, 160, 32, 0.35);
+            animation: stPulse 1.6s ease-in-out infinite;
+        }
+
+        .st-icon-wrap i {
+            font-size: 34px;
+            color: #fff;
+            animation: stSpin 1.8s linear infinite;
+        }
+
+        @keyframes stPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.06);
+            }
+        }
+
+        @keyframes stSpin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .st-title {
+            font-family: var(--ff-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.02em;
+            margin-bottom: 8px;
+        }
+
+        .st-sub {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+
+        .st-bar-track {
+            width: 240px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .st-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--clr-mid), var(--clr-gold));
+            border-radius: 10px;
+            box-shadow: 0 0 12px rgba(232, 160, 32, 0.6);
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .st-dots span {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            margin: 0 2px;
+            border-radius: 50%;
+            background: var(--clr-gold);
+            opacity: 0.3;
+            animation: stDot 1.2s ease-in-out infinite;
+        }
+
+        .st-dots span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .st-dots span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes stDot {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: translateY(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateY(-3px);
+            }
+        }
+
+        /* ═══════════════════════════════════════════
            NAVBAR
         ═══════════════════════════════════════════ */
         .navbar {
@@ -792,8 +934,8 @@
             <li><a href="{{ route('packages.index') }}">Packages</a></li>
             <li><a href="{{ route('about.index') }}">About Us</a></li>
             <li><a href="{{ url('/contact') }}">Contact</a></li>
-             <li><a href="{{ url('/store') }}">Store</a></li>
-             
+            <li><a href="{{ url('/store') }}" id="storeNavLink">Store</a></li>
+
 
 
             <li class="mobile-cta-li">
@@ -948,7 +1090,20 @@
             </div>
         </div>
     </div>
-
+    <!-- ══════════════════════════════════════════════
+     STORE TRANSITION OVERLAY
+══════════════════════════════════════════════ -->
+    <div id="storeTransition">
+        <div class="st-inner">
+            <div class="st-icon-wrap"><i class="fas fa-compass"></i></div>
+            <div class="st-title">Taking you to the Store</div>
+            <div class="st-sub">Please wait a moment <span
+                    class="st-dots"><span></span><span></span><span></span></span></div>
+            <div class="st-bar-track">
+                <div class="st-bar-fill" id="stBarFill"></div>
+            </div>
+        </div>
+    </div>
     <!-- Back to top -->
     <button id="backToTop" title="Back to top"><i class="fas fa-arrow-up"></i></button>
 
@@ -1086,6 +1241,42 @@
         });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeVideo();
+        });
+        /* ── Store page transition ── */
+        const storeLink = document.getElementById('storeNavLink');
+        const storeTransition = document.getElementById('storeTransition');
+        const stBarFill = document.getElementById('stBarFill');
+
+        if (storeLink) {
+            storeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                const destination = storeLink.getAttribute('href');
+
+                // close mobile menu if open
+                navToggle.classList.remove('open');
+                navLinks.classList.remove('open');
+                document.body.style.overflow = 'hidden';
+
+                storeTransition.classList.add('active');
+
+                // animate progress bar
+                requestAnimationFrame(() => {
+                    stBarFill.style.width = '100%';
+                });
+
+                // navigate after the transition plays
+                setTimeout(() => {
+                    window.location.href = destination;
+                }, 1100);
+            });
+        }
+
+        /* ── Reset overlay if user returns via back/forward cache ── */
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted) {
+                storeTransition.classList.remove('active');
+                stBarFill.style.width = '0%';
+            }
         });
     </script>
 

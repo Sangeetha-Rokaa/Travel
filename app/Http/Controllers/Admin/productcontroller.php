@@ -12,14 +12,34 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request)
     {
-        $products = Product::query()
-            ->with('category')
-            ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%' . $request->search . '%'))
-            ->when($request->filled('category_id'), fn ($q) => $q->where('category_id', $request->category_id))
-            ->orderByDesc('created_at')
-            ->paginate(20);
+        $query = Product::with('category')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->filled('status')) {
+            match ($request->status) {
+                'active' => $query->where('is_active', true),
+                'inactive' => $query->where('is_active', false),
+                'out_of_stock' => $query->where('stock', 0),
+                default => null,
+            };
+        }
+
+        $products = $query->paginate(15)->withQueryString();
 
         $categories = Category::orderBy('name')->get();
 
@@ -35,16 +55,19 @@ class ProductController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $this->validated($request);
-        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
+        $validated = $this->validateRequest($request);
+
+        $validated['slug'] = $this->resolveSlug($validated);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $validated['image'] = $request->file('image')
+                ->store('products', 'public');
         }
 
         Product::create($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
+        return redirect()->route('admin.products.index')
+            ->with('success', 'Product created successfully.');
     }
 
     public function show(Product $product): View
@@ -63,38 +86,56 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product): RedirectResponse
     {
-        $validated = $this->validated($request, $product->id);
-        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
+        $validated = $this->validateRequest($request, $product->id);
+
+        $validated['slug'] = $this->resolveSlug($validated, $product);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $validated['image'] = $request->file('image')
+                ->store('products', 'public');
         }
 
         $product->update($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+        return redirect()->route('admin.products.index')
+            ->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product): RedirectResponse
     {
         $product->delete();
 
-        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Product deleted.');
     }
 
-    private function validated(Request $request, ?int $ignoreId = null): array
+    private function validateRequest(Request $request, ?int $ignoreId = null): array
     {
         return $request->validate([
-            'category_id' => ['required', 'exists:categories,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:products,slug' . ($ignoreId ? ",{$ignoreId}" : '')],
-            'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'sale_price' => ['nullable', 'numeric', 'min:0', 'lt:price'],
-            'stock' => ['required', 'integer', 'min:0'],
-            'sku' => ['nullable', 'string', 'max:100', 'unique:products,sku' . ($ignoreId ? ",{$ignoreId}" : '')],
-            'image' => ['nullable', 'image', 'max:2048'],
-            'is_active' => ['boolean'],
+            'category_id'  => 'required|exists:categories,id',
+            'name'         => 'required|string|max:150',
+            'slug'         => 'nullable|string|unique:products,slug,' . $ignoreId,
+            'description'  => 'nullable|string',
+            'price'        => 'required|numeric|min:0',
+            'sale_price'   => 'nullable|numeric|min:0|lt:price',
+            'stock'        => 'required|integer|min:0',
+            'sku'          => 'nullable|string|unique:products,sku,' . $ignoreId,
+            'image'        => 'nullable|image|max:3072',
+            'is_active'    => 'boolean',
         ]);
+    }
+
+    private function resolveSlug(array $validated, ?Product $product = null): string
+    {
+        if (! empty($validated['slug'])) {
+            return Str::slug($validated['slug']);
+        }
+
+        if ($product && $product->slug) {
+            return $product->slug;
+        }
+
+        return Str::slug($validated['name']);
     }
 }

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrailCo — For Every Trail. For Every Explorer.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green: #8bc53f;
+    --green-dark: #6ea52e;
+    --ink: #1a1d16;
+    --muted: #6b7166;
+    --line: #ececec;
+    --bg: #ffffff;
+    --panel: #f6f6f4;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  body{
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,h2,h3, .brand{
+    font-family: 'Poppins', sans-serif;
+  }
+
+  img{ display:block; max-width:100%; }
+
+  a{ text-decoration:none; color:inherit; }
+
+  .eyebrow{
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position: relative;
+    min-height: 620px;
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background:
+      linear-gradient(100deg, rgba(10,18,28,0.92) 0%, rgba(10,18,28,0.72) 32%, rgba(10,18,28,0.15) 62%, rgba(10,18,28,0.05) 100%),
+      url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80') center 30%/cover no-repeat;
+    overflow: hidden;
+  }
+
+  .hero-content{
+    padding: 90px 60px 60px;
+    max-width: 620px;
+  }
+
+  .hero .eyebrow{
+    color: #b7e56b;
+    margin-bottom: 18px;
+  }
+
+  .hero h1{
+    color: #fff;
+    font-size: 3rem;
+    line-height: 1.12;
+    font-weight: 700;
+    margin-bottom: 22px;
+  }
+
+  .hero h1 .accent{ color: var(--green); }
+
+  .hero p{
+    color: rgba(255,255,255,0.85);
+    font-size: 1.02rem;
+    line-height: 1.6;
+    max-width: 460px;
+    margin-bottom: 34px;
+  }
+
+  .btn-primary{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    background: var(--green);
+    color: #16210a;
+    font-weight: 600;
+    font-size: 0.92rem;
+    letter-spacing: 0.03em;
+    padding: 15px 28px;
+    border-radius: 40px;
+    border:none;
+    cursor:pointer;
+    transition: background .2s ease, transform .2s ease;
+  }
+  .btn-primary:hover{ background:#9fd453; transform: translateY(-1px); }
+
+  .feature-bar{
+    position: relative;
+    z-index: 2;
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: rgba(15, 22, 16, 0.55);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .feature-item{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    padding: 26px 32px;
+    color: #fff;
+    border-right: 1px solid rgba(255,255,255,0.12);
+  }
+  .feature-item:last-child{ border-right:none; }
+
+  .feature-item svg{ flex-shrink:0; width:26px; height:26px; stroke: var(--green); }
+
+  .feature-item .f-title{
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+  .feature-item .f-sub{
+    font-size: 0.76rem;
+    color: rgba(255,255,255,0.65);
+  }
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section{
+    padding: 70px 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .section-head{
+    text-align:center;
+    margin-bottom: 44px;
+  }
+
+  .section-head h2{
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin-top: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .divider-icon{
+    margin: 14px auto 0;
+    width: 46px;
+    opacity: 0.8;
+  }
+
+  /* ---------- CATEGORIES ---------- */
+  .category-grid{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+  }
+
+  .cat-card{
+    background: var(--panel);
+    border-radius: 4px;
+    overflow: hidden;
+    text-align:center;
+    transition: box-shadow .25s ease, transform .25s ease;
+    cursor:pointer;
+  }
+  .cat-card:hover{ box-shadow: 0 14px 30px rgba(0,0,0,0.1); transform: translateY(-4px); }
+
+  .cat-img{
+    height: 170px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .cat-body{
+    padding: 20px 14px 26px;
+    position: relative;
+  }
+
+  .cat-icon{
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin: -44px auto 14px;
+    position: relative;
+    z-index: 2;
+  }
+  .cat-icon svg{ width:22px; height:22px; stroke: var(--ink); }
+
+  .cat-card h3{
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .cat-link{
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--green-dark);
+    display:inline-flex;
+    align-items:center;
+    gap: 4px;
+  }
+
+  /* ---------- BEST SELLERS ---------- */
+  .picks-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    margin-bottom: 30px;
+  }
+  .picks-head .titles h2{
+    font-size: 2.1rem;
+    font-weight:700;
+    position: relative;
+    padding-bottom: 14px;
+  }
+  .picks-head .titles h2::after{
+    content:'';
+    position:absolute;
+    left:0; bottom:0;
+    width: 46px;
+    height:3px;
+    background: var(--ink);
+    border-radius: 2px;
+  }
+
+  .carousel-arrows{ display:flex; gap:10px; }
+  .arrow-btn{
+    width: 38px; height:38px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background:#fff;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    color: var(--ink);
+    transition: background .2s;
+  }
+  .arrow-btn.active, .arrow-btn:hover{ background: var(--panel); }
+
+  .product-grid{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+  }
+
+  .product-card{
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px;
+    position: relative;
+    transition: box-shadow .2s ease, transform .2s ease;
+  }
+  .product-card:hover{ box-shadow: 0 12px 26px rgba(0,0,0,0.08); transform: translateY(-3px); }
+
+  .wish-btn{
+    position:absolute;
+    top: 16px; right:16px;
+    width: 32px; height:32px;
+    border-radius: 50%;
+    background:#fff;
+    border: 1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    z-index:2;
+  }
+  .wish-btn svg{ width:15px; height:15px; stroke: var(--ink); fill:none; }
+  .wish-btn.active svg{ fill: #e0483e; stroke:#e0483e; }
+
+  .product-img{
+    width:100%;
+    height: 190px;
+    object-fit: contain;
+    margin-bottom: 16px;
+  }
+
+  .p-brand{
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .p-name{
+    font-size: 0.92rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    line-height:1.35;
+  }
+  .p-name .hl{ color:#c1362b; font-weight:600; }
+
+  .p-price{
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+  }
+
+  .p-rating{
+    display:flex;
+    align-items:center;
+    gap: 5px;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .stars{ display:flex; gap:1px; }
+  .stars svg{ width:13px; height:13px; }
+  .star-fill{ fill:#f5a623; stroke:#f5a623; }
+  .star-empty{ fill:none; stroke:#d8d8d8; }
+
+  /* ---------- PROMO BANNERS ---------- */
+  .promo-row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 0 60px 70px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .promo-card{
+    position:relative;
+    height: 240px;
+    border-radius: 4px;
+    overflow:hidden;
+    display:flex;
+    align-items:flex-end;
+    color:#fff;
+  }
+  .promo-card::before{
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(90deg, rgba(10,14,10,0.82) 0%, rgba(10,14,10,0.45) 55%, rgba(10,14,10,0.1) 100%);
+    z-index:1;
+  }
+  .promo-card img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit: cover;
+    z-index:0;
+  }
+  .promo-inner{
+    position: relative;
+    z-index: 2;
+    padding: 30px 34px;
+  }
+  .promo-inner h3{ font-size:1.5rem; font-weight:700; margin-bottom:8px; }
+  .promo-inner p{ font-size:0.88rem; color:rgba(255,255,255,0.85); margin-bottom:18px; max-width:230px; line-height:1.45;}
+
+  .btn-outline{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff;
+    color: var(--ink);
+    font-weight:600;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    padding: 11px 20px;
+    border-radius: 30px;
+    border:none;
+    cursor:pointer;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1100px){
+    .category-grid{ grid-template-columns: repeat(3,1fr); }
+    .product-grid{ grid-template-columns: repeat(3,1fr); }
+    .feature-bar{ grid-template-columns: repeat(2,1fr); }
+    .promo-row{ grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 640px){
+    .hero-content{ padding: 60px 24px 40px; }
+    .hero h1{ font-size: 2.1rem; }
+    .feature-bar{ grid-template-columns: 1fr; }
+    .feature-item{ border-right:none; border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .section{ padding: 50px 20px; }
+    .category-grid{ grid-template-columns: repeat(2,1fr); }
+    .product-grid{ grid-template-columns: repeat(2,1fr); }
+    .promo-row{ padding: 0 20px 50px; }
+    .picks-head{ flex-direction:column; align-items:flex-start; gap:16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="eyebrow">Gear Up. Step Out. Explore.</div>
+    <h1>For Every Trail.<br>For Every <span class="accent">Explorer.</span></h1>
+    <p>Premium trekking &amp; hiking gears, clothes and shoes for your next adventure.</p>
+    <button class="btn-primary">SHOP NOW
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+
+  <div class="feature-bar">
+    <div class="feature-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l6-11 4 7 3-5 5 9H3z"/></svg>
+      <div>
+        <div class="f-title">Built for Adventure</div>
+        <div class="f-sub">Durable &amp; reliable gear</div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21c9 0 14-6 14-16C10 5 5 10 5 21z"/><path d="M5 21c0-6 3-10 8-12"/></svg>
+      <div>
+        <div class="f-title">Lightweight</div>
+        <div class="f-sub">Move freely, go further</div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+      <div>
+        <div class="f-title">Premium Quality</div>
+        <div class="f-sub">Tested for every terrain</div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16V7a1 1 0 011-1h10v10H4a1 1 0 01-1-1z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7.5" cy="18.5" r="1.5"/><circle cx="17.5" cy="18.5" r="1.5"/></svg>
+      <div>
+        <div class="f-title">Fast Delivery</div>
+        <div class="f-sub">Across the country</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CATEGORIES ================= -->
+<section class="section" id="categories">
+  <div class="section-head">
+    <div class="eyebrow">Shop By Category</div>
+    <h2>Find What You Need</h2>
+    <svg class="divider-icon" viewBox="0 0 46 20" fill="none" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M1 18l9-13 6 8 4-5 5 6"/><path d="M20 18l9-13 6 8 4-5"/>
+    </svg>
+  </div>
+
+  <div class="category-grid" id="categoryGrid"></div>
+</section>
+
+<!-- ================= BEST SELLERS ================= -->
+<section class="section" id="picks">
+  <div class="picks-head">
+    <div class="titles">
+      <div class="eyebrow">Best Sellers</div>
+      <h2>Top Picks for You</h2>
+    </div>
+    <div class="carousel-arrows">
+      <button class="arrow-btn" id="prevBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <button class="arrow-btn active" id="nextBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="product-grid" id="productGrid"></div>
+</section>
+
+<!-- ================= PROMO BANNERS ================= -->
+<div class="promo-row">
+  <div class="promo-card">
+    <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=900&q=80" alt="New Arrivals">
+    <div class="promo-inner">
+      <h3>New Arrivals</h3>
+      <p>Latest gear for your next adventure.</p>
+      <button class="btn-outline">EXPLORE NOW
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="promo-card">
+    <img src="https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=900&q=80" alt="Ready for Rain">
+    <div class="promo-inner">
+      <h3>Ready for Rain?</h3>
+      <p>Waterproof gear to keep you going.</p>
+      <button class="btn-outline">SHOP RAIN GEAR
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- DATA ----------
+  const categories = [
+    {
+      name: "Backpacks",
+      img: "https://images.unsplash.com/photo-1622260614153-03223fb1b0e3?auto=format&fit=crop&w=500&q=80",
+      icon: `<path d="M6 8a6 6 0 0112 0v3h1a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7a1 1 0 011-1h1V8z"/><path d="M9 8V6a3 3 0 016 0v2"/>`
+    },
+    {
+      name: "Clothing",
+      img: "https://images.unsplash.com/photo-1544966503-7ba6ea0b78b3?auto=format&fit=crop&w=500&q=80",
+      icon: `<path d="M8 4L4 8l3 3 2-2v9h6v-9l2 2 3-3-4-4-3 2-3-2z"/>`
+    },
+    {
+      name: "Footwear",
+      img: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&fit=crop&w=500&q=80",
+      icon: `<path d="M3 18c0-2 2-3 4-5l3-4 3 2 4-1 4 3v3a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>`
+    },
+    {
+      name: "Trekking Gear",
+      img: "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=500&q=80",
+      icon: `<path d="M6 21L10 3M18 21L14 3"/><path d="M8 12h2M14 12h2"/>`
+    },
+    {
+      name: "Camping Gear",
+      img: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=500&q=80",
+      icon: `<path d="M2 20h20L12 4z"/><path d="M12 4v16"/>`
+    }
+  ];
+
+  const products = [
+    {
+      brand: "OSPREY",
+      name: "Osprey Atmos AG 50",
+      price: "Rs. 23,500",
+      rating: 5,
+      reviews: 128,
+      img: "https://images.unsplash.com/photo-1622260614153-03223fb1b0e3?auto=format&fit=crop&w=500&q=80"
+    },
+    {
+      brand: "THE NORTH FACE",
+      name: "Men's Resolve Jacket",
+      price: "Rs. 9,250",
+      rating: 5,
+      reviews: 86,
+      img: "https://images.unsplash.com/photo-1544966503-7ba6ea0b78b3?auto=format&fit=crop&w=500&q=80"
+    },
+    {
+      brand: "SALOMON",
+      name: "X Ultra 4 GTX",
+      price: "Rs. 18,990",
+      rating: 4,
+      reviews: 74,
+      img: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&fit=crop&w=500&q=80"
+    },
+    {
+      brand: "BLACK DIAMOND",
+      name: "Trail Ergo Cork Poles",
+      price: "Rs. 6,490",
+      rating: 4.5,
+      reviews: 53,
+      img: "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=500&q=80"
+    },
+    {
+      brand: "LA SPORTIVA",
+      name: "<span class='hl'>B</span>ushido II",
+      price: "Rs. 16,990",
+      rating: 4.5,
+      reviews: 67,
+      img: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=500&q=80"
+    }
+  ];
+
+  // ---------- RENDER CATEGORIES ----------
+  const categoryGrid = document.getElementById("categoryGrid");
+  categories.forEach(cat => {
+    const card = document.createElement("div");
+    card.className = "cat-card";
+    card.innerHTML = `
+      <img class="cat-img" src="${cat.img}" alt="${cat.name}">
+      <div class="cat-body">
+        <div class="cat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${cat.icon}</svg>
+        </div>
+        <h3>${cat.name}</h3>
+        <a class="cat-link" href="#">Explore Now
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>`;
+    categoryGrid.appendChild(card);
+  });
+
+  // ---------- STAR RENDER ----------
+  function renderStars(rating){
+    let html = "";
+    for(let i=1;i<=5;i++){
+      if(rating >= i){
+        html += `<svg class="star-fill" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>`;
+      } else if(rating >= i - 0.5){
+        html += `<svg class="star-fill" viewBox="0 0 24 24" style="clip-path:inset(0 50% 0 0)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>`;
+      } else {
+        html += `<svg class="star-empty" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>`;
+      }
+    }
+    return html;
+  }
+
+  // ---------- RENDER PRODUCTS ----------
+  const productGrid = document.getElementById("productGrid");
+  products.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <button class="wish-btn">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 21s-7-4.35-10-9C-0.5 7 2 3 6 3c2 0 4 1.5 6 4 2-2.5 4-4 6-4 4 0 6.5 4 4 9-3 4.65-10 9-10 9z"/></svg>
+      </button>
+      <img class="product-img" src="${p.img}" alt="${p.name.replace(/<[^>]*>/g,'')}">
+      <div class="p-brand">${p.brand}</div>
+      <div class="p-name">${p.name}</div>
+      <div class="p-price">${p.price}</div>
+      <div class="p-rating">
+        <div class="stars">${renderStars(p.rating)}</div>
+        <span>(${p.reviews})</span>
+      </div>`;
+    productGrid.appendChild(card);
+
+    card.querySelector(".wish-btn").addEventListener("click", (e) => {
+      e.currentTarget.classList.toggle("active");
+    });
+  });
+
+  // ---------- CAROUSEL ARROWS (visual state only) ----------
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  prevBtn.addEventListener("click", () => {
+    prevBtn.classList.add("active");
+    nextBtn.classList.remove("active");
+  });
+  nextBtn.addEventListener("click", () => {
+    nextBtn.classList.add("active");
+    prevBtn.classList.remove("active");
+  });
+</script>
+
+</body>
+</html>

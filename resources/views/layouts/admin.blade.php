@@ -59,6 +59,7 @@
             z-index: 50;
             display: flex;
             flex-direction: column;
+            transition: width 0.22s ease, transform 0.22s ease;
         }
 
         .sidebar-logo {
@@ -74,6 +75,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .nav-item {
@@ -111,10 +113,123 @@
             padding: 18px 10px 6px;
         }
 
+        /* --- Collapsible group headers (CMS / Store) --- */
+        .nav-group {
+            margin: 4px 0;
+        }
+
+        .nav-group-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 20px;
+            margin: 2px 10px;
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.18s ease;
+        }
+
+        .nav-group-toggle:hover {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .nav-group-toggle .group-label {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .nav-group-toggle .group-label i.group-icon {
+            font-size: 12px;
+            width: 14px;
+            text-align: center;
+            color: #3b82f6;
+        }
+
+        .nav-group-toggle .chevron {
+            font-size: 10px;
+            transition: transform 0.22s ease;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .nav-group.open .nav-group-toggle .chevron {
+            transform: rotate(90deg);
+        }
+
+        .nav-group-items {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.28s ease;
+        }
+
+        .nav-group.open .nav-group-items {
+            max-height: 600px;
+        }
+
+        .nav-group-items .nav-item {
+            padding-left: 26px;
+            font-size: 13px;
+        }
+
+        .nav-group-items .nav-item i {
+            font-size: 12px;
+        }
+
+        /* Collapsed (icon-only) sidebar state */
+        .sidebar.collapsed {
+            width: 68px;
+        }
+
+        .sidebar.collapsed .sidebar-logo .brand-text,
+        .sidebar.collapsed .nav-item span,
+        .sidebar.collapsed .nav-group-toggle .group-label span,
+        .sidebar.collapsed .nav-group-toggle .chevron {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-group-items {
+            max-height: none;
+            position: static;
+        }
+
+        .sidebar.collapsed .nav-group:not(.pinned-open) .nav-group-items {
+            max-height: 0;
+        }
+
+        .sidebar.collapsed .nav-item,
+        .sidebar.collapsed .nav-group-toggle {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .sidebar.collapsed .nav-group-items .nav-item {
+            padding-left: 0;
+        }
+
+        .sidebar.collapsed .sidebar-logo {
+            padding: 20px 14px 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed~.main-content,
+        body.sidebar-collapsed .main-content {
+            margin-left: 68px;
+        }
+
         /* Main Content */
         .main-content {
             margin-left: 210px;
             min-height: 100vh;
+            transition: margin-left 0.22s ease;
         }
 
         /* Topbar */
@@ -241,6 +356,39 @@
             background: #cbd5e1;
             border-radius: 3px;
         }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 22, 35, 0.5);
+                z-index: 45;
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
     </style>
 
     @stack('styles')
@@ -248,8 +396,11 @@
 
 <body class="bg-slate-100">
 
+    <!-- Mobile overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <!-- Logo -->
         <div class="sidebar-logo">
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
@@ -269,7 +420,7 @@
                     @endif
                 </div>
 
-                <div>
+                <div class="brand-text">
                     <div class="text-white font-bold text-sm leading-tight">
                         {{ setting('site_name', 'Apex Nepal') }}
                     </div>
@@ -283,56 +434,126 @@
 
         <!-- Navigation -->
         <nav class="flex-1 py-4 overflow-y-auto">
+
+            {{-- Dashboard (always visible, top-level) --}}
             <a href="{{ route('admin.dashboard') }}"
-                class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" title="Dashboard">
                 <i class="fas fa-th-large"></i>
                 <span>Dashboard</span>
             </a>
+
             <a href="{{ route('admin.bookings.index') }}"
-                class="nav-item {{ request()->routeIs('admin.bookings.index*') ? 'active' : '' }}">
+                class="nav-item {{ request()->routeIs('admin.bookings.index*') ? 'active' : '' }}" title="Bookings">
                 <i class="far fa-calendar-check"></i>
                 <span>Bookings</span>
             </a>
-            <a href="{{ route('admin.packages.index') }}"
-                class="nav-item {{ request()->routeIs('admin.packages*') ? 'active' : '' }}">
-                <i class="fas fa-box-open"></i>
-                <span>Packages</span>
-            </a>
-            <a href="{{ route('admin.destinations.index') }}"
-                class="nav-item {{ request()->routeIs('admin.destinations*') ? 'active' : '' }}">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>Destinations</span>
-            </a>
-            <a href="{{ route('admin.treks.index') }}"
-                class="nav-item {{ request()->routeIs('admin.trekking*') ? 'active' : '' }}">
-                <i class="fas fa-hiking"></i>
-                <span>Trekking</span>
-            </a>
-            <a href="{{ route('admin.testimonials.index') }}"
-                class="nav-item {{ request()->routeIs('admin.testimonials*') ? 'active' : '' }}">
-                <i class="far fa-comment-dots"></i>
-                <span>Testimonials</span>
-            </a>
-            <a href="{{ route('admin.contacts.index') }}"
-                class="nav-item {{ request()->routeIs('admin.contacts*') ? 'active' : '' }}">
-                <i class="far fa-envelope"></i>
-                <span>Enquiries</span>
-            </a>
-            <a href="#" class="nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+
+            {{-- CMS GROUP --}}
+            @php
+                $cmsActive =
+                    request()->routeIs('admin.packages*') ||
+                    request()->routeIs('admin.destinations*') ||
+                    request()->routeIs('admin.treks*') ||
+                    request()->routeIs('admin.testimonials*') ||
+                    request()->routeIs('admin.contacts*');
+            @endphp
+
+            <div class="nav-group {{ $cmsActive ? 'open pinned-open' : '' }}" data-group="cms">
+                <div class="nav-group-toggle" data-toggle="cms" title="Content (CMS)">
+                    <span class="group-label">
+                        <i class="fas fa-layer-group group-icon"></i>
+                        <span>Content (CMS)</span>
+                    </span>
+                    <i class="fas fa-chevron-right chevron"></i>
+                </div>
+
+                <div class="nav-group-items">
+                    <a href="{{ route('admin.destinations.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.destinations*') ? 'active' : '' }}"
+                        title="Destinations">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Destinations</span>
+                    </a>
+                    <a href="{{ route('admin.treks.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.trekking*') ? 'active' : '' }}" title="Trekking">
+                        <i class="fas fa-hiking"></i>
+                        <span>Trekking</span>
+                    </a>
+                    <a href="{{ route('admin.packages.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.packages*') ? 'active' : '' }}" title="Packages">
+                        <i class="fas fa-box-open"></i>
+                        <span>Packages</span>
+                    </a>
+                    <a href="{{ route('admin.testimonials.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.testimonials*') ? 'active' : '' }}"
+                        title="Testimonials">
+                        <i class="far fa-comment-dots"></i>
+                        <span>Testimonials</span>
+                    </a>
+                    <a href="{{ route('admin.contacts.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.contacts*') ? 'active' : '' }}" title="Enquiries">
+                        <i class="far fa-envelope"></i>
+                        <span>Enquiries</span>
+                    </a>
+                </div>
+            </div>
+
+            {{-- STORE / E-COMMERCE GROUP --}}
+            @php
+                $storeActive =
+                    request()->routeIs('admin.categories*') ||
+                    request()->routeIs('admin.products*') ||
+                    request()->routeIs('admin.orders*') ||
+                    request()->routeIs('admin.cart*');
+            @endphp
+
+            <div class="nav-group {{ $storeActive ? 'open pinned-open' : '' }}" data-group="store">
+                <div class="nav-group-toggle" data-toggle="store" title="Store">
+                    <span class="group-label">
+                        <i class="fas fa-store group-icon"></i>
+                        <span>Store</span>
+                    </span>
+                    <i class="fas fa-chevron-right chevron"></i>
+                </div>
+
+                <div class="nav-group-items">
+                    <a href="{{ route('admin.categories.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.categories*') ? 'active' : '' }}"
+                        title="Category">
+                        <i class="fas fa-tags"></i>
+                        <span>Category</span>
+                    </a>
+                    <a href="{{ route('admin.products.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.products*') ? 'active' : '' }}" title="Products">
+                        <i class="fas fa-box"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="{{ route('admin.orders.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.orders*') ? 'active' : '' }}" title="Orders">
+                        <i class="fas fa-receipt"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="{{ route('admin.cart.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.cart*') ? 'active' : '' }}" title="Carts">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Carts</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-section"></div>
+
+            <a href="#" class="nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}" title="Users">
                 <i class="far fa-user"></i>
                 <span>Users</span>
             </a>
-            {{-- <a href="#" class="nav-item {{ request()->routeIs('admin.enquiries*') ? 'active' : '' }}">
-                <i class="far fa-envelope"></i>
-                <span>Enquiries</span>
-            </a> --}}
             <a href="{{ route('admin.settings.index') }}"
-                class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+                class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}" title="Settings">
                 <i class="fas fa-cog"></i>
                 <span>Settings</span>
             </a>
             <a href="{{ route('admin.email.index') }}"
-                class="nav-item {{ request()->routeIs('admin.email*') ? 'active' : '' }}">
+                class="nav-item {{ request()->routeIs('admin.email*') ? 'active' : '' }}" title="Email Config">
                 <i class="fas fa-envelope-open-text"></i>
                 <span>Email Config</span>
             </a>
@@ -351,7 +572,7 @@
     </aside>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
         <!-- Topbar -->
         <header class="topbar">
             <div class="flex items-center gap-3">
@@ -392,9 +613,51 @@
 
     <!-- Scripts -->
     <script>
-        // Sidebar toggle for mobile
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const overlay = document.getElementById('sidebarOverlay');
+        const isDesktop = () => window.matchMedia('(min-width: 1025px)').matches;
+
+        // Sidebar toggle: collapse (desktop) vs slide-in/out (mobile)
         document.getElementById('sidebarToggle')?.addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('-translate-x-full');
+            if (isDesktop()) {
+                sidebar.classList.toggle('collapsed');
+                document.body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('admin_sidebar_collapsed', sidebar.classList.contains('collapsed') ? '1' :
+                '0');
+            } else {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('show');
+            }
+        });
+
+        overlay?.addEventListener('click', function() {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('show');
+        });
+
+        // Restore collapsed state on desktop
+        if (isDesktop() && localStorage.getItem('admin_sidebar_collapsed') === '1') {
+            sidebar.classList.add('collapsed');
+            document.body.classList.add('sidebar-collapsed');
+        }
+
+        // Collapsible nav groups (CMS / Store)
+        document.querySelectorAll('.nav-group-toggle').forEach(function(toggle) {
+            toggle.addEventListener('click', function() {
+                const group = toggle.closest('.nav-group');
+
+                // If sidebar is icon-collapsed on desktop, expand sidebar first
+                if (sidebar.classList.contains('collapsed')) {
+                    sidebar.classList.remove('collapsed');
+                    document.body.classList.remove('sidebar-collapsed');
+                    localStorage.setItem('admin_sidebar_collapsed', '0');
+                    group.classList.add('open');
+                    return;
+                }
+
+                group.classList.toggle('open');
+            });
         });
     </script>
 

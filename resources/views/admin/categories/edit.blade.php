@@ -1,23 +1,23 @@
-{{-- resources/views/admin/products/create.blade.php --}}
+{{-- resources/views/admin/categories/edit.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Create Product')
-@section('page_title', 'Create Product')
-@section('page_icon', 'fas fa-box')
+@section('title', 'Edit Category')
+@section('page_title', 'Edit Category')
+@section('page_icon', 'fas fa-layer-group')
 
 @section('content')
 
-    <div class="product-wrapper">
+    <div class="category-wrapper">
 
         {{-- Header --}}
         <div class="page-header">
 
             <div>
-                <h2>Create New Product</h2>
-                <p>Add a new trekking gear product</p>
+                <h2>Edit Category</h2>
+                <p>Update trekking gear category details</p>
             </div>
 
-            <a href="{{ route('admin.products.index') }}" class="back-btn">
+            <a href="{{ route('admin.categories.index') }}" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
                 Back
             </a>
@@ -40,9 +40,10 @@
         {{-- Form Card --}}
         <div class="form-card">
 
-            <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.categories.update', $category) }}" method="POST" enctype="multipart/form-data">
 
                 @csrf
+                @method('PUT')
 
                 {{-- Basic Information --}}
                 <div class="section-title">
@@ -52,74 +53,50 @@
                 <div class="form-grid">
 
                     <div class="form-group">
-                        <label>Product Name *</label>
+                        <label>Category Name *</label>
 
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" required>
+                        <input type="text" name="name" id="name" value="{{ old('name', $category->name) }}"
+                            required>
                     </div>
 
                     <div class="form-group">
                         <label>Slug</label>
 
-                        <input type="text" name="slug" id="slug" value="{{ old('slug') }}"
-                            placeholder="auto-generated">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Category *</label>
-
-                        <select name="category_id" required>
-
-                            <option value="">Select Category</option>
-
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}"
-                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>SKU</label>
-
-                        <input type="text" name="sku" value="{{ old('sku') }}" placeholder="e.g. TRK-BAG-001">
+                        <input type="text" name="slug" id="slug" value="{{ old('slug', $category->slug) }}">
                     </div>
 
                     <div class="form-group full-width">
                         <label>Description</label>
 
-                        <textarea name="description" rows="6">{{ old('description') }}</textarea>
+                        <textarea name="description" rows="6">{{ old('description', $category->description) }}</textarea>
                     </div>
 
                 </div>
 
-                {{-- Pricing & Stock --}}
+                {{-- Hierarchy --}}
                 <div class="section-title">
-                    <h3>Pricing & Stock</h3>
+                    <h3>Hierarchy</h3>
                 </div>
 
                 <div class="form-grid">
 
                     <div class="form-group">
-                        <label>Price *</label>
+                        <label>Parent Category</label>
 
-                        <input type="number" step="0.01" min="0" name="price" value="{{ old('price') }}"
-                            required>
-                    </div>
+                        <select name="parent_id">
 
-                    <div class="form-group">
-                        <label>Sale Price</label>
+                            <option value="">None (Top Level)</option>
 
-                        <input type="number" step="0.01" min="0" name="sale_price"
-                            value="{{ old('sale_price') }}" placeholder="optional">
-                    </div>
+                            @foreach ($categories as $cat)
+                                @if ($cat->id !== $category->id)
+                                    <option value="{{ $cat->id }}"
+                                        {{ old('parent_id', $category->parent_id) == $cat->id ? 'selected' : '' }}>
+                                        {{ $cat->name }}
+                                    </option>
+                                @endif
+                            @endforeach
 
-                    <div class="form-group">
-                        <label>Stock Quantity *</label>
-
-                        <input type="number" min="0" name="stock" value="{{ old('stock', 0) }}" required>
+                        </select>
                     </div>
 
                 </div>
@@ -132,9 +109,16 @@
                 <div class="form-grid">
 
                     <div class="form-group">
-                        <label>Product Image</label>
+                        <label>Category Image</label>
 
                         <input type="file" name="image" accept="image/*">
+
+                        @if ($category->image)
+                            <div class="current-image">
+                                <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}">
+                                <span>Current image</span>
+                            </div>
+                        @endif
                     </div>
 
                 </div>
@@ -147,7 +131,8 @@
                 <div class="checkbox-grid">
 
                     <label class="check-box">
-                        <input type="checkbox" name="is_active" value="1" checked>
+                        <input type="checkbox" name="is_active" value="1"
+                            {{ old('is_active', $category->is_active) ? 'checked' : '' }}>
 
                         Active
                     </label>
@@ -157,14 +142,14 @@
                 {{-- Buttons --}}
                 <div class="button-group">
 
-                    <a href="{{ route('admin.products.index') }}" class="cancel-btn">
+                    <a href="{{ route('admin.categories.index') }}" class="cancel-btn">
                         Cancel
                     </a>
 
                     <button type="submit" class="submit-btn">
 
                         <i class="fas fa-save"></i>
-                        Create Product
+                        Update Category
 
                     </button>
 
@@ -180,7 +165,7 @@
 
 @push('styles')
     <style>
-        .product-wrapper {
+        .category-wrapper {
             max-width: 1200px;
             margin: auto;
         }
@@ -279,6 +264,26 @@
             resize: vertical;
         }
 
+        .current-image {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .current-image img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .current-image span {
+            font-size: 13px;
+            color: #64748b;
+        }
+
         .checkbox-grid {
             display: flex;
             gap: 30px;
@@ -371,7 +376,7 @@
 
 @push('scripts')
     <script>
-        // Auto slug generate
+        // Auto slug generate only if user clears it
         const nameInput = document.getElementById('name');
         const slugInput = document.getElementById('slug');
 

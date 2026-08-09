@@ -1,29 +1,29 @@
-{{-- resources/views/admin/products/show.blade.php --}}
+{{-- resources/views/admin/categories/show.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Product Details')
-@section('page_title', 'Product Details')
-@section('page_icon', 'fas fa-box')
+@section('title', 'Category Details')
+@section('page_title', 'Category Details')
+@section('page_icon', 'fas fa-layer-group')
 
 @section('content')
 
-    <div class="product-wrapper">
+    <div class="category-wrapper">
 
         {{-- Header --}}
         <div class="page-header">
 
             <div>
-                <h2>{{ $product->name }}</h2>
-                <p>Product details and information</p>
+                <h2>{{ $category->name }}</h2>
+                <p>Category details and information</p>
             </div>
 
             <div class="header-actions">
-                <a href="{{ route('admin.products.edit', $product) }}" class="edit-btn">
+                <a href="{{ route('admin.categories.edit', $category) }}" class="edit-btn">
                     <i class="fas fa-edit"></i>
                     Edit
                 </a>
 
-                <a href="{{ route('admin.products.index') }}" class="back-btn">
+                <a href="{{ route('admin.categories.index') }}" class="back-btn">
                     <i class="fas fa-arrow-left"></i>
                     Back
                 </a>
@@ -37,8 +37,8 @@
             <div class="show-top">
 
                 <div class="show-image">
-                    @if ($product->image)
-                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}">
+                    @if ($category->image)
+                        <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}">
                     @else
                         <div class="no-image">
                             <i class="fas fa-image"></i>
@@ -48,56 +48,30 @@
 
                 <div class="show-meta">
 
-                    <div class="badge-row">
-                        <span class="status-badge {{ $product->is_active ? 'active' : 'inactive' }}">
-                            {{ $product->is_active ? 'Active' : 'Inactive' }}
-                        </span>
-
-                        <span class="status-badge {{ $product->stock > 0 ? 'active' : 'inactive' }}">
-                            {{ $product->stock > 0 ? 'In Stock' : 'Out of Stock' }}
-                        </span>
-                    </div>
+                    <span class="status-badge {{ $category->is_active ? 'active' : 'inactive' }}">
+                        {{ $category->is_active ? 'Active' : 'Inactive' }}
+                    </span>
 
                     <div class="meta-row">
                         <span class="meta-label">Slug</span>
-                        <span class="meta-value">{{ $product->slug }}</span>
+                        <span class="meta-value">{{ $category->slug }}</span>
                     </div>
 
                     <div class="meta-row">
-                        <span class="meta-label">Category</span>
-                        <span class="meta-value">{{ $product->category->name ?? '—' }}</span>
-                    </div>
-
-                    <div class="meta-row">
-                        <span class="meta-label">SKU</span>
-                        <span class="meta-value">{{ $product->sku ?: '—' }}</span>
-                    </div>
-
-                    <div class="meta-row">
-                        <span class="meta-label">Price</span>
+                        <span class="meta-label">Parent Category</span>
                         <span class="meta-value">
-                            @if ($product->sale_price)
-                                <span class="old-price">${{ number_format($product->price, 2) }}</span>
-                                ${{ number_format($product->sale_price, 2) }}
-                            @else
-                                ${{ number_format($product->price, 2) }}
-                            @endif
+                            {{ $category->parent ? $category->parent->name : 'None (Top Level)' }}
                         </span>
-                    </div>
-
-                    <div class="meta-row">
-                        <span class="meta-label">Stock Quantity</span>
-                        <span class="meta-value">{{ $product->stock }}</span>
                     </div>
 
                     <div class="meta-row">
                         <span class="meta-label">Created</span>
-                        <span class="meta-value">{{ $product->created_at->format('M d, Y') }}</span>
+                        <span class="meta-value">{{ $category->created_at->format('M d, Y') }}</span>
                     </div>
 
                     <div class="meta-row">
                         <span class="meta-label">Last Updated</span>
-                        <span class="meta-value">{{ $product->updated_at->format('M d, Y') }}</span>
+                        <span class="meta-value">{{ $category->updated_at->format('M d, Y') }}</span>
                     </div>
 
                 </div>
@@ -110,8 +84,34 @@
             </div>
 
             <div class="description-box">
-                {{ $product->description ?: 'No description provided.' }}
+                {{ $category->description ?: 'No description provided.' }}
             </div>
+
+            {{-- Subcategories --}}
+            @if ($category->children && $category->children->count())
+                <div class="section-title">
+                    <h3>Subcategories</h3>
+                </div>
+
+                <div class="subcategory-list">
+                    @foreach ($category->children as $child)
+                        <a href="{{ route('admin.categories.show', $child) }}" class="subcategory-chip">
+                            {{ $child->name }}
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+
+            {{-- Products count if relation exists --}}
+            @if (isset($category->products_count))
+                <div class="section-title">
+                    <h3>Products</h3>
+                </div>
+
+                <div class="description-box">
+                    {{ $category->products_count }} product(s) in this category.
+                </div>
+            @endif
 
         </div>
 
@@ -121,7 +121,7 @@
 
 @push('styles')
     <style>
-        .product-wrapper {
+        .category-wrapper {
             max-width: 1000px;
             margin: auto;
         }
@@ -217,11 +217,6 @@
             gap: 14px;
         }
 
-        .badge-row {
-            display: flex;
-            gap: 10px;
-        }
-
         .status-badge {
             width: fit-content;
             padding: 6px 14px;
@@ -258,13 +253,6 @@
             font-size: 14px;
         }
 
-        .old-price {
-            font-size: 12px;
-            color: #94a3b8;
-            text-decoration: line-through;
-            margin-right: 6px;
-        }
-
         .section-title {
             margin-top: 25px;
             margin-bottom: 15px;
@@ -281,6 +269,26 @@
             color: #334155;
             line-height: 1.7;
             font-size: 14px;
+        }
+
+        .subcategory-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .subcategory-chip {
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .subcategory-chip:hover {
+            background: #e2e8f0;
         }
 
         @media(max-width: 768px) {

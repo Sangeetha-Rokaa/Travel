@@ -18,6 +18,7 @@ use App\Http\Controllers\Frontend\storeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 
+
 // ═══════════════════════════════════════════════════════════════════════════════
 //  ADMIN CONTROLLERS
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -167,3 +168,4 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('cart/{cart}',    [AdminCartController::class, 'show'])->name('cart.show');
     Route::delete('cart/{cart}', [AdminCartController::class, 'destroy'])->name('cart.destroy');
 });
+

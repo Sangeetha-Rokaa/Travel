@@ -755,9 +755,12 @@
                 <h4>Contact</h4>
                 <ul>
                     <li><a href="#"><i class="fas fa-map-marker-alt"></i> Thamel, Kathmandu, Nepal</a></li>
-                    <li><a href="#"><i class="fas fa-phone-alt"></i> +977 9800000000</a></li>
-                    <li><a href="#"><i class="fas fa-envelope"></i> store@{{ Str::slug(setting('site_name', 'trailco')) }}.com</a></li>
-                </ul>
+                    <li><a href="#"><i class="fas fa-phone-alt"></i> +977 9713478474</a></li>
+<li>
+    <a href="mailto:store@apeaknepal.com">
+        <i class="fas fa-envelope"></i> store@Apeaknepal.com
+    </a>
+</li>                </ul>
             </div>
         </div>
 

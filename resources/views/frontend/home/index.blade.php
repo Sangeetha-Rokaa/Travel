@@ -1714,18 +1714,8 @@
                 <a href="#destinations" class="btn-explore-hero">
                     <i class="fas fa-mountain"></i> Explore Destinations
                 </a>
-                <a href="#" class="btn-watch-hero" id="openVideoBtn">
-                    <div class="play-circle"><i class="fas fa-play"></i></div>
-                    Watch Video
-                </a>
+                
             </div>
-        </div>
-
-        <div class="hero-scroll-hint">
-            <div class="scroll-mouse">
-                <div class="scroll-wheel"></div>
-            </div>
-            <span>Scroll</span>
         </div>
 
         <div class="hero-wave">

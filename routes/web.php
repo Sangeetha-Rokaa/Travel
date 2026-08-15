@@ -88,7 +88,12 @@ Route::middleware('auth')->prefix('my-orders')->name('orders.')->group(function 
     Route::get('/', [OrderController::class, 'index'])->name('index');
     Route::get('/{order}', [OrderController::class, 'show'])->name('show');
 });
-
+// Route::prefix('cart')->name('cart.')->group(function () {
+//        Route::get('/', [CartController::class, 'index'])->name('index');
+//        Route::post('/add/{product}', [CartController::class, 'add'])->name('add');
+//        Route::patch('/{cart}/{product}', [CartController::class, 'updateQuantity'])->name('update');
+//        Route::delete('/{cart}/{product}', [CartController::class, 'remove'])->name('remove');
+//    });
 // ═══════════════════════════════════════════════════════════════════════════════
 //  ADMIN — AUTH (unauthenticated)
 // ═══════════════════════════════════════════════════════════════════════════════

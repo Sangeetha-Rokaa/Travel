@@ -211,11 +211,11 @@
                             <i class="fas fa-headset"></i>
                             <h4>Need Help?</h4>
                             <p>Our travel experts are here to assist you</p>
-                            <a href="tel:+977XXXXXXXXX" class="help-link">
-                                <i class="fas fa-phone"></i> +977 XXXXXXXXX
+                            <a href="tel:+9779713478474" class="help-link">
+                                <i class="fas fa-phone"></i> +977 9713478474
                             </a>
-                            <a href="mailto:info@visitnepal.com" class="help-link">
-                                <i class="fas fa-envelope"></i> info@visitnepal.com
+                            <a href="mailto:info@ApeakNepal.com" class="help-link">
+                                <i class="fas fa-envelope"></i> info@ApeakNepal.com
                             </a>
                         </div>
                     </div>

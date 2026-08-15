@@ -3,68 +3,81 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class CartController extends Controller
 {
-    protected const SESSION_KEY = 'cart';
+    protected string $sessionKey = 'cart';
 
     /**
-     * GET /cart
-     * Shows the cart page: line items pulled fresh from the DB using
-     * the product ids + quantities stored in the session.
+     * Display the cart page.
      */
-    public function index(): View
+    public function index()
     {
-        $cart = session(self::SESSION_KEY, []); // [product_id => qty]
+        $cart = session($this->sessionKey, []);
 
-        $products = Product::whereIn('id', array_keys($cart))->get()->keyBy('id');
+        // Re-validate against live product data (price/stock may have changed)
+        $items = collect($cart)->map(function ($item, $id) {
+            $product = Product::find($id);
 
-        $items = collect($cart)->map(function ($qty, $productId) use ($products) {
-            $product = $products->get($productId);
             if (!$product) {
                 return null;
             }
+
             $unitPrice = $product->sale_price ?? $product->price;
 
             return [
-                'product' => $product,
-                'qty' => $qty,
-                'unit_price' => $unitPrice,
-                'subtotal' => $unitPrice * $qty,
+                'id'          => $product->id,
+                'slug'        => $product->slug ?? null,
+                'name'        => $product->name,
+                'image'       => $product->image ? Storage::url($product->image) : null,
+                'price'       => $product->price,
+                'sale_price'  => $product->sale_price,
+                'unit_price'  => $unitPrice,
+                'qty'         => $item['qty'],
+                'subtotal'    => $unitPrice * $item['qty'],
+                'in_stock'    => method_exists($product, 'isInStock') ? $product->isInStock() : true,
+                'max_qty'     => $product->stock ?? 99,
             ];
         })->filter()->values();
 
-        $subtotal = (int) $items->sum('subtotal');
+        $subtotal = $items->sum('subtotal');
+        $shipping = $items->isNotEmpty() ? (float) setting('shipping_flat_rate', 0) : 0;
+        $total    = $subtotal + $shipping;
 
-        // adjust / remove this if you have real shipping logic
-        $shipping = $subtotal > 0 ? (int) setting('store_flat_shipping', 150) : 0;
-        $total = $subtotal + $shipping;
-
-        return view('frontend.store.cart', compact('items', 'subtotal', 'shipping', 'total'));
+        return view('frontend.cart.index', [
+            'items'    => $items,
+            'subtotal' => $subtotal,
+            'shipping' => $shipping,
+            'total'    => $total,
+        ]);
     }
 
     /**
-     * POST /cart/add/{product}
-     * Matches route('cart.add', $product) already referenced on the store index page.
+     * Add a product to the cart.
      */
-    public function add(Request $request, Product $product): RedirectResponse
+    public function add(Request $request, Product $product)
     {
-        if (!$product->isInStock()) {
-            return back()->with('error', 'That item is currently out of stock.');
+        $request->validate([
+            'qty' => 'nullable|integer|min:1|max:50',
+        ]);
+
+        if (method_exists($product, 'isInStock') && !$product->isInStock()) {
+            return back()->with('error', 'Sorry, "' . $product->name . '" is currently out of stock.');
         }
 
-        $cart = session(self::SESSION_KEY, []);
-        $qty = (int) $request->input('quantity', 1);
-        $cart[$product->id] = ($cart[$product->id] ?? 0) + max(1, $qty);
+        $cart = session($this->sessionKey, []);
+        $qty  = (int) ($request->input('qty', 1));
 
-        session([self::SESSION_KEY => $cart]);
+        if (isset($cart[$product->id])) {
+            $cart[$product->id]['qty'] += $qty;
+        } else {
+            $cart[$product->id] = ['qty' => $qty];
+        }
+
+        session([$this->sessionKey => $cart]);
 
         return back()->with('success', $product->name . ' was added to your cart.');
     }

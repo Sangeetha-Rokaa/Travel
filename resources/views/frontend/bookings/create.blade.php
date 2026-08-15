@@ -1181,6 +1181,43 @@
             box-shadow: 0 4px 14px rgba(26, 111, 196, .28);
             transition: all var(--transition);
         }
+        .phone-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.phone-code {
+    flex: 0 0 100px;   /* fixed width, won't grow or shrink */
+    width: 100px;
+    max-width: 100px;
+    padding: 10px 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: .85rem;
+    background: #fff;
+    color: var(--ink);   /* <- this is likely why typed text wasn't visible */
+}
+
+.phone-code:focus {
+    outline: none;
+    border-color: var(--green);
+}
+
+#b_phone {
+    flex: 1 1 auto;    /* takes up all remaining space */
+    min-width: 0;      /* prevents flex overflow bugs in some browsers */
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: .87rem;
+    color: var(--ink);   /* <- and this */
+}
+
+#b_phone:focus {
+    outline: none;
+    border-color: var(--green);
+}
 
         .btn-home:hover {
             transform: translateY(-1px);

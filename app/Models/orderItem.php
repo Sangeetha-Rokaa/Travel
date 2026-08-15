@@ -10,14 +10,12 @@ class OrderItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'order_id', 'product_id', 'product_name', 'price', 'quantity', 'total',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'price'    => 'decimal:2',
         'quantity' => 'integer',
-        'total' => 'decimal:2',
+        'total'    => 'decimal:2',
     ];
 
     public function order(): BelongsTo

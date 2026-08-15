@@ -687,7 +687,7 @@
             <button class="icon-btn" id="storeSearchToggle" title="Search"><i class="fas fa-search"></i></button>
             <a href="{{ route('cart.index') ?? '#' }}" class="icon-btn" title="Cart">
                 <i class="fas fa-shopping-bag"></i>
-                @php $cartCount = $cartCount ?? (session('cart') ? count(session('cart')) : 0); @endphp
+                @php $cartCount = collect(session('cart', []))->sum('qty'); @endphp
                 @if ($cartCount > 0)
                     <span class="cart-count">{{ $cartCount }}</span>
                 @endif

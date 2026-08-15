@@ -69,14 +69,13 @@ class CartController extends Controller
         }
 
         $cart = session($this->sessionKey, []);
-        $qty  = (int) ($request->input('qty', 1));
+$qty  = (int) ($request->input('qty', 1));
 
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['qty'] += $qty;
-        } else {
-            $cart[$product->id] = ['qty' => $qty];
-        }
-
+if (isset($cart[$product->id]) && is_array($cart[$product->id])) {
+    $cart[$product->id]['qty'] += $qty;
+} else {
+    $cart[$product->id] = ['qty' => $qty];
+}
         session([$this->sessionKey => $cart]);
 
         return back()->with('success', $product->name . ' was added to your cart.');

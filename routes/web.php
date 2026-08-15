@@ -15,8 +15,10 @@ use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\BookingController;
 use App\Http\Controllers\Frontend\TestimonialController;
 use App\Http\Controllers\Frontend\storeController;
-use App\Http\Controllers\CartController;
+use App\Http\Controllers\Frontend\CheckoutController;
+// use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Frontend\CartController;
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -79,10 +81,19 @@ Route::get('/testimonials', [TestimonialController::class, 'index'])->name('test
 Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
     Route::post('/add/{product}', [CartController::class, 'add'])->name('add');
-    Route::patch('/{cart}/{product}', [CartController::class, 'updateQuantity'])->name('update');
-    Route::delete('/{cart}/{product}', [CartController::class, 'remove'])->name('remove');
+    Route::patch('/update/{product}', [CartController::class, 'update'])->name('update');
+    Route::delete('/remove/{product}', [CartController::class, 'remove'])->name('remove');
+    Route::delete('/clear', [CartController::class, 'clear'])->name('clear');
+});
+Route::get('/cart/add/{product}', function () {
+    return redirect()->route('store.index');
 });
 
+Route::prefix('checkout')->name('checkout.')->group(function () {
+    Route::get('/', [CheckoutController::class, 'index'])->name('index');
+    Route::post('/', [CheckoutController::class, 'store'])->name('store');
+    Route::get('/success/{order_number}', [CheckoutController::class, 'success'])->name('success');
+});
 // Customer-facing orders ("My Orders")
 Route::middleware('auth')->prefix('my-orders')->name('orders.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('index');

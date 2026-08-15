@@ -1023,12 +1023,10 @@
             <div class="footer-col" data-aos="fade-up" data-aos-delay="100">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="{{ route('home') }}">Home</a></li>
                     <li><a href="{{ route('destinations.index') }}">Destinations</a></li>
                     <li><a href="{{ route('treks.index') }}">Treks</a></li>
                     <li><a href="{{ route('packages.index') }}">Packages</a></li>
                     <li><a href="{{ route('about.index') }}">About Us</a></li>
-                    <li><a href="{{ url('/contact') }}">Contact</a></li>
                 </ul>
             </div>
 
@@ -1036,19 +1034,6 @@
             <div class="footer-col" data-aos="fade-up" data-aos-delay="400">
                 <h4>Contact Info</h4>
 
-                <div class="footer-contact-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Thamel, Kathmandu, Nepal</span>
-                </div>
-            
-                <div class="footer-contact-item">
-                    <i class="fas fa-envelope"></i>
-                    <span>info@ApeakNepal.com</span>
-                </div>
-                <div class="footer-contact-item">
-                    <i class="fas fa-globe"></i>
-                    <span>www.ApeakNepal.com</span>
-                </div>
                 @if (setting('address'))
                     <div class="footer-contact-item"><i
                             class="fas fa-map-marker-alt"></i><span>{{ setting('address') }}</span></div>
@@ -1067,6 +1052,17 @@
                 @endif
 
             </div>
+
+                        <!-- popular Destination -->
+                         <div class="footer-col" data-aos="fade-up" data-aos-delay="400">
+                <h4>Popular Destinations</h4>
+            <ul>
+              <li>Kathmandu</li>
+              <li>Pokhara</li>
+                <li>Chitwan</li>
+            <li>Mustang</li>
+</ul>
+</div>
 
         </div>
         <div class="footer-bottom">

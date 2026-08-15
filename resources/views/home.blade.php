@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Visit Nepal – Dream · Explore · Discover')
+@section('title', 'ApeakNepal – Dream · Explore · Discover')
 @section('extra-styles')
 <style>
 /* ── HERO ─────────────────────────────────── */
@@ -1026,9 +1026,9 @@ textarea.form-input { height:140px; resize:vertical; }
 @php
             $contactItems = [
                 ['icon'=>'fa-map-marker-alt', 'title'=>'Our Office',     'value'=>'Thamel, Kathmandu, Nepal'],
-                ['icon'=>'fa-phone',          'title'=>'Phone Number',    'value'=>'+977 9800000000'],
-                ['icon'=>'fa-envelope',       'title'=>'Email Address',   'value'=>'info@visitnepal.com'],
-                ['icon'=>'fa-globe',          'title'=>'Website',         'value'=>'www.visitnepal.com'],
+                ['icon'=>'fa-phone',          'title'=>'Phone Number',    'value'=>'+977 9713478474'],
+                ['icon'=>'fa-envelope',       'title'=>'Email Address',   'value'=>'info@Apeaknepal.com'],
+                ['icon'=>'fa-globe',          'title'=>'Website',         'value'=>'www.Apeaknepal.com'],
             ];
             @endphp
 

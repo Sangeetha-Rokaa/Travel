@@ -376,10 +376,12 @@
         {{-- ===================== HERO ===================== --}}
         <div class="about-hero">
             <div class="about-hero-content">
-                <h1>About Visit Nepal</h1>
+                <h1>About ApeakNepal</h1>
                 <p>
-                    Nepal trennasdens daptittudindchar ennords and<br>
-                    eroc nos butrelerlerlerenleratmos.
+                   ApeakNepal, established in 2026,
+                    is a Nepal-based tour and travel company dedicated to providing memorable travel experiences across Nepal.
+                     We offer carefully designed tours, trekking adventures, cultural journeys, and nature experiences
+                      that showcase Nepal’s stunning landscapes, rich heritage, and local traditions.
                 </p>
                 <a href="#" class="btn-explore-nepal">Explore Nepal</a>
             </div>
@@ -392,13 +394,10 @@
             <div class="about-heritage-left">
                 <h2>Our Local Heritage</h2>
                 <p>
-                    Our omplete story of ores conesoation edigning ore ve
-                    nunbery icornu troupons and assoclates, wol natnopine
-                    ernosta osbo ona noe oeinent ounumen fona oce oratners
-                    oobon onan osing onoful nuobo ol ounima out nuoos olemar
-                    oobfatanneum olber loa ottmoioa oubeios nes onooationa boe
-                    enu ou oaer oer iclong aenoicumer amonnaceve al ocal
-                    ouios mrntusa.
+                  Nepal is a land of rich cultural and natural heritage, 
+                  home to ancient temples, historic cities, diverse traditions, 
+                  and breathtaking landscapes. Its heritage reflects the unique blend of cultures, 
+                  religions, art, architecture, and local knowledge passed down through generations.
                 </p>
             </div>
 
@@ -417,7 +416,7 @@
                             </svg>
                         </div>
                         <h4>Local Knowledge</h4>
-                        <p>Lcorn onorotasmel local knowledge.</p>
+                        <p>We possess deep understanding of Nepal’s diverse cultures, traditions, and local customs.</p>
                     </div>
 
                     <div class="about-feature-icon-card">
@@ -430,7 +429,7 @@
                             </svg>
                         </div>
                         <h4>Conservation</h4>
-                        <p>Oanamanon front onuonos.</p>
+                        <p>We are committed to preserving Nepal’s natural and cultural heritage for future generations.</p>
                     </div>
 
                     <div class="about-feature-icon-card">
@@ -443,7 +442,7 @@
                             </svg>
                         </div>
                         <h4>Safety</h4>
-                        <p>Tour toeocurity and satisfaction.</p>
+                        <p>Tour safety and well-being is our top priority.</p>
                     </div>
 
                 </div>
@@ -456,7 +455,7 @@
 
             {{-- Left: photo --}}
             <div>
-                <img src="https://images.unsplash.com/photo-1587502537745-84b86da1204f?w=800&q=80" alt="Our Expert Guides"
+                <img src="{{ asset('images/Agent.jpeg') }}" alt="Our Expert Guides"
                     class="about-guides-img" />
             </div>
 
@@ -464,12 +463,9 @@
             <div class="about-guides-right">
                 <h2>Meet Our Expert Guides</h2>
                 <p>
-                    Nbo dunnunnuruntu dnuunintunonabunohtot chee guide
-                    bepape oapn oobe and porclebbloos oa ontobles and
-                    oaonon oona oanuaenppades pn oudonboa partecng
-                    backoction nue ob no nbocotos ob oun ots oan aaot at
-                    natice oaoct ob natnoocione ouoatna thos, ondipcotiome
-                    patrno mates ang-bataiuns.
+              At ApeakNepal, our experienced and knowledgeable guides are dedicated to making every journey safe, 
+              comfortable, and memorable. With strong knowledge of Nepal’s mountains, culture, heritage, and
+               local communities, our guides provide professional support and authentic experiences throughout your adventure.
                 </p>
 
                 <div class="about-guides-cards">
@@ -484,7 +480,7 @@
                             </svg>
                         </div>
                         <h4>Local<br>Knowledge</h4>
-                        <p>L one oabrots odor post thorosunge.</p>
+                        <p>Knowledge</p>
                     </div>
 
                     <div class="about-guide-card">
@@ -496,7 +492,7 @@
                             </svg>
                         </div>
                         <h4>Conservation</h4>
-                        <p>Dartnn conest fubrobiton.</p>
+                        <p>conversation of local heritage.</p>
                     </div>
 
                     <div class="about-guide-card">
@@ -508,7 +504,7 @@
                             </svg>
                         </div>
                         <h4>Safety</h4>
-                        <p>Tour toeocurity and futurbotion.</p>
+                        <p>Tour safety and well-being is our top priority.</p>
                     </div>
 
                 </div>

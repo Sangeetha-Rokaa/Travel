@@ -2,160 +2,242 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\View\View;
+use App\Http\Controllers\Controller;
 
 class CheckoutController extends Controller
 {
-    protected string $sessionKey = 'cart';
-
-    public function index()
+    /**
+     * GET /checkout — show delivery + payment form with a live order summary.
+     */
+    public function index(): View|RedirectResponse
     {
-        $cart = session($this->sessionKey, []);
+        $cart = $this->buildCartItems();
 
-        if (empty($cart)) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
-        }
-
-        $items = collect($cart)->map(function ($item, $id) {
-            $product = Product::find($id);
-            if (!$product) return null;
-
-            $unitPrice = $product->sale_price ?? $product->price;
-
-            return [
-                'id'         => $product->id,
-                'name'       => $product->name,
-                'image'      => $product->image ? Storage::url($product->image) : null,
-                'unit_price' => $unitPrice,
-                'qty'        => $item['qty'],
-                'subtotal'   => $unitPrice * $item['qty'],
-                'in_stock'   => method_exists($product, 'isInStock') ? $product->isInStock() : true,
-            ];
-        })->filter()->values();
-
-        if ($items->contains(fn($i) => !$i['in_stock'])) {
+        if ($cart['items']->isEmpty()) {
             return redirect()->route('cart.index')
-                ->with('error', 'Some items in your cart are out of stock. Please remove them before checking out.');
+                ->with('error', 'Your cart is empty. Add some gear before checking out.');
         }
-
-        $subtotal     = $items->sum('subtotal');
-        $shippingCost = (float) setting('shipping_flat_rate', 0);
-        $total        = $subtotal + $shippingCost;
 
         return view('frontend.checkout.index', [
-            'items'        => $items,
-            'subtotal'     => $subtotal,
-            'shipping'     => $shippingCost,
-            'total'        => $total,
+            'items'    => $cart['items'],
+            'subtotal' => $cart['subtotal'],
+            'shipping' => $cart['shipping'],
+            'tax'      => $cart['tax'],
+            'taxRate'  => $cart['taxRate'],
+            'total'    => $cart['total'],
         ]);
     }
 
-    public function store(Request $request)
+    /**
+     * POST /checkout — validate delivery info, snapshot cart into an Order,
+     * clear the cart, redirect to the success page.
+     */
+    public function store(Request $request): RedirectResponse
     {
-        $cart = session($this->sessionKey, []);
-
-        if (empty($cart)) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
-        }
-
         $validated = $request->validate([
             'full_name'      => 'required|string|max:150',
-            'email'          => 'required|email|max:150',
             'phone'          => 'required|string|max:30',
+            'email'          => 'required|email|max:150',
             'address'        => 'required|string|max:255',
-            'city'           => 'required|string|max:100',
+            'city'           => 'nullable|string|max:100',
+            'province'       => 'nullable|string|max:100',
+            'postal_code'    => 'nullable|string|max:20',
             'notes'          => 'nullable|string|max:500',
-            'payment_method' => 'required|in:cod,esewa,bank_transfer',
+            'payment_method' => 'required|in:esewa,khalti,connect_ips,cod',
         ]);
 
-        $items = collect($cart)->map(function ($item, $id) {
-            $product = Product::find($id);
-            if (!$product) return null;
+        $cart = $this->buildCartItems();
 
-            $unitPrice = $product->sale_price ?? $product->price;
-
-            return [
-                'product'  => $product,
-                'price'    => $unitPrice,
-                'quantity' => $item['qty'],
-                'total'    => $unitPrice * $item['qty'],
-            ];
-        })->filter()->values();
-
-        if ($items->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+        if ($cart['items']->isEmpty()) {
+            return redirect()->route('cart.index')
+                ->with('error', 'Your cart is empty. Add some gear before checking out.');
         }
 
-        foreach ($items as $item) {
-            $product = $item['product'];
-            if (method_exists($product, 'isInStock') && !$product->isInStock()) {
+        foreach ($cart['items'] as $item) {
+            if (!$item['in_stock'] || $item['qty'] > $item['max_qty']) {
                 return redirect()->route('cart.index')
-                    ->with('error', $product->name . ' is out of stock. Please remove it and try again.');
+                    ->with('error', "\"{$item['name']}\" is no longer available in the requested quantity.");
             }
         }
 
-        $subtotal     = $items->sum('total');
-        $shippingCost = (float) setting('shipping_flat_rate', 0);
-        $tax          = 0; // adjust if you charge tax
-        $total        = $subtotal + $shippingCost + $tax;
+        // Your orders table stores a single shipping_address text column
+        // rather than separate street/city/province/postal columns, so we
+        // format one combined string here while still saving the structured
+        // fields (full_name, email, phone, city, province, postal_code)
+        // individually for anything that needs them separately.
+        $shippingAddress = collect([
+            $validated['address'],
+            $validated['city'] ?? null,
+            $validated['province'] ?? null,
+            $validated['postal_code'] ?? null,
+        ])->filter()->implode(', ');
 
-        $fullAddress = $validated['address'] . ', ' . $validated['city'];
-
-        $order = DB::transaction(function () use ($validated, $items, $subtotal, $shippingCost, $tax, $total, $fullAddress) {
+        $order = DB::transaction(function () use ($validated, $cart, $shippingAddress) {
             $order = Order::create([
-                'order_number'     => 'ORD-' . strtoupper(Str::random(8)),
-                'user_id'          => auth()->id(),
-                'full_name'        => $validated['full_name'],
-                'email'            => $validated['email'],
-                'phone'            => $validated['phone'],
-                'city'             => $validated['city'],
-                'shipping_address' => $fullAddress,
-                'billing_address'  => $fullAddress,
-                'notes'            => $validated['notes'] ?? null,
-                'payment_method'   => $validated['payment_method'],
-                'status'           => 'pending',
-                'payment_status'   => 'unpaid',
-                'subtotal'         => $subtotal,
-                'tax'              => $tax,
-                'shipping_cost'    => $shippingCost,
-                'total'            => $total,
+                'user_id'               => Auth::id(),
+                'status'                => 'pending',  // enum: pending|processing|shipped|delivered|cancelled
+                'payment_status'        => 'unpaid',   // enum: unpaid|paid|refunded
+                'subtotal'              => $cart['subtotal'],
+                'tax'                   => $cart['tax'],
+                'shipping_cost'         => $cart['shipping'],
+                'total'                 => $cart['total'],
+                'shipping_address'      => $shippingAddress,
+                'billing_address'       => $shippingAddress,
+                'notes'                 => $validated['notes'] ?? null,
+                'full_name'             => $validated['full_name'],
+                'email'                 => $validated['email'],
+                'phone'                 => $validated['phone'],
+                'city'                  => $validated['city'] ?? null,
+                'province'              => $validated['province'] ?? null,
+                'postal_code'           => $validated['postal_code'] ?? null,
+                'payment_method'        => $validated['payment_method'],
+                'estimated_delivery_at' => now()->addDays(4),
             ]);
 
-            foreach ($items as $item) {
+            foreach ($cart['items'] as $item) {
                 OrderItem::create([
                     'order_id'     => $order->id,
-                    'product_id'   => $item['product']->id,
-                    'product_name' => $item['product']->name,
-                    'price'        => $item['price'],
-                    'quantity'     => $item['quantity'],
-                    'total'        => $item['total'],
+                    'product_id'   => $item['id'],
+                    'product_name' => $item['name'],
+                    'image'        => $item['raw_image'] ?? null,
+                    'price'        => $item['unit_price'],
+                    'quantity'     => $item['qty'],
+                    'total'        => $item['subtotal'],
                 ]);
 
-                if (isset($item['product']->stock)) {
-                    $item['product']->decrement('stock', $item['quantity']);
-                }
+                Product::where('id', $item['id'])->decrement('stock', $item['qty']);
             }
 
             return $order;
         });
 
-        session()->forget($this->sessionKey);
+        session()->forget('cart');
 
-        return redirect()->route('checkout.success', $order->order_number)
-            ->with('success', 'Your order has been placed successfully!');
+        return redirect()
+            ->route('order.success', $order->order_number)
+            ->with('success', 'Your order has been placed successfully.');
     }
 
-    public function success(string $orderNumber)
+    /**
+     * Build the $items/$subtotal/$shipping/$tax/$total shape used across
+     * the cart + checkout pages, from the session cart.
+     *
+     * Assumes session('cart') is structured as [product_id => quantity].
+     * Adjust this method if your actual CartController stores it differently.
+     */
+    private function buildCartItems(): array
     {
-        $order = Order::with('items')->where('order_number', $orderNumber)->firstOrFail();
+        $sessionCart = session('cart', []);
 
-        return view('frontend.checkout.success', compact('order'));
+        $productIds = array_keys($sessionCart);
+
+        $products = Product::whereIn('id', $productIds)
+            ->with('category')
+            ->get()
+            ->keyBy('id');
+
+        $items = collect();
+        $subtotal = 0;
+
+        foreach ($sessionCart as $productId => $cartItem) {
+
+            $product = $products->get($productId);
+
+            if (!$product) {
+                continue;
+            }
+
+            /*
+         * Support both:
+         *
+         * [product_id => 2]
+         *
+         * and:
+         *
+         * [product_id => ['quantity' => 2]]
+         */
+
+            if (is_array($cartItem)) {
+                $qty = $cartItem['quantity']
+                    ?? $cartItem['qty']
+                    ?? 1;
+            } else {
+                $qty = $cartItem;
+            }
+
+            $qty = (int) $qty;
+
+            if ($qty < 1) {
+                $qty = 1;
+            }
+
+            $unitPrice = (float) (
+                $product->sale_price ?? $product->price
+            );
+
+            $lineSubtotal = $unitPrice * $qty;
+
+            $subtotal += $lineSubtotal;
+
+            $items->push([
+                'id'         => $product->id,
+                'name'       => $product->name,
+                'image'      => $product->image
+                    ? Storage::url($product->image)
+                    : null,
+                'raw_image'  => $product->image,
+                'price'      => (float) $product->price,
+                'sale_price' => $product->sale_price !== null
+                    ? (float) $product->sale_price
+                    : null,
+                'unit_price' => $unitPrice,
+                'qty'        => $qty,
+                'max_qty'    => (int) $product->stock,
+                'in_stock'   => $product->stock > 0,
+                'subtotal'   => $lineSubtotal,
+                'category'   => $product->category->name ?? null,
+            ]);
+        }
+
+        $taxRate = (float) setting('tax_rate', 13);
+
+        $tax = round(
+            $subtotal * ($taxRate / 100),
+            2
+        );
+
+        $freeShippingThreshold = (float) setting(
+            'free_shipping_threshold',
+            5000
+        );
+
+        $shippingFlatRate = (float) setting(
+            'shipping_flat_rate',
+            150
+        );
+
+        $shipping = $subtotal >= $freeShippingThreshold
+            ? 0
+            : $shippingFlatRate;
+
+        $total = $subtotal + $shipping + $tax;
+
+        return [
+            'items'    => $items,
+            'subtotal' => $subtotal,
+            'shipping' => $shipping,
+            'tax'      => $tax,
+            'taxRate'  => $taxRate,
+            'total'    => $total,
+        ];
     }
 }

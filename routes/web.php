@@ -18,6 +18,8 @@ use App\Http\Controllers\Frontend\storeController;
 use App\Http\Controllers\Frontend\CheckoutController;
 // use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+// use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\StoreOrderController;
 use App\Http\Controllers\Frontend\CartController;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -98,7 +100,26 @@ Route::middleware('auth')->prefix('my-orders')->name('orders.')->group(function 
     Route::get('/', [OrderController::class, 'index'])->name('index');
     Route::get('/{order}', [OrderController::class, 'show'])->name('show');
 });
+Route::get('/checkout',  [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
+// Order summary / success (public by order_number — no auth required so a
+// guest checkout can still view their confirmation)
+Route::get('/order-summary/{order:order_number}', [StoreOrderController::class, 'summary'])->name('order.summary');
+Route::get('/order-success/{order:order_number}', [StoreOrderController::class, 'success'])->name('order.success');
+
+// Customer-facing "My Orders" — replace your existing block that looked like:
+//
+//   Route::middleware('auth')->prefix('my-orders')->name('orders.')->group(function () {
+//       Route::get('/', [OrderController::class, 'index'])->name('index');
+//       Route::get('/{order}', [OrderController::class, 'show'])->name('show');
+//   });
+//
+// with this (same route names, same URIs — just pointing at StoreOrderController):
+Route::middleware('auth')->prefix('my-orders')->name('orders.')->group(function () {
+    Route::get('/', [StoreOrderController::class, 'index'])->name('index');
+    Route::get('/{order}', [StoreOrderController::class, 'show'])->name('show');
+});
 // ═══════════════════════════════════════════════════════════════════════════════
 //  ADMIN — AUTH (unauthenticated)
 // ═══════════════════════════════════════════════════════════════════════════════

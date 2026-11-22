@@ -14,11 +14,33 @@ class Order extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'subtotal'      => 'decimal:2',
-        'tax'           => 'decimal:2',
-        'shipping_cost' => 'decimal:2',
-        'total'         => 'decimal:2',
+        'subtotal'              => 'decimal:2',
+        'tax'                   => 'decimal:2',
+        'shipping_cost'         => 'decimal:2',
+        'total'                 => 'decimal:2',
+        'estimated_delivery_at' => 'datetime',
     ];
+
+    // Matches the `status` enum column exactly
+    public const STATUS_PENDING    = 'pending';
+    public const STATUS_PROCESSING = 'processing';
+    public const STATUS_SHIPPED    = 'shipped';
+    public const STATUS_DELIVERED  = 'delivered';
+    public const STATUS_CANCELLED  = 'cancelled';
+
+    // Matches the `payment_status` enum column exactly
+    public const PAYMENT_UNPAID   = 'unpaid';
+    public const PAYMENT_PAID     = 'paid';
+    public const PAYMENT_REFUNDED = 'refunded';
+
+    /**
+     * Route model binding uses order_number instead of the numeric id,
+     * e.g. /order-summary/ORD-64DF21A9 instead of /order-summary/1.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'order_number';
+    }
 
     public function user(): BelongsTo
     {

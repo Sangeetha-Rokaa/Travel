@@ -4,8 +4,8 @@
 @push('styles')
     <style>
         /* ═══════════════════════════════════════════════════
-                                       HOME PAGE STYLES
-                                    ═══════════════════════════════════════════════════ */
+                                           HOME PAGE STYLES
+                                        ═══════════════════════════════════════════════════ */
 
         /* ── Shared section rhythm ── */
         section {
@@ -105,8 +105,8 @@
         }
 
         /* ══════════════════════════════════════════════
-                                       HERO
-                                    ══════════════════════════════════════════════ */
+                                           HERO
+                                        ══════════════════════════════════════════════ */
         .hero {
             position: relative;
             height: 100svh;
@@ -401,8 +401,8 @@
         }
 
         /* ══════════════════════════════════════════════
-                                       TRUST BAR
-                                    ══════════════════════════════════════════════ */
+                                           TRUST BAR
+                                        ══════════════════════════════════════════════ */
         .trust-bar {
             display: flex;
             align-items: center;
@@ -476,8 +476,8 @@
         }
 
         /* ══════════════════════════════════════════════
-                                       WHY CHOOSE US
-                                    ══════════════════════════════════════════════ */
+                                           WHY CHOOSE US
+                                        ══════════════════════════════════════════════ */
         #why-us {
             background: linear-gradient(160deg, #f0f5ff 0%, var(--clr-snow) 100%);
             overflow: hidden;
@@ -649,8 +649,8 @@
         }
 
         /* ══════════════════════════════════════════════
-                                       DESTINATIONS
-                                    ══════════════════════════════════════════════ */
+                                           DESTINATIONS
+                                        ══════════════════════════════════════════════ */
         #destinations {
             background: var(--clr-snow);
         }
@@ -760,8 +760,8 @@
         }
 
         /* ══════════════════════════════════════════════
-                                       TREKS
-                                    ══════════════════════════════════════════════ */
+                                           TREKS
+                                        ══════════════════════════════════════════════ */
         #treks {
             background: #374151;
             color: #fff;
@@ -914,8 +914,8 @@
         }
 
         /* ══════════════════════════════════════════════
-                                       PACKAGES
-                                    ══════════════════════════════════════════════ */
+                                           PACKAGES
+                                        ══════════════════════════════════════════════ */
         .packages-section {
             background: #fff;
             padding: clamp(60px, 8vw, 120px) clamp(16px, 5vw, 80px);
@@ -1130,8 +1130,8 @@
         }
 
         /* ══════════════════════════════════════════════
-                                       TESTIMONIALS
-                                    ══════════════════════════════════════════════ */
+                                           TESTIMONIALS
+                                        ══════════════════════════════════════════════ */
         #testimonials {
             background: linear-gradient(160deg, #f0f5ff 0%, var(--clr-snow) 100%);
             overflow: hidden;
@@ -1268,8 +1268,8 @@
         }
 
         /* ══════════════════════════════════════════════
-                                       CONTACT CTA
-                                    ══════════════════════════════════════════════ */
+                                           CONTACT CTA
+                                        ══════════════════════════════════════════════ */
         #contact-cta {
             position: relative;
             overflow: hidden;
@@ -1572,8 +1572,8 @@
         }
 
         /* ══════════════════════════════════════════════
-                                       RESPONSIVE
-                                    ══════════════════════════════════════════════ */
+                                           RESPONSIVE
+                                        ══════════════════════════════════════════════ */
         @media (max-width: 1024px) {
             .why-inner {
                 grid-template-columns: 1fr;
@@ -1686,8 +1686,8 @@
 @section('content')
 
     <!-- ══════════════════════════════════════════════
-                                         HERO
-                                    ══════════════════════════════════════════════ -->
+                                             HERO
+                                        ══════════════════════════════════════════════ -->
     <section class="hero" id="home">
         <img id="heroBg" class="hero-bg-img" src="{{ asset('images/landingimg.png') }}" alt="Nepal Himalayan Banner" />
         <div class="hero-overlay"></div>
@@ -1733,8 +1733,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                         TRUST BAR
-                                    ══════════════════════════════════════════════ -->
+                                             TRUST BAR
+                                        ══════════════════════════════════════════════ -->
     <div class="trust-bar">
         <div class="trust-item" data-aos="fade-up" data-aos-delay="0">
             <div class="trust-icon"><i class="fas fa-tag"></i></div>
@@ -1771,8 +1771,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                         WHY CHOOSE US
-                                    ══════════════════════════════════════════════ -->
+                                             WHY CHOOSE US
+                                        ══════════════════════════════════════════════ -->
     <section id="why-us">
         <div class="why-inner">
             <div>
@@ -1811,7 +1811,7 @@
             </div>
 
             <div class="why-video" data-aos="fade-left" data-aos-delay="100">
-                <img src="{{ asset('images/landingimg.png') }}" alt="Experience Nepal"
+                <img src="{{ asset('images/annapurnacamp.jpg') }}" alt="Experience Nepal"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                 <div class="vid-placeholder"
                     style="display:none;background:linear-gradient(135deg,#1a3a5c,#1a6fc4);flex-direction:column;align-items:center;justify-content:center;color:white;gap:12px;">
@@ -1826,8 +1826,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                         POPULAR DESTINATIONS
-                                    ══════════════════════════════════════════════ -->
+                                             POPULAR DESTINATIONS
+                                        ══════════════════════════════════════════════ -->
     <section id="destinations">
         <div class="section-header" data-aos="fade-up">
             <div class="section-tag">Explore</div>
@@ -1869,8 +1869,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                         TOP TREKKING PLANS
-                                    ══════════════════════════════════════════════ -->
+                                             TOP TREKKING PLANS
+                                        ══════════════════════════════════════════════ -->
     <section id="treks">
         <div class="section-header" data-aos="fade-up">
             <div class="section-tag"
@@ -1928,8 +1928,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                         PACKAGES
-                                    ══════════════════════════════════════════════ -->
+                                             PACKAGES
+                                        ══════════════════════════════════════════════ -->
     <section class="packages-section">
         <div class="section-header" data-aos="fade-up">
             <span class="section-tag">Travel Packages</span>
@@ -2001,8 +2001,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                         TESTIMONIALS
-                                    ══════════════════════════════════════════════ -->
+                                             TESTIMONIALS
+                                        ══════════════════════════════════════════════ -->
     <section id="testimonials">
         <div class="section-header" data-aos="fade-up">
             <div class="section-tag">Reviews</div>
@@ -2048,8 +2048,8 @@
 
 
     <!-- ══════════════════════════════════════════════
-                                         CONTACT CTA
-                                    ══════════════════════════════════════════════ -->
+                                             CONTACT CTA
+                                        ══════════════════════════════════════════════ -->
     <section id="contact-cta">
         <img class="cta-bg" src="{{ asset('images/landingimg.png') }}" alt="Nepal"
             onerror="this.style.display='none';" />

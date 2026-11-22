@@ -1085,11 +1085,17 @@
 ══════════════════════════════════════════════ -->
     <div id="videoModal" style="display:none;">
         <div>
-            <button class="close-modal-btn" onclick="closeVideo()"><i class="fas fa-times"></i></button>
-            <div style="padding:50px;text-align:center;color:rgba(255,255,255,0.45);font-size:14px;">
-                <i class="fas fa-film" style="font-size:52px;margin-bottom:16px;display:block;opacity:0.5;"></i>
-                Replace this with your YouTube embed.<br>
-                e.g. <code>&lt;iframe src="https://www.youtube.com/embed/..."&gt;&lt;/iframe&gt;</code>
+            <button class="close-modal-btn" onclick="closeVideo()">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div style="padding:20px;">
+                <iframe width="100%" height="450"
+                    src="https://www.youtube.com/embed/videoseries?list=RDeAX57hKWLkg" title="YouTube Playlist"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+                </iframe>
             </div>
         </div>
     </div>

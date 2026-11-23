@@ -1689,7 +1689,7 @@
                                          HERO
                                     ══════════════════════════════════════════════ -->
     <section class="hero" id="home">
-        <img id="heroBg" class="hero-bg-img" src="{{ asset('images/landingimg.png') }}" alt="Nepal Himalayan Banner" />
+        <img id="heroBg" class="hero-bg-img" src="{{ asset('images/Mardi.jpeg') }}" alt="Nepal Himalayan Banner" />
         <div class="hero-overlay"></div>
 
         <div class="social-sidebar">

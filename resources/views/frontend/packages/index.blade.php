@@ -332,6 +332,209 @@
                 display: none;
             }
         }
+
+/* =============================================
+   PACKAGES PAGE - FULL WIDTH DESIGN
+============================================= */
+
+.pkg-page-wrapper {
+    background: #eae6de;
+
+    width: 100vw !important;
+    max-width: none !important;
+
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+
+    min-height: 100vh;
+
+    padding: 0 0 60px;
+    margin: 0;
+
+    box-sizing: border-box;
+    overflow-x: clip;
+}
+
+/* =============================================
+   FULL WIDTH HERO BACKGROUND
+============================================= */
+
+.pkg-hero {
+    position: relative;
+
+    width: 100% !important;
+    max-width: none !important;
+
+    height: clamp(460px, 68vh, 650px);
+
+    margin: 0 0 44px !important;
+
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+
+    background-color: #0b1b30;
+
+    /* Dynamic background image remains supported */
+    background-position: center 45% !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Dark overlay */
+
+.pkg-hero::before {
+    content: '';
+
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        90deg,
+        rgba(5, 17, 43, 0.80) 0%,
+        rgba(5, 17, 43, 0.45) 45%,
+        rgba(5, 17, 43, 0.08) 100%
+    );
+
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Hero content */
+
+.pkg-hero-content {
+    position: absolute;
+
+    top: 50%;
+    left: clamp(25px, 8vw, 140px);
+
+    transform: translateY(-50%);
+
+    z-index: 2;
+
+    max-width: 550px;
+    padding-right: 20px;
+}
+
+.pkg-hero-content h1 {
+    font-size: clamp(36px, 4.5vw, 64px);
+    font-weight: 800;
+
+    color: #fff;
+    line-height: 1.15;
+
+    margin: 0 0 16px;
+
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.pkg-hero-content p {
+    font-size: 16px;
+
+    color: rgba(255,255,255,0.9);
+    line-height: 1.7;
+
+    margin: 0 0 28px;
+}
+
+/* Discover button */
+
+.btn-discover-more {
+    display: inline-block;
+
+    background: #f4aa21;
+    color: #07182e;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    padding: 14px 30px;
+    border-radius: 50px;
+
+    text-decoration: none;
+    border: none;
+
+    transition: all 0.3s ease;
+}
+
+.btn-discover-more:hover {
+    background: #e99b10;
+    color: #07182e;
+
+    transform: translateY(-3px);
+    text-decoration: none;
+}
+
+/* Package content spacing */
+
+.pkg-section-header,
+.pkg-grid {
+    margin-left: clamp(20px, 3.7vw, 65px);
+    margin-right: clamp(20px, 3.7vw, 65px);
+}
+
+/* =============================================
+   RESPONSIVE
+============================================= */
+
+@media (max-width: 1024px) {
+
+    .pkg-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .pkg-hero {
+        height: 55vh;
+        min-height: 380px;
+    }
+
+    .pkg-hero-content {
+        left: 25px;
+        right: 25px;
+        max-width: 100%;
+    }
+
+    .pkg-hero-content h1 {
+        font-size: 36px;
+    }
+
+    .pkg-hero-content p {
+        font-size: 14px;
+    }
+
+    .pkg-section-header,
+    .pkg-grid {
+        margin-left: 16px;
+        margin-right: 16px;
+    }
+
+}
+
+@media (max-width: 580px) {
+
+    .pkg-hero {
+        height: 50vh;
+        min-height: 350px;
+    }
+
+    .pkg-hero-content h1 {
+        font-size: 30px;
+    }
+
+    .pkg-hero-content p {
+        display: block;
+    }
+
+    .pkg-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
     </style>
 @endpush
 
@@ -381,11 +584,11 @@
 
             @forelse($packages as $package)
                 <div class="pkg-card" style="cursor:pointer;" data-url="{{ route('packages.show', $package->slug) }}">
-
-                    <img src="{{ Str::startsWith($package->featured_image, 'http')
-                        ? $package->featured_image
-                        : asset('storage/' . $package->featured_image) }}"
-                        alt="{{ $package->name }}" class="pkg-card-img" />
+<img
+    src="{{ asset('images/poon.jpg') }}"
+    alt="{{ $package->name }}"
+    class="pkg-card-img"
+/>
 
                     <div class="pkg-card-body">
                         <h3 class="pkg-card-title">{{ $package->name }}</h3>

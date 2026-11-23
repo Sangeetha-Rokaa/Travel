@@ -27,6 +27,130 @@
             background: url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=1400&q=85') center 30% / cover no-repeat;
         }
 
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+/* FULL WIDTH PAGE WRAPPER */
+.about-page-wrapper {
+    background: #eae6de;
+    min-height: 100vh;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 20px clamp(16px, 4vw, 60px) 60px;
+    box-sizing: border-box;
+}
+
+/* FULL SCREEN HERO */
+.about-hero {
+    position: relative;
+
+    width: 100vw !important;
+    max-width: none !important;
+
+    margin-left: calc(50% - 50vw);
+    margin-top: 0;
+    margin-bottom: 52px;
+
+    height: clamp(400px, 65vh, 620px);
+
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+
+    background-image:
+        url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=2000&q=90');
+    background-position: center 35%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+/* DARK GRADIENT OVERLAY */
+.about-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        90deg,
+        rgba(8, 18, 50, 0.88) 0%,
+        rgba(8, 18, 50, 0.55) 45%,
+        rgba(8, 18, 50, 0.08) 100%
+    );
+
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* HERO CONTENT */
+.about-hero-content {
+    position: absolute;
+    top: 50%;
+    left: clamp(25px, 8vw, 130px);
+
+    transform: translateY(-50%);
+
+    z-index: 2;
+    max-width: 500px;
+}
+
+.about-hero-content h1 {
+    font-size: clamp(34px, 4.5vw, 58px);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    margin: 0 0 14px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.about-hero-content p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.88);
+    line-height: 1.7;
+    margin-bottom: 26px;
+}
+
+/* TABLET */
+@media (max-width: 900px) {
+    .about-hero {
+        height: 50vh;
+        min-height: 380px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+    .about-page-wrapper {
+        padding: 16px 14px 40px;
+    }
+
+    .about-hero {
+        height: 380px;
+        min-height: 0;
+        border-radius: 0 0 12px 12px;
+    }
+
+    .about-hero-content {
+        left: 24px;
+        right: 24px;
+        max-width: 100%;
+    }
+
+    .about-hero-content h1 {
+        font-size: 30px;
+    }
+
+    .about-hero-content p {
+        font-size: 13px;
+    }
+}
+
+
         .about-hero::before {
             content: '';
             position: absolute;
